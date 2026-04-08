@@ -3,28 +3,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Portfolio de projetos de desenvolvimento web e projetos full-stack. Explore minhas habilidades e experiências em desenvolvimento web.">
-    <title>Portfolio</title>
+    <meta name="description" content="Portfolio de Gabriel — Desenvolvedor Web Full-Stack em Fortaleza, CE.">
+    <meta name="theme-color" content="#07070f">
+    <title>Gabriel | Dev Full-Stack</title>
+
+    <!-- Pré-conecta com CDNs para reduzir latência -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Tema antes do render — evita flash de cor -->
+    <script>
+        (function () {
+            var s = localStorage.getItem('theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', s);
+        })();
+    </script>
+
+    <!-- Oculta elementos animados antes do GSAP carregar -->
+    <style>
+        .hero-content > *, .hero-visual,
+        .js-reveal, .js-reveal-left, .js-reveal-right, .js-reveal-up,
+        .project-card, .skill-card { opacity: 0; }
+        .hero-name { opacity: 1; }
+        .hero-char { opacity: 0; display: inline-block; }
+    </style>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <!-- Grain / noise overlay — textura premium -->
+    <div class="noise-overlay" aria-hidden="true"></div>
+
+    <!-- Barra de progresso de scroll -->
+    <div class="scroll-progress" id="scrollProgress" role="progressbar" aria-hidden="true"></div>
+
+    <!-- Canvas de partículas -->
+    <canvas class="bg-canvas" id="bgCanvas" aria-hidden="true"></canvas>
+
+    <!-- Blobs de cor ambiente -->
+    <div class="bg-blobs" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Side navigation dots (desktop ≥ 1100px) -->
+    <nav class="side-dots" id="sideDots" aria-label="Seções da página">
+        <a href="#inicio"      data-label="Início"      class="side-dot active" aria-label="Início"></a>
+        <a href="#projetos"    data-label="Projetos"    class="side-dot"        aria-label="Projetos"></a>
+        <a href="#habilidades" data-label="Habilidades" class="side-dot"        aria-label="Habilidades"></a>
+        <a href="#sobre"       data-label="Sobre"       class="side-dot"        aria-label="Sobre"></a>
+        <a href="#contato"     data-label="Contato"     class="side-dot"        aria-label="Contato"></a>
+    </nav>
+
+    <!-- ════════════════ NAVBAR ════════════════ -->
     <header>
-        <div class="nave">
-        <h1>Portfolio</h1>
-        <nav>
-            <a href="#projetos">Projetos</a>
-            <a href="#contato">Contato</a>
-            <a href="#sobre">Sobre Mim</a>
-            <a href="#habilidades">Habilidades</a>
+        <nav class="navbar" id="navbar" role="navigation" aria-label="Menu principal">
+            <a href="#inicio" class="logo" aria-label="Gabriel — Início">Gabriel<span class="accent-text">.</span></a>
+
+            <ul class="nav-links" id="navLinks" role="list">
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#projetos">Projetos</a></li>
+                <li><a href="#habilidades">Habilidades</a></li>
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema claro/escuro" type="button">
+                    <span class="icon-moon" aria-hidden="true">🌙</span>
+                    <span class="icon-sun"  aria-hidden="true">☀️</span>
+                </button>
+                <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="navLinks" type="button">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
         </nav>
-        </div>
     </header>
+
     <main>
-        <section id="projetos">
-            <h2> Projetos </h2>
-                <div class="projeto">
-                    <h3>Projeto 1: Site de Loja de Veículos</h3>
-                    <p>Desenvolvi um site de loja de veículos completo usando HTML e CSS para o frontend e JavaScript para o backend. O site inclui funcionalidades de filtro de produtos, paginação e informações enviadas direto por whatsapp.</p>
+
+        <!-- ════════════════ HERO ════════════════ -->
+        <section id="inicio" class="hero" aria-label="Apresentação">
+            <!-- Orbe que segue o mouse -->
+            <div class="hero-orb" id="heroOrb" aria-hidden="true"></div>
+
+            <!-- Formas geométricas decorativas -->
+            <div class="hero-floats" aria-hidden="true">
+                <div class="hf hf-1"></div>
+                <div class="hf hf-2"></div>
+                <div class="hf hf-3"></div>
+                <div class="hf hf-4"></div>
+                <div class="hf hf-5"></div>
+            </div>
+
+            <div class="hero-content">
+                <p class="hero-greeting">
+                    <span class="greeting-line" aria-hidden="true"></span>Olá, eu sou
+                </p>
+
+                <!-- Letras divididas em spans via main.js -->
+                <h1 class="hero-name" id="heroName">
+                    Gabriel<span class="accent-text hero-dot" aria-hidden="true">.</span>
+                </h1>
+
+                <p class="hero-role" aria-live="polite">
+                    Desenvolvedor&nbsp;<span class="accent-text" id="typewriter">Web Full-Stack</span><span class="cursor-blink" aria-hidden="true">|</span>
+                </p>
+
+                <p class="hero-desc">
+                    Criando experiências digitais modernas com código limpo e design que encanta.
+                    Transformo ideias em produtos reais.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="#projetos" class="btn btn-primary magnetic">
+                        Ver Projetos
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true" focusable="false">
+                            <path d="M3 7.5h9m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.7"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <a href="#contato" class="btn btn-outline magnetic">Fale Comigo</a>
+                </div>
+
+                <div class="hero-stats" aria-label="Estatísticas">
+                    <div class="hero-stat">
+                        <div class="stat-n-row">
+                            <span class="stat-n" data-count="2">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                        </div>
+                        <span class="stat-l">Anos</span>
+                    </div>
+                    <div class="hero-stat-div" aria-hidden="true"></div>
+                    <div class="hero-stat">
+                        <div class="stat-n-row">
+                            <span class="stat-n" data-count="5">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                        </div>
+                        <span class="stat-l">Projetos</span>
+                    </div>
+                    <div class="hero-stat-div" aria-hidden="true"></div>
+                    <div class="hero-stat">
+                        <div class="stat-n-row">
+                            <span class="stat-n" data-count="4">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                        </div>
+                        <span class="stat-l">Tecnologias</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual" aria-hidden="true">
+                <div class="code-card-wrap">
+                    <div class="code-card" id="codeCard">
+                        <div class="code-dots">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                            <span class="code-filename">gabriel.js</span>
+                        </div>
+                        <div class="code-body">
+                            <p><span class="c-line">1</span><span class="c-kw">const</span> dev = {</p>
+                            <p><span class="c-line">2</span><span class="indent">name:  <span class="c-str">"Gabriel"</span>,</span></p>
+                            <p><span class="c-line">3</span><span class="indent">role:  <span class="c-str">"Dev Full-Stack"</span>,</span></p>
+                            <p><span class="c-line">4</span><span class="indent">stack: [<span class="c-str">"HTML"</span>, <span class="c-str">"CSS"</span>, <span class="c-str">"JS"</span>],</span></p>
+                            <p><span class="c-line">5</span><span class="indent">paixao: <span class="c-str">"Codar 🚀"</span>,</span></p>
+                            <p><span class="c-line">6</span><span class="indent">disponivel: <span class="c-bool">true</span></span></p>
+                            <p><span class="c-line">7</span>};</p>
+                            <p><span class="c-line">8</span><span class="cursor-code"></span></p>
+                        </div>
+                    </div>
+
+                    <!-- Tech orbit badges -->
+                    <div class="tech-orbit">
+                        <div class="tech-orb" style="--delay:0s;    --tx:-52px; --ty:-18px">
+                            <img src="../fotosportfolio/logo3.png" alt="" loading="lazy" width="26" height="26">
+                        </div>
+                        <div class="tech-orb" style="--delay:-2.8s; --tx:calc(100% + 12px); --ty:20px">
+                            <img src="../fotosportfolio/logo2.png" alt="" loading="lazy" width="26" height="26">
+                        </div>
+                        <div class="tech-orb" style="--delay:-5.6s; --tx:-52px; --ty:calc(100% - 24px)">
+                            <img src="../fotosportfolio/logo1.png" alt="" loading="lazy" width="26" height="26">
+                        </div>
+                        <div class="tech-orb" style="--delay:-8.4s; --tx:calc(100% + 12px); --ty:calc(100% - 60px)">
+                            <img src="../fotosportfolio/logo4.png" alt="" loading="lazy" width="26" height="26">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-badge">
+                    <span class="badge-dot" aria-hidden="true"></span>
+                    Disponível para projetos
+                </div>
+            </div>
         </section>
+
+        <!-- ════════════════ PROJETOS ════════════════ -->
+        <section id="projetos" aria-label="Projetos">
+            <div class="container">
+                <div class="section-header js-reveal" data-title="WORK">
+                    <span class="section-num" aria-hidden="true">01</span>
+                    <h2>Meus <span class="accent-text">Projetos</span></h2>
+                    <p class="section-sub">Uma seleção dos trabalhos que mais me orgulho</p>
+                    <div class="section-line" aria-hidden="true"></div>
+                </div>
+
+                <div class="projects-grid">
+
+                    <!-- Card em destaque -->
+                    <article class="project-card project-card--featured"
+                             data-tilt data-tilt-max="7" data-tilt-speed="600"
+                             data-tilt-glare data-tilt-max-glare="0.09"
+                             data-tilt-perspective="1000">
+                        <div class="project-preview" aria-hidden="true">
+                            <div class="preview-chrome">
+                                <div class="preview-dots"><i></i><i></i><i></i></div>
+                                <span class="preview-url">venezamotoseveiculos.com.br</span>
+                                <a href="https://www.venezamotoseveiculos.com.br" target="_blank"
+                                   rel="noopener noreferrer" class="preview-open" aria-label="Abrir Loja de Veículos em nova aba" tabindex="-1">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                                        <path d="M4 1H1v10h10V8M7 1h4m0 0v4M11 1 5.5 6.5"
+                                              stroke="currentColor" stroke-width="1.3"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="preview-body preview-car"><span aria-hidden="true">🚗</span></div>
+                        </div>
+                        <div class="project-tag">⭐ Em Destaque</div>
+                        <h3>Loja de Veículos</h3>
+                        <p>Site completo com filtro de produtos, paginação e integração direta com WhatsApp.
+                           Frontend moderno e totalmente responsivo.</p>
+                        <div class="project-techs" aria-label="Tecnologias usadas">
+                            <span>HTML</span><span>CSS</span><span>JavaScript</span>
+                        </div>
+                        <a href="https://www.venezamotoseveiculos.com.br" target="_blank"
+                           rel="noopener noreferrer" class="btn btn-primary magnetic">Acessar Projeto →</a>
+                    </article>
+
+                    <article class="project-card"
+                             data-tilt data-tilt-max="7" data-tilt-speed="600"
+                             data-tilt-glare data-tilt-max-glare="0.09"
+                             data-tilt-perspective="1000">
+                        <div class="project-preview" aria-hidden="true">
+                            <div class="preview-chrome">
+                                <div class="preview-dots"><i></i><i></i><i></i></div>
+                                <span class="preview-url">plataforma-ensino.com.br</span>
+                                <a href="https://www.w3schools.com/" target="_blank"
+                                   rel="noopener noreferrer" class="preview-open" aria-label="Abrir Plataforma de Ensino em nova aba" tabindex="-1">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                                        <path d="M4 1H1v10h10V8M7 1h4m0 0v4M11 1 5.5 6.5"
+                                              stroke="currentColor" stroke-width="1.3"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="preview-body preview-edu"><span aria-hidden="true">📚</span></div>
+                        </div>
+                        <div class="project-tag">Education Platform</div>
+                        <h3>Plataforma de Ensino</h3>
+                        <p>Plataforma de ensino de programação com filtro de conteúdo e canal de comunicação
+                           via WhatsApp. Interface intuitiva e didática.</p>
+                        <div class="project-techs" aria-label="Tecnologias usadas">
+                            <span>HTML</span><span>CSS</span><span>JavaScript</span>
+                        </div>
+                        <a href="https://www.w3schools.com/" target="_blank"
+                           rel="noopener noreferrer" class="btn btn-primary magnetic">Acessar Projeto →</a>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════ HABILIDADES ════════════════ -->
+        <section id="habilidades" class="bg-alt" aria-label="Habilidades">
+            <div class="container">
+                <div class="section-header js-reveal" data-title="SKILLS">
+                    <span class="section-num" aria-hidden="true">02</span>
+                    <h2>Minhas <span class="accent-text">Habilidades</span></h2>
+                    <p class="section-sub">Tecnologias que domino e uso no dia a dia</p>
+                    <div class="section-line" aria-hidden="true"></div>
+                </div>
+                <div class="skills-grid">
+
+                    <div class="skill-card">
+                        <div class="skill-icon-wrap">
+                            <img src="../fotosportfolio/logo3.png" alt="HTML 5" width="34" height="34" loading="lazy">
+                        </div>
+                        <div class="skill-info">
+                            <div class="skill-top">
+                                <h3>HTML 5</h3>
+                                <span class="skill-pct" aria-label="90 por cento">90%</span>
+                            </div>
+                            <div class="skill-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+                                <div class="skill-fill" style="--w:90%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="skill-card">
+                        <div class="skill-icon-wrap">
+                            <img src="../fotosportfolio/logo2.png" alt="CSS 3" width="34" height="34" loading="lazy">
+                        </div>
+                        <div class="skill-info">
+                            <div class="skill-top">
+                                <h3>CSS 3</h3>
+                                <span class="skill-pct" aria-label="85 por cento">85%</span>
+                            </div>
+                            <div class="skill-bar" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">
+                                <div class="skill-fill" style="--w:85%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="skill-card">
+                        <div class="skill-icon-wrap">
+                            <img src="../fotosportfolio/logo1.png" alt="JavaScript" width="34" height="34" loading="lazy">
+                        </div>
+                        <div class="skill-info">
+                            <div class="skill-top">
+                                <h3>JavaScript</h3>
+                                <span class="skill-pct" aria-label="75 por cento">75%</span>
+                            </div>
+                            <div class="skill-bar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                <div class="skill-fill" style="--w:75%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="skill-card">
+                        <div class="skill-icon-wrap">
+                            <img src="../fotosportfolio/logo4.png" alt="PostgreSQL" width="34" height="34" loading="lazy">
+                        </div>
+                        <div class="skill-info">
+                            <div class="skill-top">
+                                <h3>PostgreSQL</h3>
+                                <span class="skill-pct" aria-label="65 por cento">65%</span>
+                            </div>
+                            <div class="skill-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">
+                                <div class="skill-fill" style="--w:65%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════ SOBRE ════════════════ -->
+        <section id="sobre" aria-label="Sobre mim">
+            <div class="container">
+                <div class="section-header js-reveal" data-title="ABOUT">
+                    <span class="section-num" aria-hidden="true">03</span>
+                    <h2>Sobre <span class="accent-text">Mim</span></h2>
+                    <p class="section-sub">Conheça um pouco da minha história</p>
+                    <div class="section-line" aria-hidden="true"></div>
+                </div>
+                <div class="about-grid">
+                    <div class="about-image js-reveal-left">
+                        <div class="img-wrapper">
+                            <img src="../fotosportfolio/logo5.jpg" alt="Foto de perfil de Gabriel" loading="lazy" width="280" height="300">
+                            <div class="img-glow" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                    <div class="about-text js-reveal-right">
+                        <p>Olá! Sou <strong>Gabriel</strong>, tenho 20 anos e apaixonado por desenvolvimento web.
+                           Estou cursando <strong>Análise e Desenvolvimento de Sistemas</strong> na Universidade
+                           Estácio de Sá em Fortaleza, Ceará.</p>
+                        <p>Minha paixão é criar soluções digitais que sejam
+                           <span class="accent-text">funcionais</span> e
+                           <span class="accent-text">esteticamente agradáveis</span>.
+                           Sempre buscando aprender novas tecnologias e evoluir como desenvolvedor.</p>
+                        <div class="about-tags" aria-label="Áreas de atuação">
+                            <span>Desenvolvimento Web</span>
+                            <span>UI / UX</span>
+                            <span>Full-Stack</span>
+                            <span>Banco de Dados</span>
+                        </div>
+                        <div class="about-stats" aria-label="Números">
+                            <div class="stat">
+                                <div class="stat-n-row">
+                                    <span class="stat-num" data-count="2">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                                </div>
+                                <span class="stat-label">Anos Estudando</span>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-n-row">
+                                    <span class="stat-num" data-count="5">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                                </div>
+                                <span class="stat-label">Projetos</span>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-n-row">
+                                    <span class="stat-num" data-count="4">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                                </div>
+                                <span class="stat-label">Tecnologias</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════ CONTATO ════════════════ -->
+        <section id="contato" class="bg-alt" aria-label="Contato">
+            <div class="container">
+                <div class="section-header js-reveal" data-title="CONTACT">
+                    <span class="section-num" aria-hidden="true">04</span>
+                    <h2>Entre em <span class="accent-text">Contato</span></h2>
+                    <p class="section-sub">Vamos construir algo incrível juntos</p>
+                    <div class="section-line" aria-hidden="true"></div>
+                </div>
+                <p class="contact-desc js-reveal">
+                    Aberto a oportunidades de trabalho, projetos colaborativos ou apenas para dizer olá.
+                    Escolha como prefere se conectar:
+                </p>
+                <ul class="redes" role="list">
+                    <li class="js-reveal-up">
+                        <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer" class="redelink">
+                            <img src="../fotosportfolio/logo7.png"  alt="Facebook"  width="44" height="44" loading="lazy"><span>Facebook</span>
+                        </a>
+                    </li>
+                    <li class="js-reveal-up">
+                        <a href="https://instagram.com/SEUUSUARIO" target="_blank" rel="noopener noreferrer" class="redelink">
+                            <img src="../fotosportfolio/logo8.png"  alt="Instagram" width="44" height="44" loading="lazy"><span>Instagram</span>
+                        </a>
+                    </li>
+                    <li class="js-reveal-up">
+                        <a href="https://wa.me/5585986114901" target="_blank" rel="noopener noreferrer" class="redelink">
+                            <img src="../fotosportfolio/logo11.png" alt="WhatsApp"  width="44" height="44" loading="lazy"><span>WhatsApp</span>
+                        </a>
+                    </li>
+                    <li class="js-reveal-up">
+                        <a href="https://github.com/SEUUSUARIO" target="_blank" rel="noopener noreferrer" class="redelink">
+                            <img src="../fotosportfolio/logo9.png"  alt="GitHub"    width="44" height="44" loading="lazy"><span>GitHub</span>
+                        </a>
+                    </li>
+                    <li class="js-reveal-up">
+                        <a href="mailto:seuemail@gmail.com" class="redelink">
+                            <img src="../fotosportfolio/logo6.png"  alt="Gmail"     width="44" height="44" loading="lazy"><span>Gmail</span>
+                        </a>
+                    </li>
+                    <li class="js-reveal-up">
+                        <a href="https://www.linkedin.com/in/seuusuario/" target="_blank" rel="noopener noreferrer" class="redelink">
+                            <img src="../fotosportfolio/logo12.png" alt="LinkedIn"  width="44" height="44" loading="lazy"><span>LinkedIn</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
     </main>
+
+    <footer>
+        <div class="footer-inner">
+            <span class="logo-footer">Gabriel<span class="accent-text">.</span></span>
+            <p>Feito com <span class="accent-text">♥</span> em Fortaleza, CE &copy; 2025</p>
+            <a href="#inicio" class="footer-top" aria-label="Voltar ao topo">↑ Topo</a>
+        </div>
+    </footer>
+
+    <button class="back-top" id="backTop" aria-label="Voltar ao topo da página" type="button">↑</button>
+
+    <!-- ═══════════ BIBLIOTECAS (carregadas antes do main.js) ═══════════ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"                 defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"        defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"  defer></script>
+
+    <!-- JavaScript principal — separado, defer, 'use strict' -->
+    <script src="../js/main.js" defer></script>
 </body>
 </html>
