@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Portfolio de Gabriel — Desenvolvedor Web Full-Stack em Fortaleza, CE.">
-    <meta name="theme-color" content="#07070f">
+    <meta name="theme-color" content="#05050f">
     <title>Gabriel | Dev Full-Stack</title>
 
-    <!-- Pré-conecta com CDNs para reduzir latência -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-    <!-- Tema antes do render — evita flash de cor -->
+    <!-- Tema antes do render -->
     <script>
         (function () {
             var s = localStorage.getItem('theme') ||
@@ -21,11 +20,11 @@
         })();
     </script>
 
-    <!-- Oculta elementos animados antes do GSAP carregar -->
+    <!-- Oculta elementos animados antes do GSAP -->
     <style>
         .hero-content > *, .hero-visual,
         .js-reveal, .js-reveal-left, .js-reveal-right, .js-reveal-up,
-        .project-card, .skill-card { opacity: 0; }
+        .project-card, .skill-card, .service-card { opacity: 0; }
         .hero-name { opacity: 1; }
         .hero-char { opacity: 0; display: inline-block; }
     </style>
@@ -35,7 +34,45 @@
 </head>
 <body>
 
-    <!-- Grain / noise overlay — textura premium -->
+    <!-- ══════════════ CURSOR PERSONALIZADO ══════════════ -->
+    <div class="cursor-dot"  id="cursorDot"  aria-hidden="true"></div>
+    <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+    <!-- ══════════════ TOAST DE NOTIFICAÇÃO ══════════════ -->
+    <div class="toast" id="langToast" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ══════════════ INTRO 3D ══════════════ -->
+    <div id="intro-overlay" role="dialog" aria-label="Animação de entrada" aria-modal="true">
+        <canvas id="intro-canvas" aria-hidden="true"></canvas>
+        <div class="intro-grid"      aria-hidden="true"></div>
+        <div class="intro-scanlines" aria-hidden="true"></div>
+
+        <div class="intro-content">
+            <p class="intro-tag" aria-hidden="true">
+                <span class="intro-tag-line"></span>
+                Desenvolvedor Web
+                <span class="intro-tag-line"></span>
+            </p>
+            <h1 class="intro-name">Gabriel</h1>
+            <p class="intro-role">Dev <span>Full-Stack</span></p>
+            <div class="intro-badges" aria-hidden="true">
+                <span>HTML</span><span>CSS</span><span>JavaScript</span><span>PostgreSQL</span>
+            </div>
+            <p class="intro-skip" aria-hidden="true">
+                <span class="intro-skip-icon">▶</span> Clique para entrar
+            </p>
+        </div>
+
+        <div class="intro-bar-wrap" aria-hidden="true">
+            <div class="intro-bar-fill"></div>
+        </div>
+        <div class="intro-corner intro-corner--tl" aria-hidden="true"></div>
+        <div class="intro-corner intro-corner--tr" aria-hidden="true"></div>
+        <div class="intro-corner intro-corner--bl" aria-hidden="true"></div>
+        <div class="intro-corner intro-corner--br" aria-hidden="true"></div>
+    </div>
+
+    <!-- Grain overlay -->
     <div class="noise-overlay" aria-hidden="true"></div>
 
     <!-- Barra de progresso de scroll -->
@@ -51,9 +88,10 @@
         <div class="blob blob-3"></div>
     </div>
 
-    <!-- Side navigation dots (desktop ≥ 1100px) -->
+    <!-- Side navigation dots -->
     <nav class="side-dots" id="sideDots" aria-label="Seções da página">
         <a href="#inicio"      data-label="Início"      class="side-dot active" aria-label="Início"></a>
+        <a href="#servicos"    data-label="Serviços"    class="side-dot"        aria-label="Serviços"></a>
         <a href="#projetos"    data-label="Projetos"    class="side-dot"        aria-label="Projetos"></a>
         <a href="#habilidades" data-label="Habilidades" class="side-dot"        aria-label="Habilidades"></a>
         <a href="#sobre"       data-label="Sobre"       class="side-dot"        aria-label="Sobre"></a>
@@ -63,22 +101,60 @@
     <!-- ════════════════ NAVBAR ════════════════ -->
     <header>
         <nav class="navbar" id="navbar" role="navigation" aria-label="Menu principal">
-            <a href="#inicio" class="logo" aria-label="Gabriel — Início">Gabriel<span class="accent-text">.</span></a>
+            <a href="#inicio" class="logo" aria-label="Gabriel — Início">
+                Gabriel<span class="accent-text logo-dot">.</span>
+            </a>
 
             <ul class="nav-links" id="navLinks" role="list">
-                <li><a href="#inicio">Início</a></li>
-                <li><a href="#projetos">Projetos</a></li>
-                <li><a href="#habilidades">Habilidades</a></li>
-                <li><a href="#sobre">Sobre</a></li>
-                <li><a href="#contato">Contato</a></li>
+                <li><a href="#inicio"      data-i18n="nav.home">Início</a></li>
+                <li><a href="#servicos"    data-i18n="nav.services">Serviços</a></li>
+                <li><a href="#projetos"    data-i18n="nav.projects">Projetos</a></li>
+                <li><a href="#habilidades" data-i18n="nav.skills">Habilidades</a></li>
+                <li><a href="#sobre"       data-i18n="nav.about">Sobre</a></li>
+                <li><a href="#contato"     data-i18n="nav.contact">Contato</a></li>
             </ul>
 
             <div class="nav-right">
-                <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema claro/escuro" type="button">
+
+                <!-- ── SELETOR DE IDIOMA ── -->
+                <div class="lang-switcher" id="langSwitcher">
+                    <button class="lang-btn" id="langBtn"
+                            aria-label="Selecionar idioma"
+                            aria-expanded="false"
+                            aria-haspopup="listbox"
+                            type="button">
+                        <span class="lang-flag" aria-hidden="true">🇧🇷</span>
+                        <span class="lang-code">PT</span>
+                        <svg class="lang-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+                            <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <ul class="lang-menu" id="langMenu" role="listbox" aria-label="Selecionar idioma">
+                        <li class="lang-option active" data-lang="pt" role="option" tabindex="0" aria-selected="true">
+                            <span class="lo-flag" aria-hidden="true">🇧🇷</span>
+                            <span class="lo-name">Português</span>
+                            <span class="lo-check" aria-hidden="true">✓</span>
+                        </li>
+                        <li class="lang-option" data-lang="en" role="option" tabindex="0" aria-selected="false">
+                            <span class="lo-flag" aria-hidden="true">🇺🇸</span>
+                            <span class="lo-name">English</span>
+                            <span class="lo-check" aria-hidden="true">✓</span>
+                        </li>
+                        <li class="lang-option" data-lang="es" role="option" tabindex="0" aria-selected="false">
+                            <span class="lo-flag" aria-hidden="true">🇪🇸</span>
+                            <span class="lo-name">Español</span>
+                            <span class="lo-check" aria-hidden="true">✓</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema" type="button">
                     <span class="icon-moon" aria-hidden="true">🌙</span>
                     <span class="icon-sun"  aria-hidden="true">☀️</span>
                 </button>
-                <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="navLinks" type="button">
+                <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu"
+                        aria-expanded="false" aria-controls="navLinks" type="button">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
@@ -91,68 +167,69 @@
 
         <!-- ════════════════ HERO ════════════════ -->
         <section id="inicio" class="hero" aria-label="Apresentação">
-            <!-- Orbe que segue o mouse -->
             <div class="hero-orb" id="heroOrb" aria-hidden="true"></div>
 
-            <!-- Formas geométricas decorativas -->
             <div class="hero-floats" aria-hidden="true">
-                <div class="hf hf-1"></div>
-                <div class="hf hf-2"></div>
-                <div class="hf hf-3"></div>
-                <div class="hf hf-4"></div>
+                <div class="hf hf-1"></div><div class="hf hf-2"></div>
+                <div class="hf hf-3"></div><div class="hf hf-4"></div>
                 <div class="hf hf-5"></div>
             </div>
 
             <div class="hero-content">
                 <p class="hero-greeting">
-                    <span class="greeting-line" aria-hidden="true"></span>Olá, eu sou
+                    <span class="greeting-line" aria-hidden="true"></span>
+                    <span data-i18n="hero.greeting">Olá, eu sou</span>
                 </p>
 
-                <!-- Letras divididas em spans via main.js -->
                 <h1 class="hero-name" id="heroName">
                     Gabriel<span class="accent-text hero-dot" aria-hidden="true">.</span>
                 </h1>
 
                 <p class="hero-role" aria-live="polite">
-                    Desenvolvedor&nbsp;<span class="accent-text" id="typewriter">Web Full-Stack</span><span class="cursor-blink" aria-hidden="true">|</span>
+                    <span data-i18n="hero.role.pre">Desenvolvedor</span>&nbsp;<span class="accent-text" id="typewriter">Web Full-Stack</span><span class="cursor-blink" aria-hidden="true">|</span>
                 </p>
 
-                <p class="hero-desc">
+                <p class="hero-desc" data-i18n="hero.desc">
                     Criando experiências digitais modernas com código limpo e design que encanta.
                     Transformo ideias em produtos reais.
                 </p>
 
                 <div class="hero-buttons">
                     <a href="#projetos" class="btn btn-primary magnetic">
-                        Ver Projetos
-                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true" focusable="false">
+                        <span data-i18n="hero.btn.projects">Ver Projetos</span>
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
                             <path d="M3 7.5h9m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.7"
                                   stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </a>
-                    <a href="#contato" class="btn btn-outline magnetic">Fale Comigo</a>
+                    <a href="#contato" class="btn btn-outline magnetic">
+                        <span data-i18n="hero.btn.contact">Fale Comigo</span>
+                    </a>
                 </div>
 
                 <div class="hero-stats" aria-label="Estatísticas">
                     <div class="hero-stat">
                         <div class="stat-n-row">
-                            <span class="stat-n" data-count="2">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                            <span class="stat-n" data-count="2">0</span>
+                            <span class="stat-plus" aria-hidden="true">+</span>
                         </div>
-                        <span class="stat-l">Anos</span>
+                        <span class="stat-l" data-i18n="hero.stat.years">Anos</span>
                     </div>
                     <div class="hero-stat-div" aria-hidden="true"></div>
                     <div class="hero-stat">
                         <div class="stat-n-row">
-                            <span class="stat-n" data-count="5">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                            <span class="stat-n" data-count="5">0</span>
+                            <span class="stat-plus" aria-hidden="true">+</span>
                         </div>
-                        <span class="stat-l">Projetos</span>
+                        <span class="stat-l" data-i18n="hero.stat.projects">Projetos</span>
                     </div>
                     <div class="hero-stat-div" aria-hidden="true"></div>
                     <div class="hero-stat">
                         <div class="stat-n-row">
-                            <span class="stat-n" data-count="4">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                            <span class="stat-n" data-count="4">0</span>
+                            <span class="stat-plus" aria-hidden="true">+</span>
                         </div>
-                        <span class="stat-l">Tecnologias</span>
+                        <span class="stat-l" data-i18n="hero.stat.techs">Tecnologias</span>
                     </div>
                 </div>
             </div>
@@ -177,8 +254,6 @@
                             <p><span class="c-line">8</span><span class="cursor-code"></span></p>
                         </div>
                     </div>
-
-                    <!-- Tech orbit badges -->
                     <div class="tech-orbit">
                         <div class="tech-orb" style="--delay:0s;    --tx:-52px; --ty:-18px">
                             <img src="../fotosportfolio/logo3.png" alt="" loading="lazy" width="26" height="26">
@@ -197,7 +272,78 @@
 
                 <div class="hero-badge">
                     <span class="badge-dot" aria-hidden="true"></span>
-                    Disponível para projetos
+                    <span data-i18n="hero.available">Disponível para projetos</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════ SERVIÇOS ════════════════ -->
+        <section id="servicos" class="bg-alt" aria-label="Serviços">
+            <div class="container">
+                <div class="section-header js-reveal" data-title="SERVICES">
+                    <span class="section-num" aria-hidden="true">01</span>
+                    <h2>
+                        <span data-i18n="section.services.pre">O que</span>
+                        <span class="accent-text" data-i18n="section.services.acc"> Faço</span>
+                    </h2>
+                    <p class="section-sub" data-i18n="section.services.sub">Serviços para transformar suas ideias em realidade digital</p>
+                    <div class="section-line" aria-hidden="true"></div>
+                </div>
+
+                <div class="services-grid">
+
+                    <div class="service-card js-reveal">
+                        <div class="service-icon" aria-hidden="true">
+                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                                <path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 6l-2 12"
+                                      stroke="currentColor" stroke-width="2"
+                                      stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3 data-i18n="service1.title">Frontend Development</h3>
+                        <p data-i18n="service1.desc">Interfaces modernas, responsivas e performáticas criadas com HTML, CSS e JavaScript.</p>
+                        <ul class="service-list" aria-label="Habilidades">
+                            <li>HTML5 / CSS3</li>
+                            <li>JavaScript ES6+</li>
+                            <li>Animações &amp; UI</li>
+                        </ul>
+                    </div>
+
+                    <div class="service-card service-card--highlight js-reveal">
+                        <div class="service-icon" aria-hidden="true">
+                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                                <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                                <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M7 7h4M7 11h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <circle cx="16" cy="9" r="2" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                        <h3 data-i18n="service2.title">Full-Stack</h3>
+                        <p data-i18n="service2.desc">Desenvolvimento completo do frontend ao banco de dados, entregando soluções integradas e escaláveis.</p>
+                        <ul class="service-list" aria-label="Habilidades">
+                            <li>Frontend + Backend</li>
+                            <li>PostgreSQL</li>
+                            <li>APIs &amp; Integração</li>
+                        </ul>
+                    </div>
+
+                    <div class="service-card js-reveal">
+                        <div class="service-icon" aria-hidden="true">
+                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
+                                      stroke="currentColor" stroke-width="2"
+                                      stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3 data-i18n="service3.title">UI / UX Design</h3>
+                        <p data-i18n="service3.desc">Experiências de usuário intuitivas e visualmente atraentes, focadas em usabilidade e conversão.</p>
+                        <ul class="service-list" aria-label="Habilidades">
+                            <li>Design Responsivo</li>
+                            <li>Prototipação</li>
+                            <li>Design Systems</li>
+                        </ul>
+                    </div>
+
                 </div>
             </div>
         </section>
@@ -206,25 +352,26 @@
         <section id="projetos" aria-label="Projetos">
             <div class="container">
                 <div class="section-header js-reveal" data-title="WORK">
-                    <span class="section-num" aria-hidden="true">01</span>
-                    <h2>Meus <span class="accent-text">Projetos</span></h2>
-                    <p class="section-sub">Uma seleção dos trabalhos que mais me orgulho</p>
+                    <span class="section-num" aria-hidden="true">02</span>
+                    <h2>
+                        <span data-i18n="section.projects.pre">Meus</span>
+                        <span class="accent-text" data-i18n="section.projects.acc"> Projetos</span>
+                    </h2>
+                    <p class="section-sub" data-i18n="section.projects.sub">Uma seleção dos trabalhos que mais me orgulho</p>
                     <div class="section-line" aria-hidden="true"></div>
                 </div>
 
                 <div class="projects-grid">
 
-                    <!-- Card em destaque -->
                     <article class="project-card project-card--featured"
                              data-tilt data-tilt-max="7" data-tilt-speed="600"
-                             data-tilt-glare data-tilt-max-glare="0.09"
-                             data-tilt-perspective="1000">
+                             data-tilt-glare data-tilt-max-glare="0.09" data-tilt-perspective="1000">
                         <div class="project-preview" aria-hidden="true">
                             <div class="preview-chrome">
                                 <div class="preview-dots"><i></i><i></i><i></i></div>
                                 <span class="preview-url">venezamotoseveiculos.com.br</span>
                                 <a href="https://www.venezamotoseveiculos.com.br" target="_blank"
-                                   rel="noopener noreferrer" class="preview-open" aria-label="Abrir Loja de Veículos em nova aba" tabindex="-1">
+                                   rel="noopener noreferrer" class="preview-open" tabindex="-1">
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                                         <path d="M4 1H1v10h10V8M7 1h4m0 0v4M11 1 5.5 6.5"
                                               stroke="currentColor" stroke-width="1.3"
@@ -234,27 +381,27 @@
                             </div>
                             <div class="preview-body preview-car"><span aria-hidden="true">🚗</span></div>
                         </div>
-                        <div class="project-tag">⭐ Em Destaque</div>
-                        <h3>Loja de Veículos</h3>
-                        <p>Site completo com filtro de produtos, paginação e integração direta com WhatsApp.
-                           Frontend moderno e totalmente responsivo.</p>
+                        <div class="project-tag" data-i18n="proj1.tag">⭐ Em Destaque</div>
+                        <h3 data-i18n="proj1.title">Loja de Veículos</h3>
+                        <p data-i18n="proj1.desc">Site completo com filtro de produtos, paginação e integração direta com WhatsApp. Frontend moderno e totalmente responsivo.</p>
                         <div class="project-techs" aria-label="Tecnologias usadas">
                             <span>HTML</span><span>CSS</span><span>JavaScript</span>
                         </div>
                         <a href="https://www.venezamotoseveiculos.com.br" target="_blank"
-                           rel="noopener noreferrer" class="btn btn-primary magnetic">Acessar Projeto →</a>
+                           rel="noopener noreferrer" class="btn btn-primary magnetic">
+                            <span data-i18n="proj.btn">Acessar Projeto →</span>
+                        </a>
                     </article>
 
                     <article class="project-card"
                              data-tilt data-tilt-max="7" data-tilt-speed="600"
-                             data-tilt-glare data-tilt-max-glare="0.09"
-                             data-tilt-perspective="1000">
+                             data-tilt-glare data-tilt-max-glare="0.09" data-tilt-perspective="1000">
                         <div class="project-preview" aria-hidden="true">
                             <div class="preview-chrome">
                                 <div class="preview-dots"><i></i><i></i><i></i></div>
                                 <span class="preview-url">plataforma-ensino.com.br</span>
                                 <a href="https://www.w3schools.com/" target="_blank"
-                                   rel="noopener noreferrer" class="preview-open" aria-label="Abrir Plataforma de Ensino em nova aba" tabindex="-1">
+                                   rel="noopener noreferrer" class="preview-open" tabindex="-1">
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                                         <path d="M4 1H1v10h10V8M7 1h4m0 0v4M11 1 5.5 6.5"
                                               stroke="currentColor" stroke-width="1.3"
@@ -264,15 +411,16 @@
                             </div>
                             <div class="preview-body preview-edu"><span aria-hidden="true">📚</span></div>
                         </div>
-                        <div class="project-tag">Education Platform</div>
-                        <h3>Plataforma de Ensino</h3>
-                        <p>Plataforma de ensino de programação com filtro de conteúdo e canal de comunicação
-                           via WhatsApp. Interface intuitiva e didática.</p>
+                        <div class="project-tag" data-i18n="proj2.tag">Education Platform</div>
+                        <h3 data-i18n="proj2.title">Plataforma de Ensino</h3>
+                        <p data-i18n="proj2.desc">Plataforma de ensino de programação com filtro de conteúdo e canal de comunicação via WhatsApp. Interface intuitiva e didática.</p>
                         <div class="project-techs" aria-label="Tecnologias usadas">
                             <span>HTML</span><span>CSS</span><span>JavaScript</span>
                         </div>
                         <a href="https://www.w3schools.com/" target="_blank"
-                           rel="noopener noreferrer" class="btn btn-primary magnetic">Acessar Projeto →</a>
+                           rel="noopener noreferrer" class="btn btn-primary magnetic">
+                            <span data-i18n="proj.btn">Acessar Projeto →</span>
+                        </a>
                     </article>
 
                 </div>
@@ -283,9 +431,12 @@
         <section id="habilidades" class="bg-alt" aria-label="Habilidades">
             <div class="container">
                 <div class="section-header js-reveal" data-title="SKILLS">
-                    <span class="section-num" aria-hidden="true">02</span>
-                    <h2>Minhas <span class="accent-text">Habilidades</span></h2>
-                    <p class="section-sub">Tecnologias que domino e uso no dia a dia</p>
+                    <span class="section-num" aria-hidden="true">03</span>
+                    <h2>
+                        <span data-i18n="section.skills.pre">Minhas</span>
+                        <span class="accent-text" data-i18n="section.skills.acc"> Habilidades</span>
+                    </h2>
+                    <p class="section-sub" data-i18n="section.skills.sub">Tecnologias que domino e uso no dia a dia</p>
                     <div class="section-line" aria-hidden="true"></div>
                 </div>
                 <div class="skills-grid">
@@ -358,9 +509,12 @@
         <section id="sobre" aria-label="Sobre mim">
             <div class="container">
                 <div class="section-header js-reveal" data-title="ABOUT">
-                    <span class="section-num" aria-hidden="true">03</span>
-                    <h2>Sobre <span class="accent-text">Mim</span></h2>
-                    <p class="section-sub">Conheça um pouco da minha história</p>
+                    <span class="section-num" aria-hidden="true">04</span>
+                    <h2>
+                        <span data-i18n="section.about.pre">Sobre</span>
+                        <span class="accent-text" data-i18n="section.about.acc"> Mim</span>
+                    </h2>
+                    <p class="section-sub" data-i18n="section.about.sub">Conheça um pouco da minha história</p>
                     <div class="section-line" aria-hidden="true"></div>
                 </div>
                 <div class="about-grid">
@@ -371,37 +525,44 @@
                         </div>
                     </div>
                     <div class="about-text js-reveal-right">
-                        <p>Olá! Sou <strong>Gabriel</strong>, tenho 20 anos e apaixonado por desenvolvimento web.
-                           Estou cursando <strong>Análise e Desenvolvimento de Sistemas</strong> na Universidade
-                           Estácio de Sá em Fortaleza, Ceará.</p>
-                        <p>Minha paixão é criar soluções digitais que sejam
-                           <span class="accent-text">funcionais</span> e
-                           <span class="accent-text">esteticamente agradáveis</span>.
-                           Sempre buscando aprender novas tecnologias e evoluir como desenvolvedor.</p>
+                        <p data-i18n="about.p1" data-i18n-html="true">
+                            Olá! Sou <strong>Gabriel</strong>, tenho 20 anos e sou apaixonado por desenvolvimento web.
+                            Estou cursando <strong>Análise e Desenvolvimento de Sistemas</strong> na Universidade
+                            Estácio de Sá em Fortaleza, Ceará.
+                        </p>
+                        <p data-i18n="about.p2" data-i18n-html="true">
+                            Minha paixão é criar soluções digitais que sejam
+                            <span class="accent-text">funcionais</span> e
+                            <span class="accent-text">esteticamente agradáveis</span>.
+                            Sempre buscando aprender novas tecnologias e evoluir como desenvolvedor.
+                        </p>
                         <div class="about-tags" aria-label="Áreas de atuação">
-                            <span>Desenvolvimento Web</span>
-                            <span>UI / UX</span>
-                            <span>Full-Stack</span>
-                            <span>Banco de Dados</span>
+                            <span data-i18n="about.tag1">Desenvolvimento Web</span>
+                            <span data-i18n="about.tag2">UI / UX</span>
+                            <span data-i18n="about.tag3">Full-Stack</span>
+                            <span data-i18n="about.tag4">Banco de Dados</span>
                         </div>
                         <div class="about-stats" aria-label="Números">
                             <div class="stat">
                                 <div class="stat-n-row">
-                                    <span class="stat-num" data-count="2">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                                    <span class="stat-num" data-count="2">0</span>
+                                    <span class="stat-plus" aria-hidden="true">+</span>
                                 </div>
-                                <span class="stat-label">Anos Estudando</span>
+                                <span class="stat-label" data-i18n="about.stat.years">Anos Estudando</span>
                             </div>
                             <div class="stat">
                                 <div class="stat-n-row">
-                                    <span class="stat-num" data-count="5">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                                    <span class="stat-num" data-count="5">0</span>
+                                    <span class="stat-plus" aria-hidden="true">+</span>
                                 </div>
-                                <span class="stat-label">Projetos</span>
+                                <span class="stat-label" data-i18n="about.stat.projects">Projetos</span>
                             </div>
                             <div class="stat">
                                 <div class="stat-n-row">
-                                    <span class="stat-num" data-count="4">0</span><span class="stat-plus" aria-hidden="true">+</span>
+                                    <span class="stat-num" data-count="4">0</span>
+                                    <span class="stat-plus" aria-hidden="true">+</span>
                                 </div>
-                                <span class="stat-label">Tecnologias</span>
+                                <span class="stat-label" data-i18n="about.stat.techs">Tecnologias</span>
                             </div>
                         </div>
                     </div>
@@ -413,44 +574,90 @@
         <section id="contato" class="bg-alt" aria-label="Contato">
             <div class="container">
                 <div class="section-header js-reveal" data-title="CONTACT">
-                    <span class="section-num" aria-hidden="true">04</span>
-                    <h2>Entre em <span class="accent-text">Contato</span></h2>
-                    <p class="section-sub">Vamos construir algo incrível juntos</p>
+                    <span class="section-num" aria-hidden="true">05</span>
+                    <h2>
+                        <span data-i18n="section.contact.pre">Entre em</span>
+                        <span class="accent-text" data-i18n="section.contact.acc"> Contato</span>
+                    </h2>
+                    <p class="section-sub" data-i18n="section.contact.sub">Vamos construir algo incrível juntos</p>
                     <div class="section-line" aria-hidden="true"></div>
                 </div>
-                <p class="contact-desc js-reveal">
+                <p class="contact-desc js-reveal" data-i18n="contact.desc">
                     Aberto a oportunidades de trabalho, projetos colaborativos ou apenas para dizer olá.
                     Escolha como prefere se conectar:
                 </p>
+
+                <!-- ── Formulário de contato ── -->
+                <form class="contact-form js-reveal" id="contactForm" novalidate aria-label="Formulário de contato">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="formName" name="name"
+                                   placeholder=" " required autocomplete="name"
+                                   aria-required="true">
+                            <label for="formName" data-i18n="form.name">Seu Nome</label>
+                            <div class="form-focus-bar" aria-hidden="true"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="formEmail" name="email"
+                                   placeholder=" " required autocomplete="email"
+                                   aria-required="true">
+                            <label for="formEmail" data-i18n="form.email">Seu E-mail</label>
+                            <div class="form-focus-bar" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="formMsg" name="message" rows="5"
+                                  placeholder=" " required
+                                  aria-required="true"></textarea>
+                        <label for="formMsg" data-i18n="form.message">Sua Mensagem</label>
+                        <div class="form-focus-bar" aria-hidden="true"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary magnetic form-submit-btn">
+                        <span class="submit-label" data-i18n="form.send">Enviar Mensagem</span>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.7"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </form>
+
+                <p class="redes-label" data-i18n="contact.or">— ou conecte-se pelas redes —</p>
+
                 <ul class="redes" role="list">
                     <li class="js-reveal-up">
                         <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer" class="redelink">
-                            <img src="../fotosportfolio/logo7.png"  alt="Facebook"  width="44" height="44" loading="lazy"><span>Facebook</span>
+                            <img src="../fotosportfolio/logo7.png"  alt="Facebook"  width="44" height="44" loading="lazy">
+                            <span>Facebook</span>
                         </a>
                     </li>
                     <li class="js-reveal-up">
                         <a href="https://instagram.com/SEUUSUARIO" target="_blank" rel="noopener noreferrer" class="redelink">
-                            <img src="../fotosportfolio/logo8.png"  alt="Instagram" width="44" height="44" loading="lazy"><span>Instagram</span>
+                            <img src="../fotosportfolio/logo8.png"  alt="Instagram" width="44" height="44" loading="lazy">
+                            <span>Instagram</span>
                         </a>
                     </li>
                     <li class="js-reveal-up">
                         <a href="https://wa.me/5585986114901" target="_blank" rel="noopener noreferrer" class="redelink">
-                            <img src="../fotosportfolio/logo11.png" alt="WhatsApp"  width="44" height="44" loading="lazy"><span>WhatsApp</span>
+                            <img src="../fotosportfolio/logo11.png" alt="WhatsApp"  width="44" height="44" loading="lazy">
+                            <span>WhatsApp</span>
                         </a>
                     </li>
                     <li class="js-reveal-up">
                         <a href="https://github.com/SEUUSUARIO" target="_blank" rel="noopener noreferrer" class="redelink">
-                            <img src="../fotosportfolio/logo9.png"  alt="GitHub"    width="44" height="44" loading="lazy"><span>GitHub</span>
+                            <img src="../fotosportfolio/logo9.png"  alt="GitHub"    width="44" height="44" loading="lazy">
+                            <span>GitHub</span>
                         </a>
                     </li>
                     <li class="js-reveal-up">
                         <a href="mailto:seuemail@gmail.com" class="redelink">
-                            <img src="../fotosportfolio/logo6.png"  alt="Gmail"     width="44" height="44" loading="lazy"><span>Gmail</span>
+                            <img src="../fotosportfolio/logo6.png"  alt="Gmail"     width="44" height="44" loading="lazy">
+                            <span>Gmail</span>
                         </a>
                     </li>
                     <li class="js-reveal-up">
                         <a href="https://www.linkedin.com/in/seuusuario/" target="_blank" rel="noopener noreferrer" class="redelink">
-                            <img src="../fotosportfolio/logo12.png" alt="LinkedIn"  width="44" height="44" loading="lazy"><span>LinkedIn</span>
+                            <img src="../fotosportfolio/logo12.png" alt="LinkedIn"  width="44" height="44" loading="lazy">
+                            <span>LinkedIn</span>
                         </a>
                     </li>
                 </ul>
@@ -462,19 +669,31 @@
     <footer>
         <div class="footer-inner">
             <span class="logo-footer">Gabriel<span class="accent-text">.</span></span>
-            <p>Feito com <span class="accent-text">♥</span> em Fortaleza, CE &copy; 2025</p>
-            <a href="#inicio" class="footer-top" aria-label="Voltar ao topo">↑ Topo</a>
+            <p>
+                <span data-i18n="footer.made">Feito com</span>
+                <span class="accent-text">♥</span>
+                <span data-i18n="footer.in">em Fortaleza, CE</span>
+                &copy; 2025
+            </p>
+            <a href="#inicio" class="footer-top" aria-label="Voltar ao topo">
+                <span data-i18n="footer.top">↑ Topo</span>
+            </a>
         </div>
     </footer>
 
     <button class="back-top" id="backTop" aria-label="Voltar ao topo da página" type="button">↑</button>
 
-    <!-- ═══════════ BIBLIOTECAS (carregadas antes do main.js) ═══════════ -->
+    <!-- ═══════════ THREE.JS (intro) ═══════════ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- ═══════════ BIBLIOTECAS ═══════════ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"                 defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"        defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"  defer></script>
 
-    <!-- JavaScript principal — separado, defer, 'use strict' -->
-    <script src="../js/main.js" defer></script>
+    <!-- ═══════════ SCRIPTS DO SITE ═══════════ -->
+    <script src="../js/intro.js"></script>
+    <script src="../js/i18n.js"  defer></script>
+    <script src="../js/main.js"  defer></script>
 </body>
 </html>

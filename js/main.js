@@ -125,7 +125,7 @@ function debounce(fn, ms = 150) {
     }));
 
     let mx = -9999, my = -9999;
-    let col = isDark() ? '0,255,136' : '5,150,105';
+    let col = isDark() ? '0,200,110' : '5,150,105';
 
     new MutationObserver(() => {
         col = isDark() ? '0,255,136' : '5,150,105';
@@ -207,25 +207,36 @@ function debounce(fn, ms = 150) {
 })();
 
 /* ─────────────────────────────────────────────
-   5. TYPEWRITER
+   5. TYPEWRITER — compatível com i18n
 ───────────────────────────────────────────── */
 (function initTypewriter() {
     const el = document.getElementById('typewriter');
     if (!el) return;
 
-    const roles = ['Web Full-Stack', 'Frontend Dev', 'Criador de UIs', 'Apaixonado por Código'];
+    let roles = ['Web Full-Stack', 'Frontend Dev', 'Criador de UIs', 'Apaixonado por Código'];
     let ri = 0, ci = 0, deleting = false;
+    let timerId = null;
 
     function tick() {
         const word = roles[ri];
         ci = deleting ? ci - 1 : ci + 1;
         el.textContent = word.slice(0, ci);
 
-        if (!deleting && ci === word.length) { deleting = true; setTimeout(tick, 2200); return; }
+        if (!deleting && ci === word.length) { deleting = true; timerId = setTimeout(tick, 2200); return; }
         if (deleting && ci === 0) { deleting = false; ri = (ri + 1) % roles.length; }
-        setTimeout(tick, deleting ? 52 : 108);
+        timerId = setTimeout(tick, deleting ? 52 : 108);
     }
-    setTimeout(tick, 1800);
+    timerId = setTimeout(tick, 1800);
+
+    /* Exposto para o i18n atualizar as palavras ao trocar de idioma */
+    window.__setTypewriterWords = function (newWords) {
+        if (!newWords || !newWords.length) return;
+        roles = newWords;
+        ri = 0; ci = 0; deleting = false;
+        if (timerId) clearTimeout(timerId);
+        el.textContent = '';
+        timerId = setTimeout(tick, 250);
+    };
 })();
 
 /* ─────────────────────────────────────────────
@@ -341,6 +352,14 @@ function debounce(fn, ms = 150) {
             { opacity: 1, y: 0,  duration: 0.6, ease: 'power3.out',
               delay: i * 0.06,
               scrollTrigger: { trigger: '.redes', start: 'top 88%', once: true } });
+    });
+
+    gsap.utils.toArray('.service-card').forEach((card, i) => {
+        gsap.fromTo(card,
+            { opacity: 0, y: 50, scale: 0.97 },
+            { opacity: 1, y: 0,  scale: 1,    duration: 0.75, ease: 'power3.out',
+              delay: i * 0.1,
+              scrollTrigger: { trigger: card, start: 'top 88%', once: true } });
     });
 
     gsap.utils.toArray('.project-card').forEach((card, i) => {
@@ -486,5 +505,179 @@ function debounce(fn, ms = 150) {
                 busy = false;
             }
         }, 40);
+    });
+})();
+
+/* ─────────────────────────────────────────────
+   14. CURSOR PERSONALIZADO (só desktop)
+   Dot preciso + anel com lerp suave
+───────────────────────────────────────────── */
+(function initCursor() {
+    if (isMobile) return;
+
+    const dot  = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    if (!dot || !ring) return;
+
+    let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+    let rx = mx, ry = my;
+    let visible = false;
+
+    document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        if (!visible) {
+            dot.style.opacity  = '1';
+            ring.style.opacity = '1';
+            visible = true;
+        }
+    }, { passive: true });
+
+    document.addEventListener('mouseleave', () => {
+        dot.style.opacity  = '0';
+        ring.style.opacity = '0';
+        visible = false;
+    });
+
+    /* Hover em elementos clicáveis → anel maior */
+    const CLICKABLE = 'a, button, .lang-option, .side-dot, .skill-card, .redes li, .project-card';
+    document.querySelectorAll(CLICKABLE).forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('cursor-hover'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('cursor-hover'));
+    });
+
+    /* Click → pulso no anel */
+    document.addEventListener('mousedown', () => {
+        ring.classList.add('cursor-click');
+        dot.style.transform = 'translate(-50%, -50%) scale(1.8)';
+    });
+    document.addEventListener('mouseup', () => {
+        ring.classList.remove('cursor-click');
+        dot.style.transform = 'translate(-50%, -50%) scale(1)';
+    });
+
+    /* Loop com interpolação (lerp) para suavidade */
+    (function loop() {
+        requestAnimationFrame(loop);
+        rx += (mx - rx) * 0.13;
+        ry += (my - ry) * 0.13;
+        dot.style.transform  = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+        ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+    })();
+})();
+
+/* ─────────────────────────────────────────────
+   16. CARD GLOW — rastreia o mouse (só desktop)
+   Atualiza CSS custom properties --mouse-x/y
+───────────────────────────────────────────── */
+(function initCardGlow() {
+    if (isMobile) return;
+
+    document.querySelectorAll('.project-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mouse-x', (e.clientX - r.left) + 'px');
+            card.style.setProperty('--mouse-y', (e.clientY - r.top)  + 'px');
+        }, { passive: true });
+    });
+})();
+
+/* ─────────────────────────────────────────────
+   18. FORMULÁRIO DE CONTATO
+   · Floating labels (CSS cuida da animação)
+   · Validação campo a campo no blur/input
+   · Submit: abre mailto como fallback
+───────────────────────────────────────────── */
+(function initContactForm() {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+
+    /* Valida um único .form-group */
+    function validateGroup(group) {
+        const input = group.querySelector('input, textarea');
+        if (!input) return true;
+        const ok = input.checkValidity() && input.value.trim() !== '';
+        group.classList.toggle('invalid', !ok);
+        return ok;
+    }
+
+    /* Validação lazy: só dispara após o primeiro blur */
+    form.querySelectorAll('.form-group').forEach(group => {
+        const input = group.querySelector('input, textarea');
+        if (!input) return;
+        input.addEventListener('blur', () => validateGroup(group));
+        input.addEventListener('input', () => {
+            if (group.classList.contains('invalid')) validateGroup(group);
+        });
+    });
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+
+        /* Valida todos os campos */
+        const groups   = [...form.querySelectorAll('.form-group')];
+        const allValid = groups.every(g => validateGroup(g));
+        if (!allValid) {
+            const first = form.querySelector('.form-group.invalid input, .form-group.invalid textarea');
+            if (first) first.focus();
+            return;
+        }
+
+        const btn   = form.querySelector('.form-submit-btn');
+        const label = form.querySelector('.submit-label');
+        const name  = form.querySelector('#formName').value.trim();
+        const email = form.querySelector('#formEmail').value.trim();
+        const msg   = form.querySelector('#formMsg').value.trim();
+
+        /* Estado de loading */
+        const originalText = label.textContent;
+        label.textContent  = '...';
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        setTimeout(() => {
+            /* Estado de sucesso */
+            btn.classList.remove('loading');
+            btn.classList.add('success');
+            label.textContent = '✓ Enviado!';
+
+            /* Toast de confirmação */
+            const toast = document.getElementById('langToast');
+            if (toast) {
+                toast.textContent = '✅ Mensagem enviada com sucesso!';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+
+            /* Abre o cliente de e-mail como fallback */
+            const subject = encodeURIComponent('Contato via Portfolio — ' + name);
+            const body    = encodeURIComponent(msg + '\n\nDe: ' + name + ' <' + email + '>');
+            window.location.href = 'mailto:seuemail@gmail.com?subject=' + subject + '&body=' + body;
+
+            /* Reseta o formulário */
+            form.reset();
+            groups.forEach(g => g.classList.remove('invalid'));
+
+            setTimeout(() => {
+                btn.classList.remove('success');
+                btn.disabled      = false;
+                label.textContent = originalText;
+            }, 2800);
+        }, 900);
+    });
+})();
+
+/* ─────────────────────────────────────────────
+   17. REDES SOCIAIS — rotação 3D no hover
+───────────────────────────────────────────── */
+(function initRedesHover() {
+    if (isMobile || typeof gsap === 'undefined') return;
+
+    document.querySelectorAll('.redes li').forEach(li => {
+        li.addEventListener('mouseenter', () => {
+            gsap.to(li, { scale: 1.05, duration: 0.3, ease: 'power2.out', overwrite: true });
+        });
+        li.addEventListener('mouseleave', () => {
+            gsap.to(li, { scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.5)', overwrite: true });
+        });
     });
 })();
