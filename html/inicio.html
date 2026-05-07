@@ -7,6 +7,12 @@
     <meta name="theme-color" content="#05050f">
     <title>Gabriel | Dev Full-Stack</title>
 
+    <!-- ── Segurança ── -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -50,22 +56,37 @@
         <div class="intro-content">
             <p class="intro-tag" aria-hidden="true">
                 <span class="intro-tag-line"></span>
-                Desenvolvedor Web
+                Dev Full-Stack · Fortaleza, CE
                 <span class="intro-tag-line"></span>
             </p>
-            <h1 class="intro-name">Gabriel</h1>
-            <p class="intro-role">Dev <span>Full-Stack</span></p>
+
+            <div class="intro-name-wrap" aria-label="Gabriel Ricarte">
+                <h1 class="intro-name-first">GABRIEL</h1>
+                <div class="intro-name-sep" aria-hidden="true"></div>
+                <div class="intro-name-last" role="text">RICARTE</div>
+            </div>
+
+            <p class="intro-role">Desenvolvedor <span>Web Full-Stack</span></p>
+
             <div class="intro-badges" aria-hidden="true">
                 <span>HTML</span><span>CSS</span><span>JavaScript</span><span>PostgreSQL</span>
             </div>
             <p class="intro-skip" aria-hidden="true">
                 <span class="intro-skip-icon">▶</span> Clique para entrar
+                <span class="intro-skip-ring" aria-hidden="true"></span>
             </p>
         </div>
 
         <div class="intro-bar-wrap" aria-hidden="true">
             <div class="intro-bar-fill"></div>
         </div>
+
+        <div class="intro-sweep" aria-hidden="true"></div>
+
+        <div class="intro-percent-wrap" aria-hidden="true">
+            <span class="intro-percent-num" id="introPercent">0</span><span class="intro-percent-sym">%</span>
+        </div>
+
         <div class="intro-corner intro-corner--tl" aria-hidden="true"></div>
         <div class="intro-corner intro-corner--tr" aria-hidden="true"></div>
         <div class="intro-corner intro-corner--bl" aria-hidden="true"></div>
@@ -277,6 +298,19 @@
             </div>
         </section>
 
+        <!-- ════ TECH TAPE — faixa de tecnologias ════ -->
+        <div class="tech-tape" aria-hidden="true">
+            <div class="tech-tape-track">
+                <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>PostgreSQL</span>
+                <span>Git</span><span>GitHub</span><span>VS Code</span><span>REST APIs</span>
+                <span>Responsive Design</span><span>UI / UX</span><span>Node.js</span><span>Figma</span>
+                <!-- duplicado para loop contínuo -->
+                <span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>PostgreSQL</span>
+                <span>Git</span><span>GitHub</span><span>VS Code</span><span>REST APIs</span>
+                <span>Responsive Design</span><span>UI / UX</span><span>Node.js</span><span>Figma</span>
+            </div>
+        </div>
+
         <!-- ════════════════ SERVIÇOS ════════════════ -->
         <section id="servicos" class="bg-alt" aria-label="Serviços">
             <div class="container">
@@ -292,7 +326,7 @@
 
                 <div class="services-grid">
 
-                    <div class="service-card js-reveal">
+                    <div class="service-card js-reveal" data-service="frontend">
                         <div class="service-icon" aria-hidden="true">
                             <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
                                 <path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 6l-2 12"
@@ -309,7 +343,7 @@
                         </ul>
                     </div>
 
-                    <div class="service-card service-card--highlight js-reveal">
+                    <div class="service-card service-card--highlight js-reveal" data-service="fullstack">
                         <div class="service-icon" aria-hidden="true">
                             <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
                                 <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
@@ -327,7 +361,7 @@
                         </ul>
                     </div>
 
-                    <div class="service-card js-reveal">
+                    <div class="service-card js-reveal" data-service="design">
                         <div class="service-icon" aria-hidden="true">
                             <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
                                 <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
@@ -399,8 +433,8 @@
                         <div class="project-preview" aria-hidden="true">
                             <div class="preview-chrome">
                                 <div class="preview-dots"><i></i><i></i><i></i></div>
-                                <span class="preview-url">plataforma-ensino.com.br</span>
-                                <a href="https://www.w3schools.com/" target="_blank"
+                                <span class="preview-url">jurisflow-omega.vercel.app</span>
+                                <a href="https://jurisflow-omega.vercel.app/" target="_blank"
                                    rel="noopener noreferrer" class="preview-open" tabindex="-1">
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                                         <path d="M4 1H1v10h10V8M7 1h4m0 0v4M11 1 5.5 6.5"
@@ -409,15 +443,15 @@
                                     </svg>
                                 </a>
                             </div>
-                            <div class="preview-body preview-edu"><span aria-hidden="true">📚</span></div>
+                            <div class="preview-body preview-legal"><span aria-hidden="true">⚖️</span></div>
                         </div>
-                        <div class="project-tag" data-i18n="proj2.tag">Education Platform</div>
-                        <h3 data-i18n="proj2.title">Plataforma de Ensino</h3>
-                        <p data-i18n="proj2.desc">Plataforma de ensino de programação com filtro de conteúdo e canal de comunicação via WhatsApp. Interface intuitiva e didática.</p>
+                        <div class="project-tag" data-i18n="proj2.tag">Gestão Jurídica</div>
+                        <h3 data-i18n="proj2.title">JuriVox</h3>
+                        <p data-i18n="proj2.desc">SaaS de gestão jurídica com controle de processos, clientes e prazos. Interface moderna e responsiva para escritórios de advocacia.</p>
                         <div class="project-techs" aria-label="Tecnologias usadas">
                             <span>HTML</span><span>CSS</span><span>JavaScript</span>
                         </div>
-                        <a href="https://www.w3schools.com/" target="_blank"
+                        <a href="https://jurisflow-omega.vercel.app/" target="_blank"
                            rel="noopener noreferrer" class="btn btn-primary magnetic">
                             <span data-i18n="proj.btn">Acessar Projeto →</span>
                         </a>
@@ -593,24 +627,25 @@
                         <div class="form-group">
                             <input type="text" id="formName" name="name"
                                    placeholder=" " required autocomplete="name"
-                                   aria-required="true">
+                                   maxlength="80" aria-required="true">
                             <label for="formName" data-i18n="form.name">Seu Nome</label>
                             <div class="form-focus-bar" aria-hidden="true"></div>
                         </div>
                         <div class="form-group">
                             <input type="email" id="formEmail" name="email"
                                    placeholder=" " required autocomplete="email"
-                                   aria-required="true">
+                                   maxlength="120" spellcheck="false" aria-required="true">
                             <label for="formEmail" data-i18n="form.email">Seu E-mail</label>
                             <div class="form-focus-bar" aria-hidden="true"></div>
                         </div>
                     </div>
                     <div class="form-group">
                         <textarea id="formMsg" name="message" rows="5"
-                                  placeholder=" " required
+                                  placeholder=" " required maxlength="2000"
                                   aria-required="true"></textarea>
                         <label for="formMsg" data-i18n="form.message">Sua Mensagem</label>
                         <div class="form-focus-bar" aria-hidden="true"></div>
+                        <span class="form-char-count" id="msgCharCount" aria-hidden="true">0 / 2000</span>
                     </div>
                     <button type="submit" class="btn btn-primary magnetic form-submit-btn">
                         <span class="submit-label" data-i18n="form.send">Enviar Mensagem</span>
@@ -624,38 +659,42 @@
                 <p class="redes-label" data-i18n="contact.or">— ou conecte-se pelas redes —</p>
 
                 <ul class="redes" role="list">
-                    <li class="js-reveal-up">
-                        <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer" class="redelink">
+                    <li class="js-reveal-up" data-brand="facebook">
+                        <a href="https://www.facebook.com/profile.php?id=61585909988380" target="_blank" rel="noopener noreferrer" class="redelink">
                             <img src="../fotosportfolio/logo7.png"  alt="Facebook"  width="44" height="44" loading="lazy">
                             <span>Facebook</span>
                         </a>
                     </li>
-                    <li class="js-reveal-up">
-                        <a href="https://instagram.com/SEUUSUARIO" target="_blank" rel="noopener noreferrer" class="redelink">
+                    <li class="js-reveal-up" data-brand="instagram">
+                        <a href="https://instagram.com/devgabriel_01" target="_blank" rel="noopener noreferrer" class="redelink">
                             <img src="../fotosportfolio/logo8.png"  alt="Instagram" width="44" height="44" loading="lazy">
                             <span>Instagram</span>
                         </a>
                     </li>
-                    <li class="js-reveal-up">
-                        <a href="https://wa.me/5585986114901" target="_blank" rel="noopener noreferrer" class="redelink">
+                    <li class="js-reveal-up" data-brand="whatsapp">
+                        <a href="https://wa.me/5585988485621" target="_blank" rel="noopener noreferrer" class="redelink">
                             <img src="../fotosportfolio/logo11.png" alt="WhatsApp"  width="44" height="44" loading="lazy">
                             <span>WhatsApp</span>
                         </a>
                     </li>
-                    <li class="js-reveal-up">
-                        <a href="https://github.com/SEUUSUARIO" target="_blank" rel="noopener noreferrer" class="redelink">
-                            <img src="../fotosportfolio/logo9.png"  alt="GitHub"    width="44" height="44" loading="lazy">
+                    <li class="js-reveal-up" data-brand="github">
+                        <a href="https://github.com/gabriel07-gif" target="_blank" rel="noopener noreferrer" class="redelink">
+                            <!-- Escuro: logo branca | Claro: logo preta -->
+                            <img src="../fotosportfolio/logo10.png" alt="GitHub" class="github-logo-dark"
+                                 width="44" height="44" loading="lazy">
+                            <img src="../fotosportfolio/logo9.png"  alt="GitHub" class="github-logo-light"
+                                 width="44" height="44" loading="lazy" aria-hidden="true">
                             <span>GitHub</span>
                         </a>
-                    </li>
-                    <li class="js-reveal-up">
-                        <a href="mailto:seuemail@gmail.com" class="redelink">
+                    </li> 
+                    <li class="js-reveal-up" data-brand="gmail">
+                        <a href="mailto:gabrielricarte000@gmail.com" class="redelink">
                             <img src="../fotosportfolio/logo6.png"  alt="Gmail"     width="44" height="44" loading="lazy">
                             <span>Gmail</span>
                         </a>
                     </li>
-                    <li class="js-reveal-up">
-                        <a href="https://www.linkedin.com/in/seuusuario/" target="_blank" rel="noopener noreferrer" class="redelink">
+                    <li class="js-reveal-up" data-brand="linkedin">
+                        <a href="https://www.linkedin.com/in/gabriel-lucas-439153308/" target="_blank" rel="noopener noreferrer" class="redelink">
                             <img src="../fotosportfolio/logo12.png" alt="LinkedIn"  width="44" height="44" loading="lazy">
                             <span>LinkedIn</span>
                         </a>
@@ -670,10 +709,8 @@
         <div class="footer-inner">
             <span class="logo-footer">Gabriel<span class="accent-text">.</span></span>
             <p>
-                <span data-i18n="footer.made">Feito com</span>
-                <span class="accent-text">♥</span>
-                <span data-i18n="footer.in">em Fortaleza, CE</span>
-                &copy; 2025
+                <span data-i18n="footer.in">Em Fortaleza, CE</span>
+                &copy; 2026
             </p>
             <a href="#inicio" class="footer-top" aria-label="Voltar ao topo">
                 <span data-i18n="footer.top">↑ Topo</span>

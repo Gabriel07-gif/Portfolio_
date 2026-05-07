@@ -329,10 +329,10 @@ function debounce(fn, ms = 150) {
 (function initScrollReveals() {
     if (typeof gsap === 'undefined' || prefersRed) return;
 
-    gsap.utils.toArray('.js-reveal').forEach(el => {
+    gsap.utils.toArray('.js-reveal').forEach((el, i) => {
         gsap.fromTo(el,
-            { opacity: 0, y: 48, rotateX: 10, transformPerspective: 800 },
-            { opacity: 1, y: 0,  rotateX: 0,  duration: 0.8, ease: 'power3.out',
+            { opacity: 0, y: 60, rotateX: 14, transformPerspective: 800, scale: 0.97 },
+            { opacity: 1, y: 0,  rotateX: 0,  scale: 1, duration: 0.9, ease: 'power3.out',
               scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
     });
 
@@ -356,17 +356,17 @@ function debounce(fn, ms = 150) {
 
     gsap.utils.toArray('.service-card').forEach((card, i) => {
         gsap.fromTo(card,
-            { opacity: 0, y: 50, scale: 0.97 },
-            { opacity: 1, y: 0,  scale: 1,    duration: 0.75, ease: 'power3.out',
-              delay: i * 0.1,
+            { opacity: 0, y: 60, scale: 0.95, rotateX: 8, transformPerspective: 800 },
+            { opacity: 1, y: 0,  scale: 1, rotateX: 0, duration: 0.85, ease: 'power3.out',
+              delay: i * 0.12,
               scrollTrigger: { trigger: card, start: 'top 88%', once: true } });
     });
 
     gsap.utils.toArray('.project-card').forEach((card, i) => {
         gsap.fromTo(card,
-            { opacity: 0, y: 55 },
-            { opacity: 1, y: 0,  duration: 0.8, ease: 'power3.out',
-              delay: i * 0.12,
+            { opacity: 0, y: 70, scale: 0.94 },
+            { opacity: 1, y: 0,  scale: 1, duration: 0.9, ease: 'back.out(1.4)',
+              delay: i * 0.14,
               scrollTrigger: { trigger: card, start: 'top 88%', once: true } });
     });
 
@@ -478,7 +478,7 @@ function debounce(fn, ms = 150) {
     const nameEl  = document.getElementById('heroName');
     if (!nameEl) return;
 
-    const charset  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
+    const charset  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&!?<>';
     const original = 'Gabriel';
     let busy = false;
 
@@ -487,7 +487,7 @@ function debounce(fn, ms = 150) {
         busy = true;
         const spans = nameEl.querySelectorAll('.hero-char');
         let frame = 0;
-        const total = 18;
+        const total = 22;
 
         const iv = setInterval(() => {
             spans.forEach((span, i) => {
@@ -497,14 +497,20 @@ function debounce(fn, ms = 150) {
                 } else {
                     span.textContent = charset[Math.floor(Math.random() * charset.length)];
                     span.classList.add('glitch-char');
+                    /* Deslocamento aleatório para efeito glitch */
+                    span.style.transform = `translateX(${(Math.random()-0.5)*4}px) translateY(${(Math.random()-0.5)*3}px)`;
                 }
             });
-            if (++frame > total + 4) {
-                spans.forEach((s, i) => { s.textContent = original[i]; s.classList.remove('glitch-char'); });
+            if (++frame > total + 5) {
+                spans.forEach((s, i) => {
+                    s.textContent = original[i];
+                    s.classList.remove('glitch-char');
+                    s.style.transform = '';
+                });
                 clearInterval(iv);
                 busy = false;
             }
-        }, 40);
+        }, 36);
     });
 })();
 
@@ -591,11 +597,32 @@ function debounce(fn, ms = 150) {
     const form = document.getElementById('contactForm');
     if (!form) return;
 
+    /* ── Sanitização: remove caracteres perigosos e limita tamanho ── */
+    function sanitizeInput(str, maxLen) {
+        return String(str).trim().slice(0, maxLen || 2000)
+            .replace(/[<>"'`]/g, c => ({ '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', '`': '&#x60;' })[c]);
+    }
+
+    /* ── Contador de caracteres na textarea ── */
+    const textarea  = form.querySelector('#formMsg');
+    const charCount = form.querySelector('#msgCharCount');
+    if (textarea && charCount) {
+        textarea.addEventListener('input', () => {
+            const len = textarea.value.length;
+            const max = parseInt(textarea.getAttribute('maxlength')) || 2000;
+            charCount.textContent = `${len} / ${max}`;
+            charCount.classList.toggle('warn',  len > max * 0.80);
+            charCount.classList.toggle('limit', len >= max);
+        });
+    }
+
     /* Valida um único .form-group */
     function validateGroup(group) {
         const input = group.querySelector('input, textarea');
         if (!input) return true;
-        const ok = input.checkValidity() && input.value.trim() !== '';
+        const ok = input.checkValidity()
+            && input.value.trim() !== ''
+            && input.value.length <= (parseInt(input.getAttribute('maxlength')) || 99999);
         group.classList.toggle('invalid', !ok);
         return ok;
     }
@@ -624,9 +651,10 @@ function debounce(fn, ms = 150) {
 
         const btn   = form.querySelector('.form-submit-btn');
         const label = form.querySelector('.submit-label');
-        const name  = form.querySelector('#formName').value.trim();
-        const email = form.querySelector('#formEmail').value.trim();
-        const msg   = form.querySelector('#formMsg').value.trim();
+        /* Sanitiza os valores antes de qualquer uso */
+        const name  = sanitizeInput(form.querySelector('#formName').value, 80);
+        const email = sanitizeInput(form.querySelector('#formEmail').value, 120);
+        const msg   = sanitizeInput(form.querySelector('#formMsg').value, 2000);
 
         /* Estado de loading */
         const originalText = label.textContent;
@@ -651,7 +679,7 @@ function debounce(fn, ms = 150) {
             /* Abre o cliente de e-mail como fallback */
             const subject = encodeURIComponent('Contato via Portfolio — ' + name);
             const body    = encodeURIComponent(msg + '\n\nDe: ' + name + ' <' + email + '>');
-            window.location.href = 'mailto:seuemail@gmail.com?subject=' + subject + '&body=' + body;
+            window.location.href = 'mailto:gabrielricarte000@gmail.com?subject=' + subject + '&body=' + body;
 
             /* Reseta o formulário */
             form.reset();

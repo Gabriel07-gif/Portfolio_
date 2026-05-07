@@ -1,18 +1,16 @@
 /**
- * intro.js — Animação 3D premium de entrada
+ * intro.js — Animação de entrada v5 "OBSIDIAN"
  * Three.js r128
  *
- * Componentes:
- *  · Glow volumétrico em camadas (núcleo luminoso)
- *  · 3 anéis giroscópio internos (rápidos, opostos)
- *  · Icosaedro wireframe + pontos nos vértices
- *  · 3 anéis orbitais externos
- *  · Galáxia espiral (disco de partículas 3-braços)
- *  · Nuvem halo envolvente
- *  · Câmera com movimento sutil (oscilação senoidal)
- *  · Interação com mouse (o grupo inteiro reage)
- *  · Implosão de partículas na saída
- *  · Flash de glow no nome após todas as letras aparecerem
+ * Conceito: esfera escura com iluminação real (MeshPhong), sem AdditiveBlending
+ * agressivo. Centro escuro maximiza contraste das palavras GABRIEL / RICARTE.
+ *
+ *  · Esfera central escura (MeshPhongMaterial) com specular verde
+ *  · Shell icosaedro wireframe muito sutil (detalhe 0)
+ *  · 5 anéis orbitais (LineLoop, standard blending)
+ *  · Nuvem toroidal de partículas longe do centro (r ≈ 5–7)
+ *  · Estrelas de fundo muito suaves
+ *  · Luz de acento orbita a esfera lentamente
  */
 
 'use strict';
@@ -22,12 +20,10 @@
     const overlay = document.getElementById('intro-overlay');
     if (!overlay) return;
 
-    /* Acessibilidade: sem animação se o usuário preferir */
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         overlay.remove(); return;
     }
 
-    /* Não repete na mesma sessão */
     if (sessionStorage.getItem('g-intro-done')) {
         overlay.style.display = 'none'; return;
     }
@@ -38,184 +34,167 @@
     }
 
     /* ═══════════════════════════════════════════════════════
-       SETUP BÁSICO
+       SETUP
     ═══════════════════════════════════════════════════════ */
-    const W      = window.innerWidth;
-    const H      = window.innerHeight;
-    const isMob  = W < 768;
-    const DPR    = Math.min(window.devicePixelRatio, 2);
+    const W     = window.innerWidth;
+    const H     = window.innerHeight;
+    const isMob = W < 768;
+    const DPR   = Math.min(window.devicePixelRatio, 2);
 
-    const scene    = new THREE.Scene();
-    const camera   = new THREE.PerspectiveCamera(54, W / H, 0.1, 200);
-    camera.position.set(0, 0.6, 7.2);
-    camera.lookAt(0, 0, 0);
+    const START_Z   = isMob ? 14 : 20;
+    const TARGET_Z  = 7;
+    const ENTRY_DUR = 2.6;
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMob, alpha: true });
     renderer.setSize(W, H);
     renderer.setPixelRatio(DPR);
     renderer.setClearColor(0x000000, 0);
 
-    /* ── GRUPO PRINCIPAL (recebe rotação do mouse) ── */
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 120);
+    camera.position.set(0, 0.3, START_Z);
+    camera.lookAt(0, 0, 0);
+
     const G = new THREE.Group();
     scene.add(G);
 
     /* ═══════════════════════════════════════════════════════
-       1. GLOW VOLUMÉTRICO — camadas de esferas transparentes
+       ILUMINAÇÃO — real 3-point lighting
     ═══════════════════════════════════════════════════════ */
-    const glowGroup = new THREE.Group();
-    G.add(glowGroup);
+    scene.add(new THREE.AmbientLight(0x080816, 3.5));
 
-    [
-        { r: 0.18, op: 0.28, col: 0x00ffaa },
-        { r: 0.40, op: 0.16, col: 0x00ff88 },
-        { r: 0.75, op: 0.09, col: 0x22cc88 },
-        { r: 1.20, op: 0.05, col: 0x0088ff },
-        { r: 1.80, op: 0.025, col: 0x0044cc },
-        { r: 2.60, op: 0.012, col: 0x220044 },
-    ].forEach(d => {
-        const m = new THREE.Mesh(
-            new THREE.SphereGeometry(d.r, 16, 16),
-            new THREE.MeshBasicMaterial({ color: d.col, transparent: true, opacity: d.op })
-        );
-        glowGroup.add(m);
-    });
+    const keyLight = new THREE.PointLight(0xffffff, 1.4, 45);
+    keyLight.position.set(-5, 7, 11);
+    scene.add(keyLight);
+
+    /* accentLight orbita a esfera durante o loop */
+    const accentLight = new THREE.PointLight(0x00ff88, 0.55, 22);
+    accentLight.position.set(6, -3, 5);
+    scene.add(accentLight);
+
+    const rimLight = new THREE.PointLight(0x1133aa, 0.35, 30);
+    rimLight.position.set(-7, 2, -9);
+    scene.add(rimLight);
 
     /* ═══════════════════════════════════════════════════════
-       2. ANÉIS GIROSCÓPIO — 3 planos ortogonais, rápidos
+       1. ESFERA CENTRAL — dark metallic orb
+       Phong com specular verde — specular highlight move com accentLight
     ═══════════════════════════════════════════════════════ */
-    const gyroData = [
-        { rX: 0,           rZ: 0,           col: 0x00ff88, sp:  2.2, tube: 0.013 },
-        { rX: Math.PI / 2, rZ: 0,           col: 0x00ccff, sp: -1.8, tube: 0.011 },
-        { rX: Math.PI / 4, rZ: Math.PI / 3, col: 0x9955ff, sp:  1.5, tube: 0.009 },
-    ];
-    const gyroMeshes = gyroData.map(d => {
-        const m = new THREE.Mesh(
-            new THREE.TorusGeometry(0.78, d.tube, 8, 72),
-            new THREE.MeshBasicMaterial({ color: d.col, transparent: true, opacity: 0.88 })
-        );
-        m.rotation.x = d.rX;
-        m.rotation.z = d.rZ;
-        m.userData.sp = d.sp;
-        G.add(m);
-        return m;
-    });
-
-    /* ═══════════════════════════════════════════════════════
-       3. ICOSAEDRO WIREFRAME + PONTOS NOS VÉRTICES
-    ═══════════════════════════════════════════════════════ */
-    const icoGeo = new THREE.IcosahedronGeometry(1.9, 1);
-
-    const icoMat = new THREE.LineBasicMaterial({
-        color: 0x00ff88, transparent: true, opacity: 0.16
-    });
-    const icoMesh = new THREE.LineSegments(
-        new THREE.WireframeGeometry(icoGeo), icoMat
-    );
-    G.add(icoMesh);
-
-    /* Pontos brilhantes em cada vértice */
-    const vGeo = new THREE.BufferGeometry();
-    vGeo.setAttribute('position', icoGeo.attributes.position.clone());
-    G.add(new THREE.Points(
-        vGeo,
-        new THREE.PointsMaterial({
-            color: 0x88ffcc, size: 0.09,
-            sizeAttenuation: true, transparent: true, opacity: 0.95
+    const sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(2.2, 64, 64),
+        new THREE.MeshPhongMaterial({
+            color:     0x050510,
+            specular:  0x00cc66,
+            shininess: 180,
+            transparent: true,
+            opacity:   0,
         })
-    ));
-
-    /* ═══════════════════════════════════════════════════════
-       4. ANÉIS ORBITAIS EXTERNOS
-    ═══════════════════════════════════════════════════════ */
-    const outerRings = [
-        { r: 2.7, tube: 0.007, col: 0x00ff88, rX: 1.2, rZ: 0.3, sp:  0.22 },
-        { r: 3.6, tube: 0.005, col: 0x00aaff, rX: 0.4, rZ: 1.1, sp: -0.16 },
-        { r: 4.5, tube: 0.004, col: 0x8833ff, rX: 1.9, rZ: 0.8, sp:  0.11 },
-    ].map(d => {
-        const m = new THREE.Mesh(
-            new THREE.TorusGeometry(d.r, d.tube, 8, 160),
-            new THREE.MeshBasicMaterial({ color: d.col, transparent: true, opacity: 0.50 })
-        );
-        m.rotation.x = d.rX;
-        m.rotation.z = d.rZ;
-        m.userData.sp = d.sp;
-        G.add(m);
-        return m;
-    });
-
-    /* ═══════════════════════════════════════════════════════
-       5. GALÁXIA ESPIRAL — disco com 3 braços
-    ═══════════════════════════════════════════════════════ */
-    const NG       = isMob ? 900 : 2400;
-    const gPos     = new Float32Array(NG * 3);
-    const gOrigPos = new Float32Array(NG * 3);
-    const gCols    = new Float32Array(NG * 3);
-
-    for (let i = 0; i < NG; i++) {
-        const arm   = Math.floor(Math.random() * 3);
-        const off   = (arm * Math.PI * 2) / 3;
-        const r     = 1.8 + Math.random() * 5.2;
-        const theta = off + r * 0.60 + (Math.random() - 0.5) * 0.9;
-        const h     = (Math.random() - 0.5) * (0.15 + r * 0.055);
-
-        const x = r * Math.cos(theta);
-        const y = h;
-        const z = r * Math.sin(theta);
-
-        gPos[i * 3] = gOrigPos[i * 3] = x;
-        gPos[i * 3 + 1] = gOrigPos[i * 3 + 1] = y;
-        gPos[i * 3 + 2] = gOrigPos[i * 3 + 2] = z;
-
-        /* Cor: centro branco-verde → borda azul-roxo */
-        const t = Math.min(r / 7, 1);
-        gCols[i * 3]     = t * 0.35;
-        gCols[i * 3 + 1] = 1 - t * 0.35;
-        gCols[i * 3 + 2] = t * 0.95;
-    }
-
-    const galaxyGeo = new THREE.BufferGeometry();
-    galaxyGeo.setAttribute('position', new THREE.BufferAttribute(gPos, 3));
-    galaxyGeo.setAttribute('color',    new THREE.BufferAttribute(gCols, 3));
-
-    const galaxyMat = new THREE.PointsMaterial({
-        size: isMob ? 0.030 : 0.022,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.85,
-        sizeAttenuation: true,
-    });
-    const galaxy = new THREE.Points(galaxyGeo, galaxyMat);
-    galaxy.rotation.x = 0.44;
-    galaxy.rotation.z = 0.20;
-    G.add(galaxy);
-
-    /* ═══════════════════════════════════════════════════════
-       6. NUVEM HALO — partículas esféricas ao redor
-    ═══════════════════════════════════════════════════════ */
-    const NH   = isMob ? 120 : 350;
-    const hPos  = new Float32Array(NH * 3);
-    const hCols = new Float32Array(NH * 3);
-    for (let i = 0; i < NH; i++) {
-        const u = Math.random(), v = Math.random();
-        const th = 2 * Math.PI * u;
-        const ph = Math.acos(2 * v - 1);
-        const r  = 6.0 + Math.random() * 4.0;
-        hPos[i * 3]     = r * Math.sin(ph) * Math.cos(th);
-        hPos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
-        hPos[i * 3 + 2] = r * Math.cos(ph);
-        const t = Math.random();
-        hCols[i * 3]     = t * 0.25;
-        hCols[i * 3 + 1] = 0.55 + t * 0.45;
-        hCols[i * 3 + 2] = t * 0.85;
-    }
-    const hGeo = new THREE.BufferGeometry();
-    hGeo.setAttribute('position', new THREE.BufferAttribute(hPos, 3));
-    hGeo.setAttribute('color',    new THREE.BufferAttribute(hCols, 3));
-    const halo = new THREE.Points(
-        hGeo,
-        new THREE.PointsMaterial({ size: 0.014, vertexColors: true, transparent: true, opacity: 0.50, sizeAttenuation: true })
     );
-    G.add(halo);
+    G.add(sphere);
+
+    /* ═══════════════════════════════════════════════════════
+       2. SHELL — icosaedro wireframe muito sutil
+    ═══════════════════════════════════════════════════════ */
+    const shell = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(2.55, 0),
+        new THREE.MeshBasicMaterial({
+            color: 0x00ff88, wireframe: true,
+            transparent: true, opacity: 0,
+        })
+    );
+    G.add(shell);
+
+    /* ═══════════════════════════════════════════════════════
+       3. ANÉIS ORBITAIS — LineLoop, standard blending
+       5 anéis em planos diferentes, cores sutis
+    ═══════════════════════════════════════════════════════ */
+    function buildOrbit(radius) {
+        const pts = [];
+        for (let i = 0; i <= 128; i++) {
+            const a = (i / 128) * Math.PI * 2;
+            pts.push(new THREE.Vector3(Math.cos(a) * radius, Math.sin(a) * radius, 0));
+        }
+        return new THREE.BufferGeometry().setFromPoints(pts);
+    }
+
+    const orbitDefs = [
+        { r: 3.0, rX: 0.25,         rZ: 0.00,         col: 0x00ff88, tOp: 0.28, sp:  0.28 },
+        { r: 3.9, rX: Math.PI / 2,  rZ: 0.35,         col: 0x00aaff, tOp: 0.20, sp: -0.19 },
+        { r: 5.0, rX: 0.72,         rZ: 1.10,         col: 0x5533ff, tOp: 0.14, sp:  0.13 },
+        { r: 6.1, rX: 1.45,         rZ: 0.65,         col: 0x0077cc, tOp: 0.10, sp: -0.08 },
+        { r: 7.3, rX: 0.45,         rZ: 1.75,         col: 0x00ff88, tOp: 0.07, sp:  0.04 },
+    ];
+
+    const orbits = orbitDefs.map(d => {
+        const mat  = new THREE.LineBasicMaterial({ color: d.col, transparent: true, opacity: 0 });
+        const line = new THREE.LineLoop(buildOrbit(d.r), mat);
+        line.rotation.x = d.rX;
+        line.rotation.z = d.rZ;
+        line.userData   = { sp: d.sp, tOp: d.tOp };
+        G.add(line);
+        return line;
+    });
+
+    /* ═══════════════════════════════════════════════════════
+       4. PARTÍCULAS — distribuição toroidal longe do centro
+       Raio principal: 4.8–7.3. Centro (onde está o texto) fica escuro.
+    ═══════════════════════════════════════════════════════ */
+    const NP    = isMob ? 500 : 1200;
+    const pPos  = new Float32Array(NP * 3);
+    const pCols = new Float32Array(NP * 3);
+
+    for (let i = 0; i < NP; i++) {
+        const u    = Math.random() * Math.PI * 2;
+        const v    = Math.random() * Math.PI * 2;
+        const R    = 4.8 + Math.random() * 2.5;
+        const minR = 0.3 + Math.random() * 1.2;
+
+        pPos[i * 3]     = (R + minR * Math.cos(v)) * Math.cos(u);
+        pPos[i * 3 + 1] = minR * Math.sin(v) * 0.5;
+        pPos[i * 3 + 2] = (R + minR * Math.cos(v)) * Math.sin(u);
+
+        const t = Math.random();
+        pCols[i * 3]     = 0;
+        pCols[i * 3 + 1] = 0.45 + t * 0.55;
+        pCols[i * 3 + 2] = t * 0.65;
+    }
+
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos,  3));
+    pGeo.setAttribute('color',    new THREE.BufferAttribute(pCols, 3));
+
+    const partMat = new THREE.PointsMaterial({
+        size: isMob ? 0.038 : 0.022, vertexColors: true,
+        transparent: true, opacity: 0,
+        sizeAttenuation: true, depthWrite: false,
+    });
+    const particles = new THREE.Points(pGeo, partMat);
+    G.add(particles);
+
+    /* ═══════════════════════════════════════════════════════
+       5. ESTRELAS DE FUNDO — 700 pontos muito suaves
+    ═══════════════════════════════════════════════════════ */
+    const NS   = isMob ? 280 : 700;
+    const sPos = new Float32Array(NS * 3);
+
+    for (let i = 0; i < NS; i++) {
+        const r  = 16 + Math.random() * 28;
+        const u  = Math.random() * Math.PI * 2;
+        const v  = Math.acos(2 * Math.random() - 1);
+        sPos[i * 3]     = r * Math.sin(v) * Math.cos(u);
+        sPos[i * 3 + 1] = r * Math.sin(v) * Math.sin(u);
+        sPos[i * 3 + 2] = r * Math.cos(v);
+    }
+
+    const sGeo   = new THREE.BufferGeometry();
+    sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+
+    const starMat = new THREE.PointsMaterial({
+        color: 0x88aadd, size: 0.06, transparent: true, opacity: 0,
+        sizeAttenuation: true, depthWrite: false,
+    });
+    const stars = new THREE.Points(sGeo, starMat);
+    scene.add(stars);  /* não entra no grupo G */
 
     /* ═══════════════════════════════════════════════════════
        RASTREAMENTO DO MOUSE
@@ -232,76 +211,74 @@
        LOOP DE ANIMAÇÃO
     ═══════════════════════════════════════════════════════ */
     let rafId;
-    const t0          = performance.now();
-    let   isExiting   = false;
-    let   exitProg    = 0;
-    const GAL_ATTR    = galaxyGeo.attributes.position;
+    const t0        = performance.now();
+    let   isExiting = false;
+    let   exitProg  = 0;
 
     function animate(now) {
         rafId = requestAnimationFrame(animate);
         const t = (now - t0) * 0.001;
 
-        /* ── Câmera: oscilação senoidal sutil ── */
-        camera.position.x = Math.sin(t * 0.08)  * 0.28;
-        camera.position.y = 0.6 + Math.sin(t * 0.12) * 0.38;
-        camera.position.z = 7.2 + Math.sin(t * 0.07) * 0.35;
+        const entryRaw  = Math.min(t / ENTRY_DUR, 1);
+        const entryEase = 1 - Math.pow(1 - entryRaw, 3);
+
+        /* — câmera voa para dentro — */
+        if (!isExiting) {
+            camera.position.z = START_Z + (TARGET_Z - START_Z) * entryEase
+                              + Math.sin(t * 0.06) * 0.22;
+            camera.position.x = Math.sin(t * 0.05) * 0.15;
+            camera.position.y = 0.3 + Math.sin(t * 0.08) * 0.18;
+        }
         camera.lookAt(0, 0, 0);
 
-        /* ── Rotação pelo mouse (lerp suave) ── */
+        /* — paralaxe de mouse — */
         if (!isMob) {
-            G.rotation.y += (mX * 0.20 - G.rotation.y) * 0.035;
-            G.rotation.x += (mY * 0.14 - G.rotation.x) * 0.035;
+            G.rotation.y += (mX * 0.14 - G.rotation.y) * 0.026;
+            G.rotation.x += (mY * 0.09 - G.rotation.x) * 0.026;
         }
 
-        /* ── Giroscópio interno ── */
-        gyroMeshes.forEach(m => { m.rotation.y += m.userData.sp * 0.014; });
+        /* — esfera — */
+        sphere.rotation.y = t * 0.06;
+        sphere.rotation.z = t * 0.02;
+        sphere.material.opacity = Math.min(entryEase * 2.0, 0.96);
 
-        /* ── Icosaedro ── */
-        icoMesh.rotation.x = t * 0.14;
-        icoMesh.rotation.y = t * 0.22;
-        icoMat.opacity = 0.10 + Math.sin(t * 2.0) * 0.07;
+        /* — shell — */
+        shell.rotation.x = t * 0.04;
+        shell.rotation.y = t * 0.07;
+        shell.rotation.z = t * 0.03;
+        shell.material.opacity = Math.min(entryEase * 1.4, 0.09);
 
-        /* ── Anéis externos ── */
-        outerRings.forEach(m => { m.rotation.y += m.userData.sp * 0.014; });
+        /* — anéis orbitais — */
+        orbits.forEach(line => {
+            line.rotation.z += line.userData.sp * 0.009;
+            line.material.opacity = Math.min(entryEase * 1.5, line.userData.tOp);
+        });
 
-        /* ── Glow pulsante (escala) ── */
-        if (!isExiting) {
-            const pulse = 0.88 + Math.sin(t * 2.4) * 0.12;
-            glowGroup.scale.setScalar(pulse);
-        }
+        /* — partículas — */
+        particles.rotation.y = t * 0.020;
+        particles.rotation.x = t * 0.006;
+        partMat.opacity = Math.min(entryEase * 1.3, 0.28);
 
-        /* ── Galáxia e halo ── */
-        galaxy.rotation.y = t * 0.038;
-        halo.rotation.y   = -t * 0.018;
-        halo.rotation.x   =  t * 0.009;
+        /* — estrelas — */
+        stars.rotation.y = t * 0.002;
+        starMat.opacity  = Math.min(entryEase * 1.1, 0.16);
 
-        /* ══════════════════════════════════
-           IMPLOSÃO NA SAÍDA
-        ══════════════════════════════════ */
+        /* — accentLight orbita a esfera — */
+        accentLight.position.x = Math.cos(t * 0.20) * 6.5;
+        accentLight.position.z = Math.sin(t * 0.20) * 5.5 + 2;
+        accentLight.position.y = Math.sin(t * 0.12) * 3;
+
+        /* ── SAÍDA — fade simples ── */
         if (isExiting) {
-            exitProg = Math.min(exitProg + 0.020, 1);
-            /* ease-in quadrático */
+            exitProg = Math.min(exitProg + 0.018, 1);
             const ease = exitProg * exitProg;
 
-            /* Partículas correm para o centro */
-            for (let i = 0; i < NG; i++) {
-                GAL_ATTR.array[i * 3]     = gOrigPos[i * 3]     * (1 - ease);
-                GAL_ATTR.array[i * 3 + 1] = gOrigPos[i * 3 + 1] * (1 - ease);
-                GAL_ATTR.array[i * 3 + 2] = gOrigPos[i * 3 + 2] * (1 - ease);
-            }
-            GAL_ATTR.needsUpdate = true;
+            sphere.material.opacity  = 0.96 * (1 - ease);
+            shell.material.opacity   = 0.09 * (1 - ease);
+            partMat.opacity          = 0.28 * (1 - ease);
+            starMat.opacity          = 0.16 * (1 - ease);
+            orbits.forEach(l => { l.material.opacity = l.userData.tOp * (1 - ease); });
 
-            /* Glow expande enquanto partículas implodem */
-            glowGroup.scale.setScalar(1 + ease * 5);
-
-            /* Resto some gradualmente */
-            icoMat.opacity = 0.16 * (1 - ease);
-            outerRings.forEach(m => { m.material.opacity = 0.50 * (1 - ease); });
-            gyroMeshes.forEach(m => { m.material.opacity = 0.88 * (1 - ease); });
-            galaxyMat.opacity = Math.max(0, 0.85 - ease * 1.2);
-            halo.material.opacity = 0.50 * (1 - ease);
-
-            /* Quando a implosão termina → ativa saída CSS */
             if (exitProg >= 1) {
                 cancelAnimationFrame(rafId);
                 overlay.classList.add('intro-leaving');
@@ -318,35 +295,60 @@
     animate(t0);
 
     /* ═══════════════════════════════════════════════════════
-       ANIMAÇÃO DO TEXTO — letras reveladas uma a uma
+       ANIMAÇÃO DO TEXTO — GABRIEL (branco) + RICARTE (verde)
     ═══════════════════════════════════════════════════════ */
-    const nameEl = overlay.querySelector('.intro-name');
-    if (nameEl) {
-        const txt = nameEl.textContent.trim();
-        nameEl.textContent = '';
-        nameEl.setAttribute('aria-label', txt);
 
+    /* ── 1ª linha: GABRIEL cai do topo, letra a letra ── */
+    const firstEl = overlay.querySelector('.intro-name-first');
+    if (firstEl) {
+        const txt = firstEl.textContent.trim();
+        firstEl.innerHTML = '';
+        firstEl.setAttribute('aria-label', txt);
         [...txt].forEach((ch, i) => {
             const sp = document.createElement('span');
             sp.className   = 'intro-ltr';
-            sp.textContent = ch === ' ' ? '\u00A0' : ch;
-            sp.style.animationDelay = `${0.5 + i * 0.085}s`;
-            nameEl.appendChild(sp);
+            sp.textContent = ch === ' ' ? ' ' : ch;
+            sp.style.animationDelay = `${0.65 + i * 0.075}s`;
+            firstEl.appendChild(sp);
         });
+    }
 
-        /* Flash de glow após última letra aparecer */
-        const glowAt = (0.5 + (txt.length - 1) * 0.085 + 0.58) * 1000;
-        setTimeout(() => nameEl.classList.add('intro-name--glow'), glowAt);
+    /* ── 2ª linha: RICARTE sobe de baixo em verde ── */
+    const lastEl = overlay.querySelector('.intro-name-last');
+    if (lastEl) {
+        const txt = lastEl.textContent.trim();
+        lastEl.innerHTML = '';
+        lastEl.setAttribute('aria-label', txt);
+        [...txt].forEach((ch, i) => {
+            const sp = document.createElement('span');
+            sp.className   = 'intro-ltr-up';
+            sp.textContent = ch === ' ' ? ' ' : ch;
+            sp.style.animationDelay = `${1.7 + i * 0.09}s`;
+            lastEl.appendChild(sp);
+        });
+        /* RICARTE = 7 chars: última ≈ 2.24s + 0.65s ≈ 2.9s */
+        const glowAt = Math.round((1.7 + 6 * 0.09 + 0.65) * 1000);
+        setTimeout(() => lastEl.classList.add('intro-name-last--glow'), glowAt);
     }
 
     /* ═══════════════════════════════════════════════════════
-       BARRA DE PROGRESSO
+       BARRA DE PROGRESSO + CONTADOR PERCENTUAL
     ═══════════════════════════════════════════════════════ */
-    const TOTAL_MS = 4600;
+    const TOTAL_MS = 6000;
     const barFill  = overlay.querySelector('.intro-bar-fill');
     if (barFill) {
         barFill.style.transition = `width ${TOTAL_MS}ms linear`;
         requestAnimationFrame(() => { barFill.style.width = '100%'; });
+    }
+
+    const percentEl = document.getElementById('introPercent');
+    if (percentEl) {
+        const t0pct    = Date.now();
+        const pctTimer = setInterval(() => {
+            const pct = Math.min(Math.round(((Date.now() - t0pct) / TOTAL_MS) * 100), 100);
+            percentEl.textContent = pct;
+            if (pct >= 100) clearInterval(pctTimer);
+        }, 40);
     }
 
     /* ═══════════════════════════════════════════════════════
@@ -359,13 +361,13 @@
         dismissed = true;
         clearTimeout(autoTimer);
 
-        /* Fade do texto e barra */
         const content = overlay.querySelector('.intro-content');
         const bar     = overlay.querySelector('.intro-bar-wrap');
-        if (content) { content.style.transition = 'opacity 0.3s ease'; content.style.opacity = '0'; }
-        if (bar)     { bar.style.transition     = 'opacity 0.3s ease'; bar.style.opacity     = '0'; }
+        const pct     = overlay.querySelector('.intro-percent-wrap');
+        if (content) { content.style.transition = 'opacity 0.35s ease'; content.style.opacity = '0'; }
+        if (bar)     { bar.style.transition     = 'opacity 0.35s ease'; bar.style.opacity     = '0'; }
+        if (pct)     { pct.style.transition     = 'opacity 0.35s ease'; pct.style.opacity     = '0'; }
 
-        /* Inicia implosão 3D */
         isExiting = true;
     }
 
@@ -379,7 +381,6 @@
         }
     });
 
-    /* Resize responsivo */
     window.addEventListener('resize', () => {
         const nW = window.innerWidth, nH = window.innerHeight;
         camera.aspect = nW / nH;

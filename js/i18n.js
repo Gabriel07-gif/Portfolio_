@@ -67,9 +67,9 @@ const I18N = (() => {
             'proj1.tag':    '⭐ Em Destaque',
             'proj1.title':  'Loja de Veículos',
             'proj1.desc':   'Site completo com filtro de produtos, paginação e integração direta com WhatsApp. Frontend moderno e totalmente responsivo.',
-            'proj2.tag':    'Education Platform',
-            'proj2.title':  'Plataforma de Ensino',
-            'proj2.desc':   'Plataforma de ensino de programação com filtro de conteúdo e canal de comunicação via WhatsApp. Interface intuitiva e didática.',
+            'proj2.tag':    'Gestão Jurídica',
+            'proj2.title':  'JuriVox',
+            'proj2.desc':   'SaaS de gestão jurídica com controle de processos, clientes e prazos. Interface moderna e responsiva para escritórios de advocacia.',
             'proj.btn':     'Acessar Projeto →',
 
             /* Habilidades */
@@ -98,7 +98,6 @@ const I18N = (() => {
             'contact.desc': 'Aberto a oportunidades de trabalho, projetos colaborativos ou apenas para dizer olá. Escolha como prefere se conectar:',
 
             /* Footer */
-            'footer.made':   'Feito com',
             'footer.in':     'em Fortaleza, CE',
             'footer.top':    '↑ Topo',
 
@@ -158,9 +157,9 @@ const I18N = (() => {
             'proj1.tag':    '⭐ Featured',
             'proj1.title':  'Vehicle Store',
             'proj1.desc':   'Complete website with product filtering, pagination, and direct WhatsApp integration. Modern and fully responsive frontend.',
-            'proj2.tag':    'Education Platform',
-            'proj2.title':  'Learning Platform',
-            'proj2.desc':   'Programming learning platform with content filtering and WhatsApp communication channel. Intuitive and educational interface.',
+            'proj2.tag':    'Legal Management',
+            'proj2.title':  'JuriVox',
+            'proj2.desc':   'Legal management SaaS with case tracking, client management, and deadline control. Modern and responsive interface for law firms.',
             'proj.btn':     'View Project →',
 
             'section.skills.pre':  'My',
@@ -241,9 +240,9 @@ const I18N = (() => {
             'proj1.tag':    '⭐ Destacado',
             'proj1.title':  'Tienda de Vehículos',
             'proj1.desc':   'Sitio completo con filtro de productos, paginación e integración directa con WhatsApp. Frontend moderno y totalmente responsive.',
-            'proj2.tag':    'Education Platform',
-            'proj2.title':  'Plataforma de Enseñanza',
-            'proj2.desc':   'Plataforma de enseñanza de programación con filtro de contenido y canal de comunicación por WhatsApp. Interfaz intuitiva y didáctica.',
+            'proj2.tag':    'Gestión Jurídica',
+            'proj2.title':  'JuriVox',
+            'proj2.desc':   'SaaS de gestión jurídica con control de casos, clientes y plazos. Interfaz moderna y responsive para estudios de abogados.',
             'proj.btn':     'Ver Proyecto →',
 
             'section.skills.pre':  'Mis',
