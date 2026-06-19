@@ -55,6 +55,12 @@ const cardVariants = {
   }),
 };
 
+function onSpotlight(e: React.MouseEvent<HTMLDivElement>) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+  e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+}
+
 export default function Services() {
   const { t } = useLang();
 
@@ -74,7 +80,15 @@ export default function Services() {
             <span className="accent-text">{t('section.services.acc')}</span>
           </h2>
           <p className="section-sub">{t('section.services.sub')}</p>
-          <div className="section-line" aria-hidden="true" />
+          <motion.div
+            className="section-line"
+            aria-hidden="true"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformOrigin: 'left' }}
+          />
         </motion.div>
 
         <div className="services-grid">
@@ -88,11 +102,13 @@ export default function Services() {
               whileInView="visible"
               viewport={{ once: true, margin: '-60px' }}
               variants={cardVariants}
+              whileHover={{ y: -8, transition: { type: 'spring', stiffness: 300, damping: 24 } }}
+              onMouseMove={onSpotlight}
             >
               <div className="service-icon" aria-hidden="true">{svc.icon}</div>
               <h3>{t(svc.titleKey)}</h3>
               <p>{t(svc.descKey)}</p>
-              <ul className="service-list" aria-label="Habilidades">
+              <ul className="service-list" aria-label="Recursos do serviço">
                 {svc.list.map(item => (
                   <li key={item}>{item}</li>
                 ))}

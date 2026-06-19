@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { type Lang, LANG_META, detectLang, translate } from '@/lib/i18n';
 
+const toLangAttr = (l: Lang) => l === 'pt' ? 'pt-BR' : l;
+
 interface LangContextValue {
   lang: Lang;
   setLang: (l: Lang) => void;
@@ -21,13 +23,16 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>('pt');
 
   useEffect(() => {
-    setLangState(detectLang());
+    const detected = detectLang();
+    setLangState(detected);
+    document.documentElement.lang = toLangAttr(detected);
+    document.title = translate(detected, 'page.title');
   }, []);
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l);
     localStorage.setItem('g-lang', l);
-    document.documentElement.lang = l === 'pt' ? 'pt-BR' : l;
+    document.documentElement.lang = toLangAttr(l);
     document.title = translate(l, 'page.title');
   }, []);
 

@@ -9,6 +9,7 @@ const SECTIONS = [
   { href: '#projetos',    labelKey: 'nav.projects'  },
   { href: '#habilidades', labelKey: 'nav.skills'    },
   { href: '#sobre',       labelKey: 'nav.about'     },
+  { href: '#faq',         labelKey: 'nav.faq'       },
   { href: '#contato',     labelKey: 'nav.contact'   },
 ] as const;
 
@@ -32,7 +33,7 @@ export default function SideDots() {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     setActive(href);
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    /* Lenis (SmoothScroll) intercepts anchor clicks at document level */
   };
 
   return (

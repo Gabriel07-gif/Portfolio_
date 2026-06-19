@@ -41,11 +41,12 @@ export default function IntroOverlay() {
     const overlay = overlayRef.current;
     if (!canvas || !overlay) return;
 
-    const W      = window.innerWidth;
-    const H      = window.innerHeight;
-    const isMob  = W < 768;
-    const DPR    = Math.min(window.devicePixelRatio, 2);
-    const START_Z = isMob ? 14 : 20;
+    const isTouch  = window.matchMedia('(pointer: coarse)').matches;
+    const W        = window.innerWidth;
+    const H        = window.innerHeight;
+    const isMob    = W < 768;
+    const DPR      = Math.min(window.devicePixelRatio, 2);
+    const START_Z  = isMob ? 14 : 20;
     const TARGET_Z = 7;
 
     let rafId     = 0;
@@ -70,7 +71,16 @@ export default function IntroOverlay() {
         el.style.opacity    = '0';
       });
 
-      isExiting = true;
+      if (isTouch || rafId === 0) {
+        /* No Three.js running — CSS fade directly */
+        overlay.classList.add('intro-leaving');
+        setTimeout(() => {
+          sessionStorage.setItem('g-intro-done', '1');
+          setHidden(true);
+        }, 900);
+      } else {
+        isExiting = true;
+      }
     };
 
     const onKey = (e: KeyboardEvent) => {
@@ -83,7 +93,41 @@ export default function IntroOverlay() {
     window.addEventListener('keydown', onKey);
     overlay.addEventListener('click', dismiss, { once: true });
 
-    /* ── 3-D init (async import three) ── */
+    /* ── progress bar (always) ── */
+    if (barFillRef.current) {
+      barFillRef.current.style.transition = `width ${TOTAL_MS}ms linear`;
+      requestAnimationFrame(() => {
+        if (barFillRef.current) barFillRef.current.style.width = '100%';
+      });
+    }
+
+    /* ── percent counter (always) ── */
+    const t0pct = Date.now();
+    pctTimer = setInterval(() => {
+      const pct = Math.min(Math.round(((Date.now() - t0pct) / TOTAL_MS) * 100), 100);
+      if (pctRef.current) pctRef.current.textContent = String(pct);
+      if (pct >= 100) clearInterval(pctTimer);
+    }, 40);
+
+    /* ── glow on RICARTE after last letter lands (always) ── */
+    glowTimer = setTimeout(() => setGlowing(true), Math.round((1.05 + 6 * 0.08 + 0.65) * 1000));
+
+    /* ── auto-dismiss (always) ── */
+    autoTimer = setTimeout(dismiss, TOTAL_MS);
+
+    /* ── TOUCH PATH: CSS-only, skip Three.js ── */
+    if (isTouch) {
+      return () => {
+        dismissed = true;
+        clearTimeout(autoTimer);
+        clearTimeout(glowTimer);
+        clearInterval(pctTimer);
+        window.removeEventListener('keydown', onKey);
+        overlay.removeEventListener('click', dismiss);
+      };
+    }
+
+    /* ── DESKTOP PATH: Three.js ── */
     const init = async () => {
       const THREE = await import('three');
 
@@ -205,9 +249,9 @@ export default function IntroOverlay() {
         sizeAttenuation: true, depthWrite: false,
       });
       const stars = new THREE.Points(sGeo, starMat);
-      scene.add(stars); // outside group G
+      scene.add(stars);
 
-      /* ── 6. INNER SPARKLES (bright close particles around sphere) ── */
+      /* ── 6. INNER SPARKLES ── */
       const NSP    = isMob ? 60 : 130;
       const spPos  = new Float32Array(NSP * 3);
       const spCols = new Float32Array(NSP * 3);
@@ -249,26 +293,6 @@ export default function IntroOverlay() {
         renderer.setSize(nW, nH);
       };
       window.addEventListener('resize', onResize, { passive: true });
-
-      /* ── PROGRESS BAR (CSS transition trick from original) ── */
-      if (barFillRef.current) {
-        barFillRef.current.style.transition = `width ${TOTAL_MS}ms linear`;
-        requestAnimationFrame(() => {
-          if (barFillRef.current) barFillRef.current.style.width = '100%';
-        });
-      }
-
-      /* ── PERCENT COUNTER ── */
-      const t0pct = Date.now();
-      pctTimer = setInterval(() => {
-        const pct = Math.min(Math.round(((Date.now() - t0pct) / TOTAL_MS) * 100), 100);
-        if (pctRef.current) pctRef.current.textContent = String(pct);
-        if (pct >= 100) clearInterval(pctTimer);
-      }, 40);
-
-      /* ── GLOW on RICARTE after last letter finishes ── */
-      // RICARTE = 7 chars, last at 1.05 + 6*0.08 + 0.65s ≈ 2180ms
-      glowTimer = setTimeout(() => setGlowing(true), Math.round((1.05 + 6 * 0.08 + 0.65) * 1000));
 
       /* ── ANIMATION LOOP ── */
       const t0 = performance.now();
@@ -321,25 +345,23 @@ export default function IntroOverlay() {
         stars.rotation.y   = t * 0.002;
         starMat.opacity    = Math.min(entryEase * 1.1, 0.16);
 
-        /* inner sparkles — counter-rotate for depth */
+        /* inner sparkles */
         sparkles.rotation.y = -t * 0.030;
         sparkles.rotation.x =  t * 0.018;
         spMat.opacity = Math.min(entryEase * 1.4, 0.50);
 
-        /* accent light orbits sphere + subtle hue shift green→blue */
+        /* accent light orbits sphere */
         accentLight.color.setHSL(0.38 + Math.sin(t * 0.14) * 0.08, 1.0, 0.5);
         accentLight.position.x = Math.cos(t * 0.20) * 6.5;
         accentLight.position.z = Math.sin(t * 0.20) * 5.5 + 2;
         accentLight.position.y = Math.sin(t * 0.12) * 3;
 
-        /* exit fade — camera rushes in, group spins faster */
+        /* exit fade */
         if (isExiting) {
           exitProg = Math.min(exitProg + 0.018, 1);
           const ease = exitProg * exitProg;
 
-          /* rush camera toward scene center */
           camera.position.z = TARGET_Z * (1 - exitProg * 0.72);
-          /* accelerate group spin */
           G.rotation.y += exitProg * 0.038;
 
           sphereMat.opacity = 0.96 * (1 - ease);
@@ -369,12 +391,8 @@ export default function IntroOverlay() {
       };
 
       rafId = requestAnimationFrame(animate);
-      autoTimer = setTimeout(dismiss, TOTAL_MS);
 
       return () => {
-        clearTimeout(autoTimer);
-        clearTimeout(glowTimer);
-        clearInterval(pctTimer);
         cancelAnimationFrame(rafId);
         if (!isMob) overlay.removeEventListener('mousemove', onMouse);
         window.removeEventListener('resize', onResize);
@@ -384,13 +402,19 @@ export default function IntroOverlay() {
       };
     };
 
+    let isCleaned = false;
     const cleanupPromise = init();
 
     return () => {
+      isCleaned = true;
       dismissed = true;
+      cancelAnimationFrame(rafId);
+      clearTimeout(autoTimer);
+      clearTimeout(glowTimer);
+      clearInterval(pctTimer);
       window.removeEventListener('keydown', onKey);
       overlay.removeEventListener('click', dismiss);
-      cleanupPromise.then(fn => fn?.());
+      cleanupPromise.then(fn => { if (isCleaned) fn?.(); });
     };
   }, [mounted]);
 
@@ -420,7 +444,7 @@ export default function IntroOverlay() {
           <span className="intro-tag-line" />
         </p>
 
-        {/* ── NAME — letter-by-letter, matching original ── */}
+        {/* ── NAME — letter-by-letter ── */}
         <div className="intro-name-wrap" aria-label="Gabriel Ricarte">
           <h1 className="intro-name-first" aria-label="GABRIEL">
             {GABRIEL.map((ch, i) => (

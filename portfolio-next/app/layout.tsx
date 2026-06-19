@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LangProvider }  from '@/contexts/LangContext';
@@ -31,11 +32,18 @@ export const metadata: Metadata = {
     type:        'website',
     locale:      'pt_BR',
     siteName:    'Gabriel Ricarte — Portfolio',
+    images: [{
+      url:    '/images/project-github.png',
+      width:  1200,
+      height: 630,
+      alt:    'Gabriel Ricarte — Desenvolvedor Full-Stack',
+    }],
   },
   twitter: {
     card:        'summary_large_image',
     title:       'Gabriel Ricarte | Dev Full-Stack',
     description: 'Criando experiências digitais modernas com React, Next.js e TypeScript.',
+    images:      ['/images/project-github.png'],
   },
 };
 
@@ -52,9 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" data-theme="dark" suppressHydrationWarning>
       <head>
-        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta name="referrer"        content="strict-origin-when-cross-origin" />
-        <meta httpEquiv="X-Frame-Options" content="SAMEORIGIN" />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
         {/* Inline theme script prevents FOUC */}
         <script
           dangerouslySetInnerHTML={{
@@ -68,6 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </LangProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

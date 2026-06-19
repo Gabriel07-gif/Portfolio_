@@ -50,7 +50,7 @@ export default function Footer() {
 
         {/* Built with */}
         <div className="footer-stack" aria-label="Stack usada">
-          <span className="footer-stack-label">Built with</span>
+          <span className="footer-stack-label">{t('footer.builtWith')}</span>
           <div className="footer-stack-pills">
             {STACK.map(s => (
               <span key={s} className="footer-pill">{s}</span>

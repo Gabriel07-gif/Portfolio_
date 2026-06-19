@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useLang } from '@/contexts/LangContext';
 
 export default function NotFound() {
+  const { t } = useLang();
+
   return (
     <div
       style={{
@@ -16,7 +19,6 @@ export default function NotFound() {
         position: 'relative', overflow: 'hidden',
       }}
     >
-      {/* background glow */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
         background: 'radial-gradient(ellipse at 50% 40%, rgba(0,255,136,0.05) 0%, transparent 65%)',
@@ -46,7 +48,7 @@ export default function NotFound() {
         transition={{ delay: 0.18, duration: 0.5 }}
         style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text)', margin: 0 }}
       >
-        Página não encontrada
+        {t('notFound.title')}
       </motion.h1>
 
       <motion.p
@@ -58,7 +60,7 @@ export default function NotFound() {
           lineHeight: 1.75, margin: 0, fontSize: '1rem',
         }}
       >
-        Essa rota não existe ou foi movida. Verifique o link ou volte à página inicial.
+        {t('notFound.desc')}
       </motion.p>
 
       <motion.div
@@ -72,10 +74,10 @@ export default function NotFound() {
             <path d="M12 7.5H3M7 3.5L3 7.5l4 4" stroke="currentColor" strokeWidth="1.7"
               strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Voltar ao início
+          {t('notFound.back')}
         </Link>
         <Link href="/#contato" className="btn btn-outline">
-          Entre em contato
+          {t('notFound.contact')}
         </Link>
       </motion.div>
 

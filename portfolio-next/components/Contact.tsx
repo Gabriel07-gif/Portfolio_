@@ -6,9 +6,10 @@ import Image from 'next/image';
 import { useLang } from '@/contexts/LangContext';
 
 interface FormState {
-  name:    string;
-  email:   string;
-  message: string;
+  name:     string;
+  email:    string;
+  message:  string;
+  website:  string; /* honeypot — hidden from real users, bots fill it */
 }
 
 function GmailIcon() {
@@ -40,18 +41,20 @@ const SOCIALS: Social[] = [
   { key: 'linkedin',  label: 'LinkedIn',  img: '/images/logo12.png', url: 'https://www.linkedin.com/in/gabriel-lucas-439153308/' },
 ];
 
+const MAILTO_FALLBACK = 'gabrielricarte000@gmail.com';
+
 export default function Contact() {
-  const { t }         = useLang();
-  const [form, setForm] = useState<FormState>({ name: '', email: '', message: '' });
-  const [errors, setErrors]   = useState<Partial<FormState>>({});
-  const [status, setStatus]   = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const { t } = useLang();
+  const [form, setForm]     = useState<FormState>({ name: '', email: '', message: '', website: '' });
+  const [errors, setErrors] = useState<Partial<Omit<FormState, 'website'>>>({});
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [charCount, setCharCount] = useState(0);
 
   const validate = (): boolean => {
-    const errs: Partial<FormState> = {};
-    if (!form.name.trim()   || form.name.length > 80)    errs.name    = 'invalid';
-    if (!form.email.trim()  || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'invalid';
-    if (!form.message.trim()|| form.message.length > 2000) errs.message = 'invalid';
+    const errs: Partial<Omit<FormState, 'website'>> = {};
+    if (!form.name.trim()    || form.name.length > 80)     errs.name    = 'invalid';
+    if (!form.email.trim()   || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) errs.email = 'invalid';
+    if (!form.message.trim() || form.message.length > 2000) errs.message = 'invalid';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -66,33 +69,39 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    /* Honeypot check — bot filled the hidden field */
+    if (form.website) return;
     if (!validate()) return;
     setStatus('loading');
     try {
+      const { website: _hp, ...payload } = form;
       const res = await fetch('/api/contact', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(form),
+        body:    JSON.stringify(payload),
       });
       if (res.ok) {
         setStatus('success');
-        setForm({ name: '', email: '', message: '' });
+        setForm({ name: '', email: '', message: '', website: '' });
         setErrors({});
         setCharCount(0);
         showToast(t('form.success'));
         setTimeout(() => setStatus('idle'), 3000);
+      } else if (res.status === 429) {
+        setStatus('error');
+        showToast(t('form.rateLimit'));
+        setTimeout(() => setStatus('idle'), 4000);
       } else {
         setStatus('error');
         showToast(t('form.error'));
         setTimeout(() => setStatus('idle'), 3000);
       }
     } catch {
-      setStatus('error');
-      /* Fallback: open mailto */
+      /* API unreachable — open the user's mail client as fallback */
       const sub  = encodeURIComponent(`Contato via Portfolio — ${form.name}`);
       const body = encodeURIComponent(`${form.message}\n\nDe: ${form.name} <${form.email}>`);
-      window.location.href = `mailto:gabrielricarte000@gmail.com?subject=${sub}&body=${body}`;
-      showToast(t('form.success'));
+      window.open(`mailto:${MAILTO_FALLBACK}?subject=${sub}&body=${body}`, '_blank');
+      showToast(t('form.fallback'));
       setStatus('idle');
     }
   };
@@ -112,13 +121,21 @@ export default function Contact() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="section-num">05</span>
+          <span className="section-num">06</span>
           <h2>
             <span>{t('section.contact.pre')}</span>
             <span className="accent-text">{t('section.contact.acc')}</span>
           </h2>
           <p className="section-sub">{t('section.contact.sub')}</p>
-          <div className="section-line" aria-hidden="true" />
+          <motion.div
+            className="section-line"
+            aria-hidden="true"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformOrigin: 'left' }}
+          />
         </motion.div>
 
         <motion.p
@@ -132,7 +149,6 @@ export default function Contact() {
           {t('contact.desc')}
         </motion.p>
 
-        {/* Contact form */}
         <motion.form
           className="contact-form"
           id="contactForm"
@@ -144,6 +160,18 @@ export default function Contact() {
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
+          {/* Honeypot — visually hidden, bots fill it, humans don't */}
+          <input
+            type="text"
+            name="website"
+            value={form.website}
+            onChange={e => setForm(f => ({ ...f, website: e.target.value }))}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}
+          />
+
           <div className="form-row">
             <div className={`form-group${errors.name ? ' invalid' : ''}`}>
               <input
@@ -164,7 +192,7 @@ export default function Contact() {
                 maxLength={120} aria-required="true"
                 value={form.email}
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                onBlur={() => { if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) setErrors(er => ({ ...er, email: undefined })); }}
+                onBlur={() => { if (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) setErrors(er => ({ ...er, email: undefined })); }}
               />
               <label htmlFor="formEmail">{t('form.email')}</label>
               <div className="form-focus-bar" aria-hidden="true" />
@@ -231,7 +259,7 @@ export default function Contact() {
               >
                 {social.icon ? social.icon : social.key === 'github' ? (
                   <>
-                    <Image src={social.img!}           alt={social.label} width={44} height={44} loading="lazy" className="github-logo-dark"  />
+                    <Image src={social.img!}                  alt={social.label} width={44} height={44} loading="lazy" className="github-logo-dark"  />
                     <Image src={social.imgLight ?? social.img!} alt={social.label} width={44} height={44} loading="lazy" className="github-logo-light" aria-hidden="true" />
                   </>
                 ) : (

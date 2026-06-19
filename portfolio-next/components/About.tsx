@@ -1,24 +1,10 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useLang } from '@/contexts/LangContext';
-
-function useCounter(target: number, duration = 1600, trigger = false) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    if (!trigger) return;
-    const start = performance.now();
-    const tick  = (now: number) => {
-      const p = Math.min((now - start) / duration, 1);
-      setValue(Math.round((1 - Math.pow(1 - p, 3)) * target));
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [target, duration, trigger]);
-  return value;
-}
+import { useCounter } from '@/hooks/useCounter';
+import { useInView }   from '@/hooks/useInView';
 
 function DownloadIcon() {
   return (
@@ -32,21 +18,11 @@ function DownloadIcon() {
 
 export default function About() {
   const { t }  = useLang();
-  const [inView, setInView] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
+  const [sectionRef, inView] = useInView<HTMLElement>(0.2);
 
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setInView(true); },
-      { threshold: 0.2 }
-    );
-    if (sectionRef.current) obs.observe(sectionRef.current);
-    return () => obs.disconnect();
-  }, []);
-
-  const years = useCounter(2,  1600, inView);
-  const projs  = useCounter(5,  1800, inView);
-  const techs  = useCounter(10, 1400, inView);
+  const years = useCounter(2,  1600, { trigger: inView });
+  const projs  = useCounter(5,  1800, { trigger: inView });
+  const techs  = useCounter(10, 1400, { trigger: inView });
 
   const TAGS = ['about.tag1', 'about.tag2', 'about.tag3', 'about.tag4'];
 
@@ -66,28 +42,41 @@ export default function About() {
             <span className="accent-text">{t('section.about.acc')}</span>
           </h2>
           <p className="section-sub">{t('section.about.sub')}</p>
-          <div className="section-line" aria-hidden="true" />
+          <motion.div
+            className="section-line"
+            aria-hidden="true"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformOrigin: 'left' }}
+          />
         </motion.div>
 
         <div className="about-grid">
-          {/* Profile image */}
+          {/* Profile image — clip-path reveal from left */}
           <motion.div
             className="about-image"
-            initial={{ opacity: 0, x: -60, rotateY: 12 }}
-            whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+            initial={{ opacity: 0, clipPath: 'inset(0 100% 0 0 round 24px)' }}
+            whileInView={{ opacity: 1, clipPath: 'inset(0 0% 0 0 round 24px)' }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            style={{ perspective: 800 }}
+            transition={{ duration: 1.0, ease: [0.76, 0, 0.24, 1] }}
           >
-            <div className="img-wrapper">
+            <motion.div
+              className="img-wrapper"
+              initial={{ scale: 1.12 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+            >
               <div className="img-border" />
               <Image
-                src="/images/logo5.jpg"
+                src="/images/fotonova.jpg"
                 alt="Foto de perfil de Gabriel"
                 width={340}
                 height={380}
                 loading="lazy"
-                style={{ objectFit: 'cover', borderRadius: '24px', width: '100%', height: 'auto' }}
+                style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto' }}
               />
               <div
                 aria-hidden="true"
@@ -97,7 +86,7 @@ export default function About() {
                   borderRadius: '24px',
                 }}
               />
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Text content */}
@@ -144,7 +133,9 @@ export default function About() {
             <div style={{ marginTop: 32 }}>
               <a
                 href="/cv-gabriel-ricarte.pdf"
-                download
+                download="CV-Gabriel-Ricarte.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn btn-outline magnetic"
                 aria-label="Download do currículo"
               >

@@ -1,78 +1,30 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useLang } from '@/contexts/LangContext';
+import { useCounter } from '@/hooks/useCounter';
 
-const CHARSET  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&!?<>';
-const ORIGINAL = 'Gabriel';
+const NAME = 'Gabriel';
 
-function useCounter(target: number, duration = 1400, trigger = false) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    if (!trigger) return;
-    const start = performance.now();
-    const tick  = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased    = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [target, duration, trigger]);
-  return value;
-}
-
-function useTypewriter(words: string[], enabled = true) {
-  const [text, setText] = useState('');
-  const state = useRef({ ri: 0, ci: 0, deleting: false, timer: 0 });
-
-  useEffect(() => {
-    if (!enabled || !words.length) return;
-    const s = state.current;
-    s.ri = 0; s.ci = 0; s.deleting = false;
-    clearTimeout(s.timer);
-
-    const tick = () => {
-      const word = words[s.ri];
-      s.ci = s.deleting ? s.ci - 1 : s.ci + 1;
-      setText(word.slice(0, s.ci));
-      if (!s.deleting && s.ci === word.length) {
-        s.deleting = true;
-        s.timer = window.setTimeout(tick, 2200);
-        return;
-      }
-      if (s.deleting && s.ci === 0) {
-        s.deleting = false;
-        s.ri = (s.ri + 1) % words.length;
-      }
-      s.timer = window.setTimeout(tick, s.deleting ? 52 : 108);
-    };
-
-    s.timer = window.setTimeout(tick, 1800);
-    return () => clearTimeout(s.timer);
-  }, [words, enabled]);
-
-  return text;
-}
+const CYCLE_ROLES: Record<string, string[]> = {
+  pt: ['Full-Stack', 'Frontend', 'Back-End', 'TypeScript'],
+  en: ['Full-Stack', 'Frontend', 'Back-End', 'TypeScript'],
+  es: ['Full-Stack', 'Frontend', 'Back-End', 'TypeScript'],
+};
 
 export default function Hero() {
-  const { t } = useLang();
-  const [inView,    setInView]    = useState(false);
-  const [glitching, setGlitching] = useState(false);
+  const { t, lang } = useLang();
   const sectionRef = useRef<HTMLElement>(null);
   const orbRef     = useRef<HTMLDivElement>(null);
+  const [roleIdx,  setRoleIdx]  = useState(0);
 
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setInView(true); },
-      { threshold: 0.3 }
-    );
-    if (sectionRef.current) obs.observe(sectionRef.current);
-    return () => obs.disconnect();
-  }, []);
+  const yearsVal = useCounter(2,  1400, { delayMs: 1800 });
+  const projsVal = useCounter(5,  1600, { delayMs: 2000 });
+  const techsVal = useCounter(10, 1200, { delayMs: 2200 });
 
+  /* Orb follows cursor */
   useEffect(() => {
     const hero = sectionRef.current;
     const orb  = orbRef.current;
@@ -86,18 +38,16 @@ export default function Hero() {
     return () => hero.removeEventListener('mousemove', onMove);
   }, []);
 
-  const handleNameHover = () => {
-    if (glitching) return;
-    setGlitching(true);
-    setTimeout(() => setGlitching(false), 800);
-  };
+  /* Cycle through roles every 2.8 s */
+  useEffect(() => {
+    const id = setInterval(() => {
+      setRoleIdx(i => (i + 1) % (CYCLE_ROLES[lang]?.length ?? 4));
+    }, 2800);
+    return () => clearInterval(id);
+  }, [lang]);
 
-  const years = useCounter(2,  1400, inView);
-  const projs  = useCounter(5,  1600, inView);
-  const techs  = useCounter(10, 1200, inView);
-
-  const twWords  = t('hero.typewriter').split('|');
-  const typeText = useTypewriter(twWords, true);
+  /* Reset index on language change */
+  useEffect(() => { setRoleIdx(0); }, [lang]);
 
   const nameVariants = {
     hidden:  { opacity: 0 },
@@ -105,18 +55,20 @@ export default function Hero() {
   };
   const charVariants = {
     hidden:  { opacity: 0, y: -60, rotateX: 90 },
-    visible: { opacity: 1, y: 0,   rotateX: 0, transition: { type: 'spring' as const, stiffness: 200, damping: 18 } },
+    visible: { opacity: 1, y: 0, rotateX: 0, transition: { type: 'spring' as const, stiffness: 200, damping: 18 } },
   };
   const fadeUp = (delay = 0) => ({
     initial: { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0,  transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const } },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const } },
   });
 
+  const roles = CYCLE_ROLES[lang] ?? CYCLE_ROLES.pt;
+
   const TECH_ORBS = [
-    { src: '/images/logo3.png',  alt: 'HTML',       style: { left: '-52px', top: '-18px' }    },
-    { src: '/images/logo2.png',  alt: 'CSS',        style: { right: '-52px', top: '20px' }    },
-    { src: '/images/logo1.png',  alt: 'JavaScript', style: { left: '-52px', bottom: '-18px' } },
-    { src: '/images/logo4.png',  alt: 'PostgreSQL', style: { right: '-52px', bottom: '-18px' }},
+    { src: '/images/logo3.png',  alt: 'HTML',       style: { left: '-52px', top: '-18px' }     },
+    { src: '/images/logo2.png',  alt: 'CSS',        style: { right: '-52px', top: '20px' }     },
+    { src: '/images/logo1.png',  alt: 'JavaScript', style: { left: '-52px', bottom: '-18px' }  },
+    { src: '/images/logo4.png',  alt: 'PostgreSQL', style: { right: '-52px', bottom: '-18px' } },
   ];
 
   return (
@@ -130,9 +82,9 @@ export default function Hero() {
 
       <div className="container" style={{ position: 'relative', zIndex: 2 }}>
         <div className="hero-grid">
+
           {/* ── LEFT ── */}
           <div>
-            {/* location badge */}
             <motion.div className="hero-location" {...fadeUp(0)} aria-label="Localização">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
@@ -149,23 +101,19 @@ export default function Hero() {
 
             <motion.h1
               className="hero-name"
-              id="heroName"
               variants={nameVariants}
               initial="hidden"
               animate="visible"
-              onMouseEnter={handleNameHover}
               style={{ perspective: 600 }}
             >
-              {ORIGINAL.split('').map((char, i) => (
+              {NAME.split('').map((char, i) => (
                 <motion.span
                   key={i}
-                  className={`hero-char${glitching ? ' glitch' : ''}`}
+                  className="hero-char"
                   variants={charVariants}
                   style={{ display: 'inline-block' }}
                 >
-                  {glitching && i < ORIGINAL.length - 1
-                    ? CHARSET[Math.floor(Math.random() * CHARSET.length)]
-                    : char}
+                  {char}
                 </motion.span>
               ))}
               <motion.span
@@ -177,10 +125,28 @@ export default function Hero() {
               >.</motion.span>
             </motion.h1>
 
-            <motion.p className="hero-role" aria-live="polite" {...fadeUp(0.5)}>
+            {/* Role with cycling accent text */}
+            <motion.p className="hero-role" {...fadeUp(0.5)}>
               {t('hero.role.pre')}&nbsp;
-              <span className="accent-text">{typeText}</span>
-              <span className="cursor-blink" aria-hidden="true">|</span>
+              <span
+                className="hero-role-cycle"
+                aria-live="polite"
+                style={{ display: 'inline-block', position: 'relative', minWidth: 'min(180px, 45vw)' }}
+              >
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={roles[roleIdx]}
+                    className="accent-text"
+                    initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }}
+                    animate={{ opacity: 1, y: 0,  filter: 'blur(0px)' }}
+                    exit={{    opacity: 0, y: -14, filter: 'blur(6px)' }}
+                    transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    {roles[roleIdx]}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
             </motion.p>
 
             <motion.p className="hero-desc" {...fadeUp(0.65)}>
@@ -200,29 +166,24 @@ export default function Hero() {
               </a>
             </motion.div>
 
-            <motion.div className="hero-stats" {...fadeUp(0.88)} aria-label="Estatísticas">
-              <div className="hero-stat">
-                <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                  <span className="stat-n">{years}</span>
-                  <span className="stat-plus" aria-hidden="true">+</span>
-                </div>
-                <span className="stat-l">{t('hero.stat.years')}</span>
+            {/* Stats row */}
+            <motion.div className="hero-stats" {...fadeUp(0.9)} aria-label="Estatísticas">
+              <div>
+                <span className="stat-n">{yearsVal}</span>
+                <span className="stat-plus" aria-hidden="true">+</span>
+                <p className="stat-l">{t('hero.stat.years')}</p>
               </div>
               <div className="hero-stat-div" aria-hidden="true" />
-              <div className="hero-stat">
-                <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                  <span className="stat-n">{projs}</span>
-                  <span className="stat-plus" aria-hidden="true">+</span>
-                </div>
-                <span className="stat-l">{t('hero.stat.projects')}</span>
+              <div>
+                <span className="stat-n">{projsVal}</span>
+                <span className="stat-plus" aria-hidden="true">+</span>
+                <p className="stat-l">{t('hero.stat.projects')}</p>
               </div>
               <div className="hero-stat-div" aria-hidden="true" />
-              <div className="hero-stat">
-                <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                  <span className="stat-n">{techs}</span>
-                  <span className="stat-plus" aria-hidden="true">+</span>
-                </div>
-                <span className="stat-l">{t('hero.stat.techs')}</span>
+              <div>
+                <span className="stat-n">{techsVal}</span>
+                <span className="stat-plus" aria-hidden="true">+</span>
+                <p className="stat-l">{t('hero.stat.techs')}</p>
               </div>
             </motion.div>
           </div>
@@ -243,24 +204,20 @@ export default function Hero() {
                   <span className="dot dot-red"    />
                   <span className="dot dot-yellow" />
                   <span className="dot dot-green"  />
-                  <span className="code-filename">gabriel.ts</span>
+                  <span className="code-filename">gabriel.config.ts</span>
                 </div>
                 <div className="code-body">
-                  <p><span className="c-line">1</span><span className="c-comment">// about me</span></p>
-                  <p><span className="c-line">2</span><span className="c-kw">interface</span> <span className="c-prop">Profile</span> {'{'}</p>
-                  <p><span className="c-line">3</span><span className="indent"><span className="c-prop">name</span>: <span className="c-str">string</span>;</span></p>
-                  <p><span className="c-line">4</span><span className="indent"><span className="c-prop">role</span>: <span className="c-str">string</span>;</span></p>
-                  <p><span className="c-line">5</span><span className="indent"><span className="c-prop">stack</span>: <span className="c-str">string</span>[];</span></p>
-                  <p><span className="c-line">6</span><span className="indent"><span className="c-prop">open</span>: <span className="c-str">boolean</span>;</span></p>
-                  <p><span className="c-line">7</span>{'}'}</p>
-                  <p><span className="c-line">8</span></p>
-                  <p><span className="c-line">9</span><span className="c-kw">const</span> me<span className="c-kw">:</span> <span className="c-prop">Profile</span> = {'{'}</p>
-                  <p><span className="c-line">10</span><span className="indent"><span className="c-prop">name</span>: <span className="c-str">&quot;Gabriel&quot;</span>,</span></p>
-                  <p><span className="c-line">11</span><span className="indent"><span className="c-prop">role</span>: <span className="c-str">&quot;Full-Stack Dev&quot;</span>,</span></p>
-                  <p><span className="c-line">12</span><span className="indent"><span className="c-prop">stack</span>: [<span className="c-str">&quot;React&quot;</span>, <span className="c-str">&quot;Next&quot;</span>, <span className="c-str">&quot;Node&quot;</span>],</span></p>
-                  <p><span className="c-line">13</span><span className="indent"><span className="c-prop">open</span>: <span className="c-bool">true</span>,</span></p>
-                  <p><span className="c-line">14</span>{'}'};</p>
-                  <p><span className="c-line">15</span><span className="cursor-code" /></p>
+                  <p><span className="c-line">1</span><span className="c-comment">// quem está por trás disso</span></p>
+                  <p><span className="c-line">2</span><span className="c-kw">const</span> dev = {'{'}</p>
+                  <p><span className="c-line">3</span><span className="indent"><span className="c-prop">nome</span>:       <span className="c-str">&quot;Gabriel Ricarte&quot;</span>,</span></p>
+                  <p><span className="c-line">4</span><span className="indent"><span className="c-prop">cidade</span>:     <span className="c-str">&quot;Fortaleza, CE&quot;</span>,</span></p>
+                  <p><span className="c-line">5</span><span className="indent"><span className="c-prop">stack</span>:      [<span className="c-str">&quot;Next.js&quot;</span>, <span className="c-str">&quot;Node&quot;</span>, <span className="c-str">&quot;Postgres&quot;</span>],</span></p>
+                  <p><span className="c-line">6</span><span className="indent"><span className="c-prop">projetos</span>:  <span className="c-num">5</span>,</span></p>
+                  <p><span className="c-line">7</span><span className="indent"><span className="c-prop">disponivel</span>: <span className="c-bool">true</span>,</span></p>
+                  <p><span className="c-line">8</span>{'}'} <span className="c-kw">as const</span>;</p>
+                  <p><span className="c-line">9</span></p>
+                  <p><span className="c-line">10</span><span className="c-kw">export default</span> dev;</p>
+                  <p><span className="c-line">11</span><span className="cursor-code" /></p>
                 </div>
               </div>
 
@@ -285,7 +242,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* scroll-down indicator */}
       <motion.div
         className="hero-scroll"
         initial={{ opacity: 0 }}

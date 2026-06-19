@@ -1,18 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+/* ── Rate limiting (in-memory; resets on cold start — acceptable for a portfolio) ── */
+const rateLimitStore = new Map<string, { count: number; reset: number }>();
+const RATE_WINDOW_MS = 60_000; // 1 minute window
+const RATE_LIMIT_MAX = 3;      // max 3 submissions per window per IP
+
+function isRateLimited(ip: string): boolean {
+  const now  = Date.now();
+  const rec  = rateLimitStore.get(ip);
+  if (!rec || now > rec.reset) {
+    rateLimitStore.set(ip, { count: 1, reset: now + RATE_WINDOW_MS });
+    return false;
+  }
+  if (rec.count >= RATE_LIMIT_MAX) return true;
+  rec.count++;
+  return false;
+}
+
+/* ── Input sanitization — strips newlines (SMTP header injection guard) ── */
 function sanitize(str: string, max: number): string {
-  return String(str).trim().slice(0, max)
-    .replace(/[<>"'`]/g, c => ({ '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', '`': '&#x60;' }[c] ?? c));
+  return String(str)
+    .replace(/[\r\n]/g, ' ')
+    .trim()
+    .slice(0, max)
+    .replace(/[<>"'`]/g, c =>
+      ({ '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', '`': '&#x60;' }[c] ?? c)
+    );
 }
 
 function validateEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
 export async function POST(req: NextRequest) {
+  /* Rate limit by IP */
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+           ?? req.headers.get('x-real-ip')
+           ?? 'unknown';
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Try again in a minute.' },
+      { status: 429, headers: { 'Retry-After': '60' } }
+    );
+  }
   try {
-    const body = await req.json();
+    const body    = await req.json();
     const name    = sanitize(body.name    ?? '', 80);
     const email   = sanitize(body.email   ?? '', 120);
     const message = sanitize(body.message ?? '', 2000);
@@ -21,21 +54,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid fields' }, { status: 400 });
     }
 
-    /* ── Send via SMTP if configured ── */
     const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+    const TO = process.env.CONTACT_EMAIL ?? 'gabrielricarte000@gmail.com';
 
     if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
       const transporter = nodemailer.createTransport({
-        host: SMTP_HOST,
-        port: parseInt(SMTP_PORT ?? '587'),
+        host:   SMTP_HOST,
+        port:   parseInt(SMTP_PORT ?? '587'),
         secure: parseInt(SMTP_PORT ?? '587') === 465,
-        auth: { user: SMTP_USER, pass: SMTP_PASS },
+        auth:   { user: SMTP_USER, pass: SMTP_PASS },
       });
 
+      /* Primary: notify Gabriel */
       await transporter.sendMail({
         from:    `"Portfolio Gabriel" <${SMTP_USER}>`,
-        to:      'gabrielricarte000@gmail.com',
-        replyTo: `${name} <${email}>`,
+        to:      TO,
+        replyTo: `"${name}" <${email}>`,
         subject: `Contato via Portfolio — ${name}`,
         html: `
           <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#05050f;color:#e8eaf0;border-radius:16px">
@@ -48,8 +82,28 @@ export async function POST(req: NextRequest) {
           </div>
         `,
       });
+
+      /* Confirmation: reply to sender */
+      await transporter.sendMail({
+        from:    `"Gabriel Ricarte" <${SMTP_USER}>`,
+        to:      email,
+        subject: `Recebi sua mensagem, ${name}! — Gabriel Ricarte`,
+        html: `
+          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#05050f;color:#e8eaf0;border-radius:16px">
+            <h2 style="color:#00ff88;margin-bottom:8px">Mensagem recebida!</h2>
+            <p style="color:#b0b8cc;margin-bottom:24px">Obrigado por entrar em contato, <strong style="color:#e8eaf0">${name}</strong>.</p>
+            <p style="color:#b0b8cc;line-height:1.7">Recebi sua mensagem e responderei em até <strong style="color:#e8eaf0">24 horas</strong>. Enquanto isso, fique à vontade para me seguir nas redes.</p>
+            <hr style="border-color:rgba(255,255,255,0.08);margin:24px 0">
+            <p style="color:#6b7a99;font-size:0.85rem">Esta é uma confirmação automática — não precisa responder a este e-mail.</p>
+            <p style="color:#6b7a99;font-size:0.85rem;margin-top:4px">
+              <a href="https://github.com/gabriel07-gif" style="color:#00ff88;text-decoration:none">GitHub</a>
+              &nbsp;·&nbsp;
+              <a href="https://www.linkedin.com/in/gabriel-lucas-439153308/" style="color:#00ff88;text-decoration:none">LinkedIn</a>
+            </p>
+          </div>
+        `,
+      });
     } else {
-      /* No SMTP configured — log and return success (mailto: fallback used on client) */
       console.log('[contact] SMTP not configured. Message received:', { name, email });
     }
 

@@ -22,7 +22,7 @@ export default function TechTape() {
           <span key={i}>{tech}</span>
         ))}
       </div>
-      <div className="tech-tape-track tech-tape-track-rev">
+      <div className="tech-tape-track-rev">
         {row2.map((tech, i) => (
           <span key={i}>{tech}</span>
         ))}

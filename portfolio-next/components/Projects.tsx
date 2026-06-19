@@ -1,49 +1,10 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import React from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import Image from 'next/image';
 import { useLang } from '@/contexts/LangContext';
-
-const PROJECTS = [
-  {
-    id:           'venezamotos',
-    tagKey:       'proj1.tag',
-    titleKey:     'proj1.title',
-    descKey:      'proj1.desc',
-    techs:        ['HTML', 'CSS', 'JavaScript'],
-    url:          'https://www.venezamotoseveiculos.com.br',
-    githubUrl:    '',
-    urlLabel:     'venezamotoseveiculos.com.br',
-    emoji:        '🚗',
-    previewClass: 'preview-car',
-    featured:     true,
-  },
-  {
-    id:           'jurivox',
-    tagKey:       'proj2.tag',
-    titleKey:     'proj2.title',
-    descKey:      'proj2.desc',
-    techs:        ['HTML', 'CSS', 'JavaScript'],
-    url:          'https://jurisflow-omega.vercel.app/',
-    githubUrl:    '',
-    urlLabel:     'jurisflow-omega.vercel.app',
-    emoji:        '⚖️',
-    previewClass: 'preview-legal',
-    featured:     false,
-  },
-  {
-    id:           'portfolio',
-    tagKey:       'proj3.tag',
-    titleKey:     'proj3.title',
-    descKey:      'proj3.desc',
-    techs:        ['Next.js', 'TypeScript', 'Framer Motion', 'Three.js'],
-    url:          'https://github.com/gabriel07-gif',
-    githubUrl:    'https://github.com/gabriel07-gif',
-    urlLabel:     'github.com/gabriel07-gif',
-    emoji:        '✨',
-    previewClass: 'preview-portfolio',
-    featured:     false,
-  },
-];
+import { PROJECTS, type Project } from '@/data/projects';
 
 function ExternalIcon() {
   return (
@@ -63,27 +24,58 @@ function GitHubIcon() {
   );
 }
 
-function ProjectCard({ project, index, t }: {
-  project: typeof PROJECTS[0];
+function ProjectCard({
+  project,
+  index,
+  t,
+}: {
+  project: Project;
   index: number;
   t: (k: string) => string;
 }) {
+  /* 3D tilt — Framer Motion motion values (composes safely with animations) */
+  const mouseX  = useMotionValue(0.5);
+  const mouseY  = useMotionValue(0.5);
+  const springX = useSpring(mouseX, { stiffness: 260, damping: 28 });
+  const springY = useSpring(mouseY, { stiffness: 260, damping: 28 });
+  const rotateX = useTransform(springY, [0, 1], [6, -6]);
+  const rotateY = useTransform(springX, [0, 1], [-6, 6]);
+
+  /* Disable 3D tilt on touch devices */
+  const [isTouch, setIsTouch] = React.useState(false);
+  React.useEffect(() => {
+    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
+
   const onMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (isTouch) return;
     const r = e.currentTarget.getBoundingClientRect();
+    mouseX.set((e.clientX - r.left)  / r.width);
+    mouseY.set((e.clientY - r.top)   / r.height);
     e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - r.left}px`);
     e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
+  };
+
+  const onMouseLeave = () => {
+    if (isTouch) return;
+    mouseX.set(0.5);
+    mouseY.set(0.5);
   };
 
   return (
     <motion.article
       className={`project-card${project.featured ? ' project-card--featured' : ''}`}
+      data-cursor-label="ABRIR"
       initial={{ opacity: 0, y: 70, scale: 0.94 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      whileHover={{ y: -8 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.9, delay: index * 0.14, ease: [0.34, 1.56, 0.64, 1] }}
+      style={isTouch ? { transformPerspective: 900 } : { rotateX, rotateY, transformPerspective: 900 }}
       onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
     >
-      {/* Browser preview */}
+      {/* Browser chrome + preview */}
       <div className="project-preview" aria-hidden="true">
         <div className="preview-chrome">
           <div className="preview-dots">
@@ -101,12 +93,33 @@ function ProjectCard({ project, index, t }: {
             <ExternalIcon />
           </a>
         </div>
-        <div className={`preview-body ${project.previewClass}`}>
-          <span role="img" aria-label={t(project.titleKey)}>{project.emoji}</span>
+        <div className="preview-body preview-svg">
+          {project.screenshot ? (
+            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              <Image
+                src={project.screenshot}
+                alt={t(project.titleKey)}
+                fill
+                style={{ objectFit: 'cover', objectPosition: 'top' }}
+                sizes="(max-width: 768px) 100vw, 400px"
+              />
+            </div>
+          ) : (
+            project.fallback
+          )}
         </div>
       </div>
 
       <div className="project-body">
+        <div className="project-card-meta">
+          <span className="project-card-num">{String(index + 1).padStart(2, '0')}</span>
+          {project.live && (
+            <span className="project-live-badge" aria-label="Projeto no ar">
+              <span className="project-live-dot" aria-hidden="true" />
+              LIVE
+            </span>
+          )}
+        </div>
         <div className="project-tag">{t(project.tagKey)}</div>
         <h3>{t(project.titleKey)}</h3>
         <p>{t(project.descKey)}</p>
@@ -161,7 +174,15 @@ export default function Projects() {
             <span className="accent-text">{t('section.projects.acc')}</span>
           </h2>
           <p className="section-sub">{t('section.projects.sub')}</p>
-          <div className="section-line" aria-hidden="true" />
+          <motion.div
+            className="section-line"
+            aria-hidden="true"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformOrigin: 'left' }}
+          />
         </motion.div>
 
         <div className="projects-grid">
