@@ -81,7 +81,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-copy">
-        <p>&copy; {new Date().getFullYear()} Gabriel Ricarte &mdash; Todos os direitos reservados.</p>
+        <p>&copy; {new Date().getFullYear()} Gabriel Ricarte &mdash; {t('footer.rights')}</p>
       </div>
     </footer>
   );

@@ -6,16 +6,6 @@ import { useLang } from '@/contexts/LangContext';
 import { useCounter } from '@/hooks/useCounter';
 import { useInView }   from '@/hooks/useInView';
 
-function DownloadIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-      <path d="M7.5 10.5L4 7M7.5 10.5L11 7M7.5 10.5V1.5M2 13.5h11"
-        stroke="currentColor" strokeWidth="1.7"
-        strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 export default function About() {
   const { t }  = useLang();
   const [sectionRef, inView] = useInView<HTMLElement>(0.2);
@@ -73,10 +63,11 @@ export default function About() {
               <Image
                 src="/images/fotonova.jpg"
                 alt="Foto de perfil de Gabriel"
-                width={340}
-                height={380}
-                loading="lazy"
-                style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto' }}
+                width={680}
+                height={760}
+                quality={98}
+                priority
+                style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto', imageRendering: 'auto' }}
               />
               <div
                 aria-hidden="true"
@@ -130,19 +121,22 @@ export default function About() {
               </div>
             </div>
 
-            <div style={{ marginTop: 32 }}>
-              <a
-                href="/cv-gabriel-ricarte.pdf"
-                download="CV-Gabriel-Ricarte.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-outline magnetic"
-                aria-label="Download do currículo"
-              >
-                <DownloadIcon />
-                {t('about.cv')}
-              </a>
-            </div>
+            <motion.a
+              href="#contato"
+              className="btn btn-primary magnetic"
+              style={{ marginTop: 28, display: 'inline-flex' }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" strokeWidth="1.7"
+                  strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {t('about.contact')}
+            </motion.a>
+
           </motion.div>
         </div>
       </div>

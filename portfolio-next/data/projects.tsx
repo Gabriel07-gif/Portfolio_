@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { MockVenezamotos, MockJuriVox, MockPortfolio } from '@/components/ProjectMocks';
 
 export interface Project {
@@ -9,8 +10,9 @@ export interface Project {
   url:        string;
   githubUrl:  string;
   urlLabel:   string;
+  videoSrc?:  string;
   screenshot: string;
-  fallback:   React.ReactNode;
+  fallback:   ReactNode;
   featured:   boolean;
   live:       boolean;
 }
@@ -25,6 +27,7 @@ export const PROJECTS: Project[] = [
     url:        'https://www.venezamotoseveiculos.com.br',
     githubUrl:  '',
     urlLabel:   'venezamotoseveiculos.com.br',
+    videoSrc:   '/videos/venezamotos.mp4',
     screenshot: '/images/project-venezamotos.png',
     fallback:   <MockVenezamotos />,
     featured:   true,
@@ -39,6 +42,7 @@ export const PROJECTS: Project[] = [
     url:        'https://jurisflow-omega.vercel.app/',
     githubUrl:  '',
     urlLabel:   'jurisflow-omega.vercel.app',
+    videoSrc:   '/videos/jurivox.mp4',
     screenshot: '',
     fallback:   <MockJuriVox />,
     featured:   false,
@@ -53,6 +57,7 @@ export const PROJECTS: Project[] = [
     url:        'https://github.com/gabriel07-gif',
     githubUrl:  'https://github.com/gabriel07-gif',
     urlLabel:   'github.com/gabriel07-gif',
+    videoSrc:   '/videos/portfolio.mp4',
     screenshot: '/images/project-github.png',
     fallback:   <MockPortfolio />,
     featured:   false,

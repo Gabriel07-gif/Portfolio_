@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { useLang } from '@/contexts/LangContext';
 import { useCounter } from '@/hooks/useCounter';
 
@@ -64,12 +63,6 @@ export default function Hero() {
 
   const roles = CYCLE_ROLES[lang] ?? CYCLE_ROLES.pt;
 
-  const TECH_ORBS = [
-    { src: '/images/logo3.png',  alt: 'HTML',       style: { left: '-52px', top: '-18px' }     },
-    { src: '/images/logo2.png',  alt: 'CSS',        style: { right: '-52px', top: '20px' }     },
-    { src: '/images/logo1.png',  alt: 'JavaScript', style: { left: '-52px', bottom: '-18px' }  },
-    { src: '/images/logo4.png',  alt: 'PostgreSQL', style: { right: '-52px', bottom: '-18px' } },
-  ];
 
   return (
     <section id="inicio" className="hero" ref={sectionRef} aria-label="Apresentação">
@@ -95,7 +88,6 @@ export default function Hero() {
             </motion.div>
 
             <motion.p className="hero-greeting" {...fadeUp(0.1)}>
-              <span className="greeting-line" aria-hidden="true" />
               {t('hero.greeting')}
             </motion.p>
 
@@ -116,13 +108,6 @@ export default function Hero() {
                   {char}
                 </motion.span>
               ))}
-              <motion.span
-                className="hero-dot"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.7, type: 'spring', stiffness: 300 }}
-                aria-hidden="true"
-              >.</motion.span>
             </motion.h1>
 
             {/* Role with cycling accent text */}
@@ -197,47 +182,115 @@ export default function Hero() {
             style={{ perspective: 900 }}
             aria-hidden="true"
           >
-            <div className="code-card-wrap">
-              <div className="code-card-ambient" />
-              <div className="code-card">
-                <div className="code-dots">
-                  <span className="dot dot-red"    />
-                  <span className="dot dot-yellow" />
-                  <span className="dot dot-green"  />
-                  <span className="code-filename">gabriel.config.ts</span>
+            <motion.div
+              className="status-card-wrap"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', repeatType: 'loop' }}
+            >
+              <div className="status-card-ambient" />
+              <div className="status-card">
+                <div className="status-card-header">
+                  <span className="status-live-dot" />
+                  <span className="status-card-label-top">dev · status</span>
                 </div>
-                <div className="code-body">
-                  <p><span className="c-line">1</span><span className="c-comment">// quem está por trás disso</span></p>
-                  <p><span className="c-line">2</span><span className="c-kw">const</span> dev = {'{'}</p>
-                  <p><span className="c-line">3</span><span className="indent"><span className="c-prop">nome</span>:       <span className="c-str">&quot;Gabriel Ricarte&quot;</span>,</span></p>
-                  <p><span className="c-line">4</span><span className="indent"><span className="c-prop">cidade</span>:     <span className="c-str">&quot;Fortaleza, CE&quot;</span>,</span></p>
-                  <p><span className="c-line">5</span><span className="indent"><span className="c-prop">stack</span>:      [<span className="c-str">&quot;Next.js&quot;</span>, <span className="c-str">&quot;Node&quot;</span>, <span className="c-str">&quot;Postgres&quot;</span>],</span></p>
-                  <p><span className="c-line">6</span><span className="indent"><span className="c-prop">projetos</span>:  <span className="c-num">5</span>,</span></p>
-                  <p><span className="c-line">7</span><span className="indent"><span className="c-prop">disponivel</span>: <span className="c-bool">true</span>,</span></p>
-                  <p><span className="c-line">8</span>{'}'} <span className="c-kw">as const</span>;</p>
-                  <p><span className="c-line">9</span></p>
-                  <p><span className="c-line">10</span><span className="c-kw">export default</span> dev;</p>
-                  <p><span className="c-line">11</span><span className="cursor-code" /></p>
-                </div>
-              </div>
-
-              <div className="tech-orbit">
-                {TECH_ORBS.map((orb, i) => (
-                  <div
-                    key={i}
-                    className="tech-orb"
-                    style={{ position: 'absolute', ...orb.style, animationDelay: `${-i * 2.8}s` }}
+                <motion.div
+                  className="status-card-body"
+                  initial="hidden"
+                  animate="visible"
+                  variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.18, delayChildren: 1.0 } } }}
+                >
+                  <motion.div
+                    className="status-row"
+                    variants={{ hidden: { opacity: 0, x: 24 }, visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } } }}
                   >
-                    <Image src={orb.src} alt={orb.alt} width={26} height={26} loading="lazy" />
-                  </div>
-                ))}
-              </div>
-            </div>
+                    <span className="status-row-label">building now</span>
+                    <span className="status-row-title">Portfolio v2</span>
+                    <motion.div
+                      className="status-chips"
+                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } } }}
+                    >
+                      {['Next.js', 'Three.js', 'Framer Motion'].map(tech => (
+                        <motion.span
+                          key={tech}
+                          variants={{ hidden: { opacity: 0, scale: 0.7 }, visible: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 18 } } }}
+                        >{tech}</motion.span>
+                      ))}
+                    </motion.div>
+                  </motion.div>
 
-            <div className="hero-badge">
+                  <div className="status-divider" />
+
+                  <motion.div
+                    className="status-row"
+                    variants={{ hidden: { opacity: 0, x: 24 }, visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } } }}
+                  >
+                    <span className="status-row-label">last shipped</span>
+                    <a
+                      href="https://www.venezamotoseveiculos.com.br"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="status-row-link"
+                    >
+                      venezamotos
+                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                        <path d="M4 1H1v10h10V8M7 1h4m0 0v4M11 1 5.5 6.5"
+                          stroke="currentColor" strokeWidth="1.4"
+                          strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </a>
+                    <motion.div
+                      className="status-chips"
+                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } } }}
+                    >
+                      {['HTML', 'CSS', 'JavaScript'].map(tech => (
+                        <motion.span
+                          key={tech}
+                          variants={{ hidden: { opacity: 0, scale: 0.7 }, visible: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 18 } } }}
+                        >{tech}</motion.span>
+                      ))}
+                    </motion.div>
+                  </motion.div>
+
+                  <div className="status-divider" />
+
+                  <motion.div
+                    className="status-row"
+                    style={{ marginBottom: 0 }}
+                    variants={{ hidden: { opacity: 0, x: 24 }, visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } } }}
+                  >
+                    <span className="status-row-label">focus stack</span>
+                    <motion.div
+                      className="status-stack-grid"
+                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } } }}
+                    >
+                      {(['React', 'TypeScript', 'Node.js', 'PostgreSQL'] as const).map(tech => (
+                        <motion.span
+                          key={tech}
+                          className="status-stack-item"
+                          variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 260, damping: 20 } } }}
+                        >{tech}</motion.span>
+                      ))}
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+                <div className="status-card-footer">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                  <span>gabriel07-gif</span>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="hero-badge"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.4, duration: 0.5 }}
+            >
               <span className="badge-dot" aria-hidden="true" />
               {t('hero.available')}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>

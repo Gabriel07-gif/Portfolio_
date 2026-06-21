@@ -24,6 +24,32 @@ function GitHubIcon() {
   );
 }
 
+function VideoPreview({ src, fallback }: { src: string; fallback: React.ReactNode }) {
+  const [hasError, setHasError] = React.useState(false);
+
+  if (hasError) {
+    return <div style={{ position: 'relative', width: '100%', height: '100%' }}>{fallback}</div>;
+  }
+
+  return (
+    <video
+      src={src}
+      autoPlay
+      muted
+      loop
+      playsInline
+      onError={() => setHasError(true)}
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        objectPosition: 'top',
+        display: 'block',
+      }}
+    />
+  );
+}
+
 function ProjectCard({
   project,
   index,
@@ -94,7 +120,19 @@ function ProjectCard({
           </a>
         </div>
         <div className="preview-body preview-svg">
-          {project.screenshot ? (
+          {project.videoSrc ? (
+            <VideoPreview src={project.videoSrc} fallback={
+              project.screenshot ? (
+                <Image
+                  src={project.screenshot}
+                  alt={t(project.titleKey)}
+                  fill
+                  style={{ objectFit: 'cover', objectPosition: 'top' }}
+                  sizes="(max-width: 768px) 100vw, 400px"
+                />
+              ) : project.fallback
+            } />
+          ) : project.screenshot ? (
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
               <Image
                 src={project.screenshot}

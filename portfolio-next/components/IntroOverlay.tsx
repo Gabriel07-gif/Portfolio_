@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type * as ThreeTypes from 'three';
+import { useLang } from '@/contexts/LangContext';
 
 const TOTAL_MS  = 6000;
 const ENTRY_DUR = 2.6;
@@ -10,6 +11,7 @@ const GABRIEL = 'GABRIEL'.split('');
 const RICARTE = 'RICARTE'.split('');
 
 export default function IntroOverlay() {
+  const { t } = useLang();
   const canvasRef   = useRef<HTMLCanvasElement>(null);
   const overlayRef  = useRef<HTMLDivElement>(null);
   const contentRef  = useRef<HTMLDivElement>(null);
@@ -440,7 +442,7 @@ export default function IntroOverlay() {
       <div className="intro-content" ref={contentRef}>
         <p className="intro-tag" aria-hidden="true">
           <span className="intro-tag-line" />
-          Dev Full-Stack &middot; Fortaleza, CE
+          {t('intro.tag')}
           <span className="intro-tag-line" />
         </p>
 
@@ -476,7 +478,7 @@ export default function IntroOverlay() {
         </div>
 
         <p className="intro-role">
-          Desenvolvedor <span>Web Full-Stack</span>
+          {t('intro.role')}
         </p>
 
         <div className="intro-badges" aria-hidden="true">
@@ -487,7 +489,7 @@ export default function IntroOverlay() {
         </div>
 
         <p className="intro-skip" aria-hidden="true">
-          <span>▶</span> Clique ou pressione <kbd>ESC</kbd>
+          <span>▶</span> {t('intro.skip')}
         </p>
       </div>
 

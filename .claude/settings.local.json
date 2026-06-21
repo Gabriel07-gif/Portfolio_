@@ -49,7 +49,16 @@
       "Bash(Select-String -Pattern \"faq-answer|faq-list|project-card-meta\")",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\Projetos\\\\fotosportfolio\" -ErrorAction SilentlyContinue)",
       "PowerShell(Copy-Item -Path \"C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\Projetos\\\\fotosportfolio\\\\foto nova.jpg\" -Destination \"C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\Projetos\\\\portfolio-next\\\\public\\\\images\\\\fotonova.jpg\" -Force)",
-      "Bash(Test-Path \"C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\Projetos\\\\portfolio-next\\\\app\\\\not-found.tsx\")"
+      "Bash(Test-Path \"C:\\\\Users\\\\User\\\\OneDrive\\\\Desktop\\\\Projetos\\\\portfolio-next\\\\app\\\\not-found.tsx\")",
+      "Bash(node -e \"const p = require\\('./node_modules/@vercel/analytics/package.json'\\); console.log\\(JSON.stringify\\(p.exports, null, 2\\)\\)\")",
+      "Bash(node -e \"const m = require\\('./node_modules/@vercel/analytics/dist/next/index.js'\\); console.log\\(Object.keys\\(m\\)\\)\")",
+      "Bash(npm show *)",
+      "Bash(cd \"/c/Users/User/OneDrive/Desktop/Projetos/portfolio-next\" && rm -rf .next && echo \"Cache limpo com sucesso\")",
+      "Bash(cat data/skills.ts)",
+      "Bash(cat data/skills.tsx)"
+    ],
+    "additionalDirectories": [
+      "c:\\c\\Users\\User\\OneDrive\\Desktop\\Projetos\\portfolio-next"
     ]
   }
 }

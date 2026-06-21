@@ -1,36 +1,28 @@
-'use client';
-
-import dynamic from 'next/dynamic';
-import Navbar from '@/components/Navbar';
-import Hero from '@/components/Hero';
-import TechTape from '@/components/TechTape';
-import Services from '@/components/Services';
-import Projects from '@/components/Projects';
-import Skills from '@/components/Skills';
-import About from '@/components/About';
-import FAQ from '@/components/FAQ';
-import Contact from '@/components/Contact';
-import Footer from '@/components/Footer';
+import Navbar        from '@/components/Navbar';
+import Hero          from '@/components/Hero';
+import TechTape      from '@/components/TechTape';
+import Services      from '@/components/Services';
+import Projects      from '@/components/Projects';
+import Skills        from '@/components/Skills';
+import About         from '@/components/About';
+import FAQ           from '@/components/FAQ';
+import Contact       from '@/components/Contact';
+import Footer        from '@/components/Footer';
 import ScrollProgress from '@/components/ScrollProgress';
-import SideDots from '@/components/SideDots';
-import BackTop from '@/components/BackTop';
-import Toast from '@/components/Toast';
-
-/* Heavy/browser-only components loaded dynamically */
-const IntroOverlay    = dynamic(() => import('@/components/IntroOverlay'),    { ssr: false });
-const CustomCursor    = dynamic(() => import('@/components/CustomCursor'),    { ssr: false });
-const ParticleCanvas  = dynamic(() => import('@/components/ParticleCanvas'),  { ssr: false });
-const MagneticLayer   = dynamic(() => import('@/components/MagneticLayer'),   { ssr: false });
-const SmoothScroll    = dynamic(() => import('@/components/SmoothScroll'),    { ssr: false });
+import SideDots      from '@/components/SideDots';
+import BackTop       from '@/components/BackTop';
+import Toast         from '@/components/Toast';
+import ClientShell   from '@/components/ClientShell';
 
 export default function Home() {
   return (
     <>
-      <IntroOverlay />
-      <CustomCursor />
-      <ParticleCanvas />
-      <MagneticLayer />
-      <SmoothScroll />
+      <a href="#main-content" className="skip-to-content">
+        Pular para o conteúdo
+      </a>
+
+      {/* Browser-only: intro overlay, custom cursor, particles, magnetic, smooth scroll */}
+      <ClientShell />
 
       {/* Ambient blobs */}
       <div className="bg-blobs" aria-hidden="true">
@@ -42,11 +34,10 @@ export default function Home() {
       <div className="noise-overlay" aria-hidden="true" />
       <ScrollProgress />
       <Toast />
-
       <SideDots />
       <Navbar />
 
-      <main>
+      <main id="main-content">
         <Hero />
         <TechTape />
         <Services />

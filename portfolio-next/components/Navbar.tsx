@@ -101,7 +101,7 @@ export default function Navbar() {
           <div className="lang-switcher" ref={langRef} id="langSwitcher">
             <button
               className={`lang-btn${langOpen ? ' open' : ''}`}
-              aria-label="Selecionar idioma"
+              aria-label={t('nav.lang')}
               aria-expanded={langOpen}
               aria-haspopup="listbox"
               type="button"
@@ -114,7 +114,7 @@ export default function Navbar() {
                   strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <ul className={`lang-menu${langOpen ? ' open' : ''}`} role="listbox" aria-label="Selecionar idioma">
+            <ul className={`lang-menu${langOpen ? ' open' : ''}`} role="listbox" aria-label={t('nav.lang')}>
               {(['pt', 'en', 'es'] as Lang[]).map(l => (
                 <li
                   key={l}
@@ -142,7 +142,7 @@ export default function Navbar() {
           <button
             className="theme-toggle"
             id="themeToggle"
-            aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+            aria-label={theme === 'dark' ? t('nav.theme.dark') : t('nav.theme.light')}
             type="button"
             onClick={toggle}
           >
@@ -165,7 +165,7 @@ export default function Navbar() {
           <button
             className={`menu-toggle${menuOpen ? ' active' : ''}`}
             id="menuToggle"
-            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-label={menuOpen ? t('nav.menu.close') : t('nav.menu.open')}
             aria-expanded={menuOpen}
             aria-controls="navLinks"
             type="button"

@@ -72,6 +72,7 @@ const pt: Dict = {
   'about.stat.projects': 'Projetos',
   'about.stat.techs':    'Tecnologias',
   'about.cv':            'Download CV',
+  'about.contact':       'Fale Comigo',
 
   /* FAQ */
   'nav.faq': 'FAQ',
@@ -103,6 +104,9 @@ const pt: Dict = {
   'form.error':      'Erro ao enviar. Tente novamente.',
   'form.fallback':   'Não foi possível enviar. Abrindo seu e-mail…',
   'form.rateLimit':  'Muitas tentativas. Aguarde 1 minuto e tente novamente.',
+  'form.error.name':    'Nome obrigatório (máx. 80 caracteres)',
+  'form.error.email':   'E-mail inválido',
+  'form.error.message': 'Mensagem obrigatória (máx. 2000 caracteres)',
 
   /* Footer */
   'footer.in':       'em Fortaleza, CE',
@@ -120,6 +124,35 @@ const pt: Dict = {
   'notFound.desc':    'Essa rota não existe ou foi movida. Verifique o link ou volte à página inicial.',
   'notFound.back':    'Voltar ao início',
   'notFound.contact': 'Entre em contato',
+
+  /* Services lists */
+  'service1.list.1': 'HTML5 / CSS3',
+  'service1.list.2': 'JavaScript & TypeScript',
+  'service1.list.3': 'React & Next.js',
+  'service1.list.4': 'Animações & UI',
+  'service2.list.1': 'React / Next.js',
+  'service2.list.2': 'Node.js & APIs REST',
+  'service2.list.3': 'PostgreSQL / SQL',
+  'service2.list.4': 'Deploy & DevOps',
+  'service3.list.1': 'UI / UX Moderno',
+  'service3.list.2': 'Design Responsivo',
+  'service3.list.3': 'Framer Motion',
+  'service3.list.4': 'Design Systems',
+
+  /* Intro overlay */
+  'intro.tag':  'Dev Full-Stack · Fortaleza, CE',
+  'intro.role': 'Desenvolvedor Web Full-Stack',
+  'intro.skip': 'Clique ou pressione ESC',
+
+  /* Navbar aria-labels */
+  'nav.theme.dark':  'Ativar tema claro',
+  'nav.theme.light': 'Ativar tema escuro',
+  'nav.menu.open':   'Abrir menu',
+  'nav.menu.close':  'Fechar menu',
+  'nav.lang':        'Selecionar idioma',
+
+  /* Footer */
+  'footer.rights': 'Todos os direitos reservados.',
 };
 
 const en: Dict = {
@@ -184,6 +217,7 @@ const en: Dict = {
   'about.stat.projects': 'Projects',
   'about.stat.techs':    'Technologies',
   'about.cv':            'Download CV',
+  'about.contact':       "Let's Talk",
 
   /* FAQ */
   'nav.faq': 'FAQ',
@@ -215,6 +249,9 @@ const en: Dict = {
   'form.error':      'Send error. Please try again.',
   'form.fallback':   'Could not send. Opening your email…',
   'form.rateLimit':  'Too many attempts. Please wait 1 minute and try again.',
+  'form.error.name':    'Name is required (max 80 chars)',
+  'form.error.email':   'Invalid email address',
+  'form.error.message': 'Message is required (max 2000 chars)',
 
   /* Footer */
   'footer.in':       'in Fortaleza, Brazil',
@@ -232,6 +269,35 @@ const en: Dict = {
   'notFound.desc':    "This route doesn't exist or was moved. Check the link or go back home.",
   'notFound.back':    'Back to home',
   'notFound.contact': 'Contact me',
+
+  /* Services lists */
+  'service1.list.1': 'HTML5 / CSS3',
+  'service1.list.2': 'JavaScript & TypeScript',
+  'service1.list.3': 'React & Next.js',
+  'service1.list.4': 'Animations & UI',
+  'service2.list.1': 'React / Next.js',
+  'service2.list.2': 'Node.js & REST APIs',
+  'service2.list.3': 'PostgreSQL / SQL',
+  'service2.list.4': 'Deploy & DevOps',
+  'service3.list.1': 'Modern UI / UX',
+  'service3.list.2': 'Responsive Design',
+  'service3.list.3': 'Framer Motion',
+  'service3.list.4': 'Design Systems',
+
+  /* Intro overlay */
+  'intro.tag':  'Full-Stack Dev · Fortaleza, CE',
+  'intro.role': 'Full-Stack Web Developer',
+  'intro.skip': 'Click or press ESC',
+
+  /* Navbar aria-labels */
+  'nav.theme.dark':  'Enable light theme',
+  'nav.theme.light': 'Enable dark theme',
+  'nav.menu.open':   'Open menu',
+  'nav.menu.close':  'Close menu',
+  'nav.lang':        'Select language',
+
+  /* Footer */
+  'footer.rights': 'All rights reserved.',
 };
 
 const es: Dict = {
@@ -296,6 +362,7 @@ const es: Dict = {
   'about.stat.projects': 'Proyectos',
   'about.stat.techs':    'Tecnologías',
   'about.cv':            'Descargar CV',
+  'about.contact':       'Contáctame',
 
   /* FAQ */
   'nav.faq': 'FAQ',
@@ -327,6 +394,9 @@ const es: Dict = {
   'form.error':      'Error al enviar. Inténtalo de nuevo.',
   'form.fallback':   'No se pudo enviar. Abriendo tu email…',
   'form.rateLimit':  'Demasiados intentos. Espera 1 minuto e inténtalo de nuevo.',
+  'form.error.name':    'Nombre requerido (máx. 80 caracteres)',
+  'form.error.email':   'Email inválido',
+  'form.error.message': 'Mensaje requerido (máx. 2000 caracteres)',
 
   /* Footer */
   'footer.in':       'en Fortaleza, Brasil',
@@ -344,6 +414,35 @@ const es: Dict = {
   'notFound.desc':    'Esta ruta no existe o fue movida. Verifica el enlace o vuelve al inicio.',
   'notFound.back':    'Volver al inicio',
   'notFound.contact': 'Contáctame',
+
+  /* Services lists */
+  'service1.list.1': 'HTML5 / CSS3',
+  'service1.list.2': 'JavaScript & TypeScript',
+  'service1.list.3': 'React & Next.js',
+  'service1.list.4': 'Animaciones & UI',
+  'service2.list.1': 'React / Next.js',
+  'service2.list.2': 'Node.js & APIs REST',
+  'service2.list.3': 'PostgreSQL / SQL',
+  'service2.list.4': 'Deploy & DevOps',
+  'service3.list.1': 'UI / UX Moderno',
+  'service3.list.2': 'Diseño Responsivo',
+  'service3.list.3': 'Framer Motion',
+  'service3.list.4': 'Design Systems',
+
+  /* Intro overlay */
+  'intro.tag':  'Dev Full-Stack · Fortaleza, CE',
+  'intro.role': 'Desarrollador Web Full-Stack',
+  'intro.skip': 'Haz clic o presiona ESC',
+
+  /* Navbar aria-labels */
+  'nav.theme.dark':  'Activar tema claro',
+  'nav.theme.light': 'Activar tema oscuro',
+  'nav.menu.open':   'Abrir menú',
+  'nav.menu.close':  'Cerrar menú',
+  'nav.lang':        'Seleccionar idioma',
+
+  /* Footer */
+  'footer.rights': 'Todos los derechos reservados.',
 };
 
 export const DICT: Record<Lang, Dict> = { pt, en, es };

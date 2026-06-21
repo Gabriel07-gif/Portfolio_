@@ -8,7 +8,7 @@ const SERVICES = [
     id:        'frontend',
     titleKey:  'service1.title',
     descKey:   'service1.desc',
-    list:      ['HTML5 / CSS3', 'JavaScript & TypeScript', 'React & Next.js', 'Animações & UI'],
+    listKeys:  ['service1.list.1', 'service1.list.2', 'service1.list.3', 'service1.list.4'],
     highlight: false,
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -21,8 +21,8 @@ const SERVICES = [
     id:        'fullstack',
     titleKey:  'service2.title',
     descKey:   'service2.desc',
-    list:      ['React / Next.js', 'Node.js & APIs REST', 'PostgreSQL / SQL', 'Deploy & DevOps'],
-    highlight: true,
+    listKeys:  ['service2.list.1', 'service2.list.2', 'service2.list.3', 'service2.list.4'],
+    highlight: false,
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
         <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
@@ -36,7 +36,7 @@ const SERVICES = [
     id:        'design',
     titleKey:  'service3.title',
     descKey:   'service3.desc',
-    list:      ['UI / UX Moderno', 'Design Responsivo', 'Framer Motion', 'Design Systems'],
+    listKeys:  ['service3.list.1', 'service3.list.2', 'service3.list.3', 'service3.list.4'],
     highlight: false,
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
@@ -108,9 +108,9 @@ export default function Services() {
               <div className="service-icon" aria-hidden="true">{svc.icon}</div>
               <h3>{t(svc.titleKey)}</h3>
               <p>{t(svc.descKey)}</p>
-              <ul className="service-list" aria-label="Recursos do serviço">
-                {svc.list.map(item => (
-                  <li key={item}>{item}</li>
+              <ul className="service-list" aria-label={t('section.services.pre') + t('section.services.acc')}>
+                {svc.listKeys.map(key => (
+                  <li key={key}>{t(key)}</li>
                 ))}
               </ul>
             </motion.div>

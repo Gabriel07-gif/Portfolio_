@@ -52,9 +52,9 @@ export default function Contact() {
 
   const validate = (): boolean => {
     const errs: Partial<Omit<FormState, 'website'>> = {};
-    if (!form.name.trim()    || form.name.length > 80)     errs.name    = 'invalid';
-    if (!form.email.trim()   || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) errs.email = 'invalid';
-    if (!form.message.trim() || form.message.length > 2000) errs.message = 'invalid';
+    if (!form.name.trim()    || form.name.length > 80)     errs.name    = 'form.error.name';
+    if (!form.email.trim()   || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) errs.email = 'form.error.email';
+    if (!form.message.trim() || form.message.length > 2000) errs.message = 'form.error.message';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -178,24 +178,28 @@ export default function Contact() {
                 type="text" id="formName" name="name"
                 placeholder=" " required autoComplete="name"
                 maxLength={80} aria-required="true"
+                aria-describedby={errors.name ? 'err-name' : undefined}
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 onBlur={() => { if (form.name.trim()) setErrors(er => ({ ...er, name: undefined })); }}
               />
               <label htmlFor="formName">{t('form.name')}</label>
               <div className="form-focus-bar" aria-hidden="true" />
+              {errors.name && <span id="err-name" className="form-error-msg" role="alert">{t(errors.name)}</span>}
             </div>
             <div className={`form-group${errors.email ? ' invalid' : ''}`}>
               <input
                 type="email" id="formEmail" name="email"
                 placeholder=" " required autoComplete="email"
                 maxLength={120} aria-required="true"
+                aria-describedby={errors.email ? 'err-email' : undefined}
                 value={form.email}
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                 onBlur={() => { if (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) setErrors(er => ({ ...er, email: undefined })); }}
               />
               <label htmlFor="formEmail">{t('form.email')}</label>
               <div className="form-focus-bar" aria-hidden="true" />
+              {errors.email && <span id="err-email" className="form-error-msg" role="alert">{t(errors.email)}</span>}
             </div>
           </div>
 
@@ -204,6 +208,7 @@ export default function Contact() {
               id="formMsg" name="message" rows={5}
               placeholder=" " required maxLength={2000}
               aria-required="true"
+              aria-describedby={errors.message ? 'err-message' : undefined}
               value={form.message}
               onChange={e => {
                 setForm(f => ({ ...f, message: e.target.value }));
@@ -213,6 +218,7 @@ export default function Contact() {
             <label htmlFor="formMsg">{t('form.message')}</label>
             <div className="form-focus-bar" aria-hidden="true" />
             <span className="form-char-count" aria-hidden="true">{charCount} / 2000</span>
+            {errors.message && <span id="err-message" className="form-error-msg" role="alert">{t(errors.message)}</span>}
           </div>
 
           <button
