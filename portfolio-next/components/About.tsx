@@ -6,13 +6,15 @@ import { useLang } from '@/contexts/LangContext';
 import { useCounter } from '@/hooks/useCounter';
 import { useInView }   from '@/hooks/useInView';
 
+const TIMELINE_KEYS = ['t1', 't2', 't3', 't4'] as const;
+
 export default function About() {
   const { t }  = useLang();
-  const [sectionRef, inView] = useInView<HTMLElement>(0.2);
+  const [sectionRef, inView] = useInView<HTMLElement>(0.1);
 
   const years = useCounter(2,  1600, { trigger: inView });
-  const projs  = useCounter(5,  1800, { trigger: inView });
-  const techs  = useCounter(10, 1400, { trigger: inView });
+  const projs  = useCounter(8,  1800, { trigger: inView });
+  const techs  = useCounter(15, 1400, { trigger: inView });
 
   const TAGS = ['about.tag1', 'about.tag2', 'about.tag3', 'about.tag4'];
 
@@ -44,7 +46,7 @@ export default function About() {
         </motion.div>
 
         <div className="about-grid">
-          {/* Profile image — clip-path reveal from left */}
+          {/* Profile image */}
           <motion.div
             className="about-image"
             initial={{ opacity: 0, clipPath: 'inset(0 100% 0 0 round 24px)' }}
@@ -67,7 +69,7 @@ export default function About() {
                 height={760}
                 quality={98}
                 priority
-                style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto', imageRendering: 'auto' }}
+                style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto' }}
               />
               <div
                 aria-hidden="true"
@@ -121,14 +123,46 @@ export default function About() {
               </div>
             </div>
 
-            <motion.a
-              href="#contato"
-              className="btn btn-primary magnetic"
-              style={{ marginTop: 28, display: 'inline-flex' }}
+            {/* ── TIMELINE ── */}
+            <motion.div
+              className="about-timeline"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <span className="about-timeline-label">{t('timeline.title')}</span>
+              <div className="timeline-list">
+                {TIMELINE_KEYS.map((key, i) => (
+                  <motion.div
+                    key={key}
+                    className="timeline-item"
+                    initial={{ opacity: 0, x: -16 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div className="timeline-dot" aria-hidden="true" />
+                    <div className="timeline-body">
+                      <div className="timeline-meta">
+                        <span className="timeline-year">{t(`timeline.${key}.year`)}</span>
+                        <span className="timeline-title">{t(`timeline.${key}.title`)}</span>
+                      </div>
+                      <p className="timeline-desc">{t(`timeline.${key}.desc`)}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.a
+              href="#contato"
+              className="btn btn-primary magnetic"
+              style={{ marginTop: 32, display: 'inline-flex' }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M2 8h12M9 3l5 5-5 5" stroke="currentColor" strokeWidth="1.7"
@@ -136,7 +170,6 @@ export default function About() {
               </svg>
               {t('about.contact')}
             </motion.a>
-
           </motion.div>
         </div>
       </div>

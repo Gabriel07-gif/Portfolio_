@@ -76,7 +76,7 @@ export default function Navbar() {
           aria-label="Gabriel — Início"
           onClick={e => { e.preventDefault(); handleNavClick('#inicio'); }}
         >
-          Gabriel<span className="accent-text logo-dot">.</span>
+          Gabriel
         </a>
 
         <ul className={`nav-links${menuOpen ? ' open' : ''}`} id="navLinks" role="list">

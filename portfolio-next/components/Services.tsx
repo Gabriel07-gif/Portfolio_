@@ -22,7 +22,7 @@ const SERVICES = [
     titleKey:  'service2.title',
     descKey:   'service2.desc',
     listKeys:  ['service2.list.1', 'service2.list.2', 'service2.list.3', 'service2.list.4'],
-    highlight: false,
+    highlight: true,
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
         <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />

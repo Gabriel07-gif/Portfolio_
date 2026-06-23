@@ -25,28 +25,37 @@ function GitHubIcon() {
 }
 
 function VideoPreview({ src, fallback }: { src: string; fallback: React.ReactNode }) {
-  const [hasError, setHasError] = React.useState(false);
-
-  if (hasError) {
-    return <div style={{ position: 'relative', width: '100%', height: '100%' }}>{fallback}</div>;
-  }
+  const [status, setStatus] = React.useState<'loading' | 'ready' | 'error'>('loading');
 
   return (
-    <video
-      src={src}
-      autoPlay
-      muted
-      loop
-      playsInline
-      onError={() => setHasError(true)}
-      style={{
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        objectPosition: 'top',
-        display: 'block',
-      }}
-    />
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', inset: 0,
+        opacity: status === 'ready' ? 0 : 1,
+        transition: 'opacity 0.5s',
+        pointerEvents: 'none',
+      }}>
+        {fallback}
+      </div>
+      <video
+        src={src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        onCanPlay={() => setStatus('ready')}
+        onError={() => setStatus('error')}
+        style={{
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover', objectPosition: 'top',
+          display: 'block',
+          opacity: status === 'ready' ? 1 : 0,
+          transition: 'opacity 0.5s',
+        }}
+      />
+    </div>
   );
 }
 

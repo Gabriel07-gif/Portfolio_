@@ -20,8 +20,8 @@ export default function Hero() {
   const [roleIdx,  setRoleIdx]  = useState(0);
 
   const yearsVal = useCounter(2,  1400, { delayMs: 1800 });
-  const projsVal = useCounter(5,  1600, { delayMs: 2000 });
-  const techsVal = useCounter(10, 1200, { delayMs: 2200 });
+  const projsVal = useCounter(8,  1600, { delayMs: 2000 });
+  const techsVal = useCounter(15, 1200, { delayMs: 2200 });
 
   /* Orb follows cursor */
   useEffect(() => {

@@ -38,7 +38,7 @@ export const PROJECTS: Project[] = [
     tagKey:     'proj2.tag',
     titleKey:   'proj2.title',
     descKey:    'proj2.desc',
-    techs:      ['HTML', 'CSS', 'JavaScript'],
+    techs:      ['Next.js', 'TypeScript', 'Supabase', 'Clerk', 'Stripe', 'Tailwind'],
     url:        'https://jurisflow-omega.vercel.app/',
     githubUrl:  '',
     urlLabel:   'jurisflow-omega.vercel.app',

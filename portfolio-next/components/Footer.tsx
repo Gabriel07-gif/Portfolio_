@@ -43,7 +43,7 @@ export default function Footer() {
         {/* Logo + tagline */}
         <div className="footer-brand">
           <span className="logo-footer">
-            Gabriel<span className="accent-text">.</span>
+            Gabriel
           </span>
           <p className="footer-tagline">{t('footer.in')}</p>
         </div>

@@ -6,16 +6,13 @@ export const size        = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 export default async function Image() {
-  const stack = ['React', 'Next.js', 'TypeScript', 'Node.js'];
-
   return new ImageResponse(
     (
       <div
         style={{
           height: '100%', width: '100%',
           display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          backgroundColor: '#05050f',
+          backgroundColor: '#04040e',
           fontFamily: 'system-ui, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -23,83 +20,125 @@ export default async function Image() {
       >
         {/* Ambient blobs */}
         <div style={{
-          position: 'absolute', top: -180, left: -180,
-          width: 520, height: 520, borderRadius: 260,
-          background: 'radial-gradient(circle, rgba(0,255,136,0.13) 0%, transparent 70%)',
+          position: 'absolute', top: -200, left: -150,
+          width: 600, height: 600, borderRadius: 300,
+          background: 'radial-gradient(circle, rgba(0,255,136,0.14) 0%, transparent 70%)',
         }} />
         <div style={{
-          position: 'absolute', bottom: -120, right: -120,
-          width: 420, height: 420, borderRadius: 210,
-          background: 'radial-gradient(circle, rgba(0,170,255,0.09) 0%, transparent 70%)',
+          position: 'absolute', bottom: -150, right: -150,
+          width: 500, height: 500, borderRadius: 250,
+          background: 'radial-gradient(circle, rgba(0,170,255,0.10) 0%, transparent 70%)',
         }} />
         <div style={{
-          position: 'absolute', top: '40%', right: '10%',
-          width: 300, height: 300, borderRadius: 150,
-          background: 'radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 70%)',
+          position: 'absolute', top: '35%', right: '15%',
+          width: 350, height: 350, borderRadius: 175,
+          background: 'radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%)',
         }} />
 
-        {/* Grid overlay */}
+        {/* Horizontal grid lines */}
         <div style={{
           position: 'absolute', inset: 0,
-          backgroundImage: 'linear-gradient(rgba(0,255,136,0.028) 1px, transparent 1px)',
-          backgroundSize: '1200px 60px',
-          opacity: 1,
+          backgroundImage: 'linear-gradient(rgba(0,255,136,0.025) 1px, transparent 1px)',
+          backgroundSize: '1200px 80px',
         }} />
 
-        {/* Name */}
-        <div style={{ display: 'flex', alignItems: 'baseline', lineHeight: 1, zIndex: 1 }}>
-          <span style={{
-            fontSize: 104, fontWeight: 900,
-            color: '#e8eaf0', letterSpacing: '-4px',
-          }}>
-            Gabriel
-          </span>
-          <span style={{ fontSize: 104, fontWeight: 900, color: '#00ff88' }}>.</span>
-        </div>
-
-        {/* Subtitle */}
+        {/* Top accent bar */}
         <div style={{
-          fontSize: 30, color: '#6b7a99',
-          marginTop: 10, letterSpacing: '1.5px',
-          zIndex: 1,
-        }}>
-          Dev Full-Stack · Fortaleza, CE
-        </div>
+          position: 'absolute', top: 0, left: 0, right: 0,
+          height: 3,
+          background: 'linear-gradient(90deg, #00ff88, #00aaff, #7c3aed)',
+        }} />
 
-        {/* Stack pills */}
-        <div style={{ display: 'flex', gap: 14, marginTop: 40, zIndex: 1 }}>
-          {stack.map((tech, i) => (
-            <div key={i} style={{
-              padding: '10px 24px',
-              background: 'rgba(0,255,136,0.09)',
-              border: '1px solid rgba(0,255,136,0.22)',
-              borderRadius: 10,
-              color: '#00ff88',
-              fontSize: 22,
+        {/* Content */}
+        <div style={{
+          display: 'flex', flexDirection: 'column',
+          flex: 1, justifyContent: 'center',
+          padding: '0 96px',
+          position: 'relative', zIndex: 1,
+        }}>
+          {/* Tag line */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 14,
+            marginBottom: 28,
+          }}>
+            <div style={{
+              width: 8, height: 8, borderRadius: 4,
+              background: '#00ff88',
+              boxShadow: '0 0 10px rgba(0,255,136,0.9)',
+            }} />
+            <span style={{
+              fontSize: 18, color: 'rgba(0,255,136,0.75)',
+              letterSpacing: '0.22em', textTransform: 'uppercase',
               fontWeight: 500,
             }}>
-              {tech}
-            </div>
-          ))}
+              Desenvolvedor Web Full-Stack · Fortaleza, CE
+            </span>
+          </div>
+
+          {/* Name */}
+          <div style={{ display: 'flex', alignItems: 'baseline', lineHeight: 1 }}>
+            <span style={{
+              fontSize: 110, fontWeight: 900,
+              color: '#e8f0f8', letterSpacing: '-5px',
+            }}>
+              Gabriel
+            </span>
+            <span style={{
+              fontSize: 110, fontWeight: 900,
+              background: 'linear-gradient(120deg, #00ff88, #00aaff)',
+              backgroundClip: 'text',
+              color: 'transparent',
+              letterSpacing: '-5px',
+            }}>
+              {' '}Ricarte
+            </span>
+          </div>
+
+          {/* Stack pills */}
+          <div style={{ display: 'flex', gap: 12, marginTop: 40 }}>
+            {['React', 'Next.js', 'TypeScript', 'Node.js', 'PostgreSQL'].map((tech, i) => (
+              <div key={i} style={{
+                padding: '10px 22px',
+                background: i === 1
+                  ? 'rgba(0,255,136,0.12)'
+                  : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${i === 1 ? 'rgba(0,255,136,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                borderRadius: 10,
+                color: i === 1 ? '#00ff88' : 'rgba(232,240,248,0.65)',
+                fontSize: 20,
+                fontWeight: i === 1 ? 600 : 400,
+              }}>
+                {tech}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Available badge */}
+        {/* Bottom bar */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 12,
-          marginTop: 42, zIndex: 1,
-          padding: '12px 32px',
-          background: 'rgba(0,255,136,0.06)',
-          border: '1px solid rgba(0,255,136,0.14)',
-          borderRadius: 32,
-          color: '#5fcf9a',
-          fontSize: 20,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '20px 96px',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+          position: 'relative', zIndex: 1,
         }}>
+          <span style={{ color: 'rgba(136,146,176,0.7)', fontSize: 18 }}>
+            gabrielricartedev.com
+          </span>
           <div style={{
-            width: 10, height: 10, borderRadius: 5,
-            background: '#00ff88',
-            boxShadow: '0 0 8px rgba(0,255,136,0.8)',
-          }} />
-          Disponível para novos projetos
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '10px 28px',
+            background: 'rgba(0,255,136,0.06)',
+            border: '1px solid rgba(0,255,136,0.15)',
+            borderRadius: 28,
+            color: 'rgba(0,255,136,0.8)',
+            fontSize: 18,
+          }}>
+            <div style={{
+              width: 9, height: 9, borderRadius: 5,
+              background: '#00ff88',
+            }} />
+            Disponível para projetos
+          </div>
         </div>
       </div>
     ),

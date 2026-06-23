@@ -8,7 +8,7 @@ import { FRONTEND, BACKEND, TOOLS, type ChipData } from '@/data/skills';
 function SkillChip({ chip, delay }: { chip: ChipData; delay: number }) {
   return (
     <motion.span
-      className="skill-chip"
+      className={`skill-chip${chip.featured ? ' skill-chip--featured' : ''}`}
       initial={{ opacity: 0, scale: 0.78, y: 12, filter: 'blur(4px)' }}
       whileInView={{ opacity: 1, scale: 1,    y: 0,  filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-20px' }}
@@ -16,7 +16,7 @@ function SkillChip({ chip, delay }: { chip: ChipData; delay: number }) {
     >
       <span className="skill-chip-icon" aria-hidden="true">
         {chip.icon ? chip.icon : chip.img ? (
-          <Image src={chip.img} alt={chip.name} width={56} height={56} loading="lazy" style={{ objectFit: 'contain' }} />
+          <Image src={chip.img} alt={chip.name} width={64} height={64} loading="lazy" style={{ objectFit: 'contain' }} />
         ) : (
           <span className="skill-chip-letter">{chip.letter}</span>
         )}

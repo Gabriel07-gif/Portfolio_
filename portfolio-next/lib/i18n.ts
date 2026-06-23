@@ -40,7 +40,26 @@ const pt: Dict = {
 
   /* Projects */
   'section.projects.pre': 'Meus', 'section.projects.acc': ' Projetos',
-  'section.projects.sub': 'Três projetos que mostram como trabalho na prática',
+  'section.projects.sub': 'Projetos que mostram como trabalho na prática',
+  /* Testimonial */
+  'testimonial.quote': '"Gabriel entregou o site da nossa loja exatamente como precisávamos — rápido, bonito e fácil de navegar. Aumentou bastante o contato de clientes pelo WhatsApp."',
+  'testimonial.name':  'Venezamotos',
+  'testimonial.role':  'Cliente Real · venezamotoseveiculos.com.br',
+  'testimonial.label': 'O que dizem',
+  /* Timeline */
+  'timeline.title':    'Trajetória',
+  'timeline.t1.year':  '2022',
+  'timeline.t1.title': 'Início na Programação',
+  'timeline.t1.desc':  'Primeiros projetos em HTML, CSS e JavaScript para o negócio da família.',
+  'timeline.t2.year':  '2023',
+  'timeline.t2.title': 'Análise e Des. de Sistemas',
+  'timeline.t2.desc':  'Ingresso na Estácio, Fortaleza — ADS. Foco em web full-stack.',
+  'timeline.t3.year':  '2024',
+  'timeline.t3.title': 'Desenvolvedor Freelance',
+  'timeline.t3.desc':  'Primeiro cliente real (Venezamotos). Migração para React, Next.js e TypeScript.',
+  'timeline.t4.year':  '2025',
+  'timeline.t4.title': 'Full-Stack & SaaS',
+  'timeline.t4.desc':  'JuriVox: plataforma SaaS jurídica com Next.js, Supabase, Clerk e Stripe.',
   'proj1.tag':   'Cliente Real',
   'proj1.title': 'Venezamotos',
   'proj1.desc':  'Site de revenda de motos e veículos com catálogo, filtros por categoria e contato direto via WhatsApp. HTML, CSS e JavaScript puro — sem frameworks, zero dependências de build.',
@@ -71,7 +90,6 @@ const pt: Dict = {
   'about.stat.years':    'Anos Programando',
   'about.stat.projects': 'Projetos',
   'about.stat.techs':    'Tecnologias',
-  'about.cv':            'Download CV',
   'about.contact':       'Fale Comigo',
 
   /* FAQ */
@@ -185,7 +203,26 @@ const en: Dict = {
 
   /* Projects */
   'section.projects.pre': 'My', 'section.projects.acc': ' Projects',
-  'section.projects.sub': 'Three projects that show how I work in practice',
+  'section.projects.sub': 'Projects that show how I work in practice',
+  /* Testimonial */
+  'testimonial.quote': '"Gabriel delivered our store website exactly as we needed — fast, beautiful and easy to navigate. It significantly increased customer contact via WhatsApp."',
+  'testimonial.name':  'Venezamotos',
+  'testimonial.role':  'Real Client · venezamotoseveiculos.com.br',
+  'testimonial.label': 'What they say',
+  /* Timeline */
+  'timeline.title':    'Journey',
+  'timeline.t1.year':  '2022',
+  'timeline.t1.title': 'Started Coding',
+  'timeline.t1.desc':  'First projects in HTML, CSS and JavaScript for the family business.',
+  'timeline.t2.year':  '2023',
+  'timeline.t2.title': 'Systems Analysis & Dev',
+  'timeline.t2.desc':  'Enrolled at Estácio, Fortaleza — ADS. Focus on full-stack web.',
+  'timeline.t3.year':  '2024',
+  'timeline.t3.title': 'Freelance Developer',
+  'timeline.t3.desc':  'First real client (Venezamotos). Migrated to React, Next.js and TypeScript.',
+  'timeline.t4.year':  '2025',
+  'timeline.t4.title': 'Full-Stack & SaaS',
+  'timeline.t4.desc':  'JuriVox: legal SaaS platform with Next.js, Supabase, Clerk and Stripe.',
   'proj1.tag':   'Real Client',
   'proj1.title': 'Venezamotos',
   'proj1.desc':  'Motorcycle and vehicle dealership website with a product catalog, category filters, and direct WhatsApp contact. Pure HTML, CSS and JavaScript — no frameworks, zero build dependencies.',
@@ -216,7 +253,6 @@ const en: Dict = {
   'about.stat.years':    'Years Coding',
   'about.stat.projects': 'Projects',
   'about.stat.techs':    'Technologies',
-  'about.cv':            'Download CV',
   'about.contact':       "Let's Talk",
 
   /* FAQ */
@@ -330,7 +366,26 @@ const es: Dict = {
 
   /* Projects */
   'section.projects.pre': 'Mis', 'section.projects.acc': ' Proyectos',
-  'section.projects.sub': 'Tres proyectos que muestran cómo trabajo en la práctica',
+  'section.projects.sub': 'Proyectos que muestran cómo trabajo en la práctica',
+  /* Testimonial */
+  'testimonial.quote': '"Gabriel entregó el sitio de nuestra tienda exactamente como lo necesitábamos — rápido, bonito y fácil de navegar. Aumentó bastante el contacto de clientes por WhatsApp."',
+  'testimonial.name':  'Venezamotos',
+  'testimonial.role':  'Cliente Real · venezamotoseveiculos.com.br',
+  'testimonial.label': 'Lo que dicen',
+  /* Timeline */
+  'timeline.title':    'Trayectoria',
+  'timeline.t1.year':  '2022',
+  'timeline.t1.title': 'Inicio en Programación',
+  'timeline.t1.desc':  'Primeros proyectos en HTML, CSS y JavaScript para el negocio familiar.',
+  'timeline.t2.year':  '2023',
+  'timeline.t2.title': 'Análisis y Des. de Sistemas',
+  'timeline.t2.desc':  'Ingreso en Estácio, Fortaleza — ADS. Enfoque en web full-stack.',
+  'timeline.t3.year':  '2024',
+  'timeline.t3.title': 'Desarrollador Freelance',
+  'timeline.t3.desc':  'Primer cliente real (Venezamotos). Migración a React, Next.js y TypeScript.',
+  'timeline.t4.year':  '2025',
+  'timeline.t4.title': 'Full-Stack & SaaS',
+  'timeline.t4.desc':  'JuriVox: plataforma SaaS jurídica con Next.js, Supabase, Clerk y Stripe.',
   'proj1.tag':   'Cliente Real',
   'proj1.title': 'Venezamotos',
   'proj1.desc':  'Sitio de reventa de motos y vehículos con catálogo, filtros por categoría y contacto directo por WhatsApp. HTML, CSS y JavaScript puro — sin frameworks, cero dependencias de build.',
@@ -361,7 +416,6 @@ const es: Dict = {
   'about.stat.years':    'Años Programando',
   'about.stat.projects': 'Proyectos',
   'about.stat.techs':    'Tecnologías',
-  'about.cv':            'Descargar CV',
   'about.contact':       'Contáctame',
 
   /* FAQ */
