@@ -40,7 +40,7 @@ export default function Hero() {
   /* Cycle through roles every 2.8 s */
   useEffect(() => {
     const id = setInterval(() => {
-      setRoleIdx(i => (i + 1) % (CYCLE_ROLES[lang]?.length ?? 4));
+      setRoleIdx(i => (i + 1) % (CYCLE_ROLES[lang]?.length ?? CYCLE_ROLES.pt.length));
     }, 2800);
     return () => clearInterval(id);
   }, [lang]);

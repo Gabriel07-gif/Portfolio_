@@ -24,35 +24,52 @@ function GitHubIcon() {
   );
 }
 
-function VideoPreview({ src, fallback }: { src: string; fallback: React.ReactNode }) {
-  const [status, setStatus] = React.useState<'loading' | 'ready' | 'error'>('loading');
+function PhotoIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.8"/>
+      <circle cx="9" cy="10" r="2" stroke="currentColor" strokeWidth="1.8"/>
+      <path d="M3 17l5-5 4 4 3-3 6 4" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function VideoIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="2" y="7" width="13" height="10" rx="2" stroke="currentColor" strokeWidth="1.8"/>
+      <path d="M15 10l7-4v12l-7-4V10z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function VideoPreview({ src, poster, fallback }: { src: string; poster?: string; fallback: React.ReactNode }) {
+  const [errored, setErrored] = React.useState(false);
+
+  if (errored) {
+    return (
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+        {fallback}
+      </div>
+    );
+  }
 
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-      <div style={{
-        position: 'absolute', inset: 0,
-        opacity: status === 'ready' ? 0 : 1,
-        transition: 'opacity 0.5s',
-        pointerEvents: 'none',
-      }}>
-        {fallback}
-      </div>
       <video
         src={src}
+        poster={poster}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
-        onCanPlay={() => setStatus('ready')}
-        onError={() => setStatus('error')}
+        onError={() => setErrored(true)}
         style={{
           position: 'absolute', inset: 0,
           width: '100%', height: '100%',
           objectFit: 'cover', objectPosition: 'top',
           display: 'block',
-          opacity: status === 'ready' ? 1 : 0,
-          transition: 'opacity 0.5s',
         }}
       />
     </div>
@@ -63,10 +80,12 @@ function ProjectCard({
   project,
   index,
   t,
+  mediaMode,
 }: {
   project: Project;
   index: number;
   t: (k: string) => string;
+  mediaMode: 'photo' | 'video';
 }) {
   /* 3D tilt — Framer Motion motion values (composes safely with animations) */
   const mouseX  = useMotionValue(0.5);
@@ -129,18 +148,22 @@ function ProjectCard({
           </a>
         </div>
         <div className="preview-body preview-svg">
-          {project.videoSrc ? (
-            <VideoPreview src={project.videoSrc} fallback={
-              project.screenshot ? (
-                <Image
-                  src={project.screenshot}
-                  alt={t(project.titleKey)}
-                  fill
-                  style={{ objectFit: 'cover', objectPosition: 'top' }}
-                  sizes="(max-width: 768px) 100vw, 400px"
-                />
-              ) : project.fallback
-            } />
+          {project.videoSrc && mediaMode === 'video' ? (
+            <VideoPreview
+              src={project.videoSrc}
+              poster={project.screenshot || undefined}
+              fallback={
+                project.screenshot ? (
+                  <Image
+                    src={project.screenshot}
+                    alt={t(project.titleKey)}
+                    fill
+                    style={{ objectFit: 'cover', objectPosition: 'top' }}
+                    sizes="(max-width: 768px) 100vw, 400px"
+                  />
+                ) : project.fallback
+              }
+            />
           ) : project.screenshot ? (
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
               <Image
@@ -204,6 +227,7 @@ function ProjectCard({
 
 export default function Projects() {
   const { t } = useLang();
+  const [mediaMode, setMediaMode] = React.useState<'photo' | 'video'>('photo');
 
   return (
     <section id="projetos" aria-label="Projetos">
@@ -232,9 +256,24 @@ export default function Projects() {
           />
         </motion.div>
 
+        <div className="projects-mode-toggle" role="group" aria-label="Modo de visualização">
+          <button
+            className={`projects-mode-btn${mediaMode === 'photo' ? ' active' : ''}`}
+            onClick={() => setMediaMode('photo')}
+          >
+            <PhotoIcon /> Fotos
+          </button>
+          <button
+            className={`projects-mode-btn${mediaMode === 'video' ? ' active' : ''}`}
+            onClick={() => setMediaMode('video')}
+          >
+            <VideoIcon /> Vídeos
+          </button>
+        </div>
+
         <div className="projects-grid">
           {PROJECTS.map((p, i) => (
-            <ProjectCard key={p.id} project={p} index={i} t={t} />
+            <ProjectCard key={p.id} project={p} index={i} t={t} mediaMode={mediaMode} />
           ))}
         </div>
       </div>

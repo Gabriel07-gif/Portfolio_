@@ -416,7 +416,7 @@ export default function IntroOverlay() {
       clearInterval(pctTimer);
       window.removeEventListener('keydown', onKey);
       overlay.removeEventListener('click', dismiss);
-      cleanupPromise.then(fn => { if (isCleaned) fn?.(); });
+      cleanupPromise.then(fn => { if (isCleaned) fn?.(); }).catch(() => {});
     };
   }, [mounted]);
 

@@ -591,16 +591,19 @@ function debounce(fn, ms = 150) {
    18. FORMULÁRIO DE CONTATO
    · Floating labels (CSS cuida da animação)
    · Validação campo a campo no blur/input
-   · Submit: abre mailto como fallback
+   · Submit: envia via Formspree (sem redirecionar o usuário)
+   · AÇÃO: substitua SEU_ID_FORMSPREE pelo ID do seu form em formspree.io
 ───────────────────────────────────────────── */
 (function initContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
 
+    /* ── ID do Formspree: crie em formspree.io e cole aqui ── */
+    const FORMSPREE_ID = 'SEU_ID_FORMSPREE';
+
     /* ── Sanitização: remove caracteres perigosos e limita tamanho ── */
     function sanitizeInput(str, maxLen) {
-        return String(str).trim().slice(0, maxLen || 2000)
-            .replace(/[<>"'`]/g, c => ({ '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', '`': '&#x60;' })[c]);
+        return String(str).trim().slice(0, maxLen || 2000);
     }
 
     /* ── Contador de caracteres na textarea ── */
@@ -637,6 +640,14 @@ function debounce(fn, ms = 150) {
         });
     });
 
+    function showToast(msg) {
+        const toast = document.getElementById('langToast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
     form.addEventListener('submit', e => {
         e.preventDefault();
 
@@ -651,7 +662,6 @@ function debounce(fn, ms = 150) {
 
         const btn   = form.querySelector('.form-submit-btn');
         const label = form.querySelector('.submit-label');
-        /* Sanitiza os valores antes de qualquer uso */
         const name  = sanitizeInput(form.querySelector('#formName').value, 80);
         const email = sanitizeInput(form.querySelector('#formEmail').value, 120);
         const msg   = sanitizeInput(form.querySelector('#formMsg').value, 2000);
@@ -662,35 +672,48 @@ function debounce(fn, ms = 150) {
         btn.classList.add('loading');
         btn.disabled = true;
 
-        setTimeout(() => {
-            /* Estado de sucesso */
-            btn.classList.remove('loading');
-            btn.classList.add('success');
-            label.textContent = '✓ Enviado!';
-
-            /* Toast de confirmação */
-            const toast = document.getElementById('langToast');
-            if (toast) {
-                toast.textContent = '✅ Mensagem enviada com sucesso!';
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
-            }
-
-            /* Abre o cliente de e-mail como fallback */
+        if (FORMSPREE_ID === 'SEU_ID_FORMSPREE') {
+            /* Fallback: abre cliente de e-mail enquanto Formspree não está configurado */
             const subject = encodeURIComponent('Contato via Portfolio — ' + name);
             const body    = encodeURIComponent(msg + '\n\nDe: ' + name + ' <' + email + '>');
             window.location.href = 'mailto:gabrielricarte000@gmail.com?subject=' + subject + '&body=' + body;
+            btn.classList.remove('loading');
+            btn.disabled = false;
+            label.textContent = originalText;
+            return;
+        }
 
-            /* Reseta o formulário */
-            form.reset();
-            groups.forEach(g => g.classList.remove('invalid'));
-
-            setTimeout(() => {
-                btn.classList.remove('success');
-                btn.disabled      = false;
+        /* Envia para o Formspree via fetch (sem recarregar a página) */
+        fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body:    JSON.stringify({ name, email, message: msg }),
+        })
+        .then(res => {
+            btn.classList.remove('loading');
+            if (res.ok) {
+                btn.classList.add('success');
+                label.textContent = '✓ Enviado!';
+                showToast('✅ Mensagem enviada com sucesso!');
+                form.reset();
+                groups.forEach(g => g.classList.remove('invalid'));
+                setTimeout(() => {
+                    btn.classList.remove('success');
+                    btn.disabled      = false;
+                    label.textContent = originalText;
+                }, 2800);
+            } else {
                 label.textContent = originalText;
-            }, 2800);
-        }, 900);
+                btn.disabled      = false;
+                showToast('❌ Erro ao enviar. Tente novamente.');
+            }
+        })
+        .catch(() => {
+            btn.classList.remove('loading');
+            btn.disabled      = false;
+            label.textContent = originalText;
+            showToast('❌ Sem conexão. Tente mais tarde.');
+        });
     });
 })();
 

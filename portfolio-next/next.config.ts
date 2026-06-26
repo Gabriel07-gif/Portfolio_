@@ -8,7 +8,7 @@ const CSP = [
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: https:",
   "connect-src 'self'",
-  "media-src 'none'",
+  "media-src 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",
   "base-uri 'self'",

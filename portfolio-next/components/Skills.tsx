@@ -16,7 +16,7 @@ function SkillChip({ chip, delay }: { chip: ChipData; delay: number }) {
     >
       <span className="skill-chip-icon" aria-hidden="true">
         {chip.icon ? chip.icon : chip.img ? (
-          <Image src={chip.img} alt={chip.name} width={64} height={64} loading="lazy" style={{ objectFit: 'contain' }} />
+          <Image src={chip.img} alt={chip.name} fill loading="lazy" style={{ objectFit: 'contain', padding: '0px' }} />
         ) : (
           <span className="skill-chip-letter">{chip.letter}</span>
         )}

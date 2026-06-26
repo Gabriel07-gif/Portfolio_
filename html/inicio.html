@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Portfolio de Gabriel — Desenvolvedor Web Full-Stack em Fortaleza, CE.">
+    <meta name="description" content="Portfolio de Gabriel — Desenvolvedor Web Full-Stack em Fortaleza, CE. Criando experiências digitais modernas com código limpo e design que encanta.">
+    <meta name="keywords" content="desenvolvedor web, full-stack, frontend, HTML, CSS, JavaScript, PostgreSQL, Fortaleza, Ceará">
+    <meta name="author" content="Gabriel Ricarte">
     <meta name="theme-color" content="#05050f">
     <title>Gabriel | Dev Full-Stack</title>
 
@@ -12,6 +14,43 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+
+    <!-- ── Open Graph / Redes Sociais ── -->
+    <meta property="og:type"        content="website">
+    <meta property="og:title"       content="Gabriel | Dev Full-Stack">
+    <meta property="og:description" content="Portfolio de Gabriel — Desenvolvedor Web Full-Stack em Fortaleza, CE. Criando experiências digitais modernas com código limpo e design que encanta.">
+    <meta property="og:locale"      content="pt_BR">
+    <meta property="og:site_name"   content="Gabriel Ricarte — Portfolio">
+    <!-- og:image requer URL absoluta — substitua YOUR_DOMAIN quando publicar -->
+    <!-- <meta property="og:image" content="https://YOUR_DOMAIN/fotosportfolio/fotoperfil.jpg"> -->
+
+    <!-- ── Twitter / X Card ── -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="Gabriel | Dev Full-Stack">
+    <meta name="twitter:description" content="Portfolio de Gabriel — Desenvolvedor Web Full-Stack em Fortaleza, CE.">
+    <!-- <meta name="twitter:image" content="https://YOUR_DOMAIN/fotosportfolio/fotoperfil.jpg"> -->
+
+    <!-- ── Dados Estruturados (JSON-LD) ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Gabriel Ricarte",
+      "jobTitle": "Desenvolvedor Web Full-Stack",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Fortaleza",
+        "addressRegion": "CE",
+        "addressCountry": "BR"
+      },
+      "email": "gabrielricarte000@gmail.com",
+      "sameAs": [
+        "https://github.com/gabriel07-gif",
+        "https://www.linkedin.com/in/gabriel-lucas-439153308/",
+        "https://instagram.com/devgabriel_01"
+      ]
+    }
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -554,7 +593,7 @@
                 <div class="about-grid">
                     <div class="about-image js-reveal-left">
                         <div class="img-wrapper">
-                            <img src="../fotosportfolio/logo5.jpg" alt="Foto de perfil de Gabriel" loading="lazy" width="280" height="300">
+                            <img src="../fotosportfolio/fotoperfil.jpg" alt="Foto de perfil de Gabriel" loading="lazy" width="280" height="300">
                             <div class="img-glow" aria-hidden="true"></div>
                         </div>
                     </div>
@@ -721,12 +760,12 @@
     <button class="back-top" id="backTop" aria-label="Voltar ao topo da página" type="button">↑</button>
 
     <!-- ═══════════ THREE.JS (intro) ═══════════ -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous"></script>
 
     <!-- ═══════════ BIBLIOTECAS ═══════════ -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"                 defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"        defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"  defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"                crossorigin="anonymous" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"       crossorigin="anonymous" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" crossorigin="anonymous" defer></script>
 
     <!-- ═══════════ SCRIPTS DO SITE ═══════════ -->
     <script src="../js/intro.js"></script>
