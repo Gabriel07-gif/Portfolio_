@@ -7,7 +7,7 @@ export default function Testimonial() {
   const { t } = useLang();
 
   return (
-    <section id="depoimento" className="testimonial-section" aria-label="Depoimento">
+    <section id="depoimento" className="testimonial-section" aria-label={t('testimonial.label')}>
       <div className="container">
         <motion.div
           className="testimonial-wrap"

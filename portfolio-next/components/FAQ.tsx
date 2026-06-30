@@ -22,7 +22,7 @@ export default function FAQ() {
   const toggle = (key: string) => setOpen(prev => prev === key ? null : key);
 
   return (
-    <section id="faq" className="bg-alt" aria-label="FAQ">
+    <section id="faq" className="bg-alt" aria-label={t('nav.faq')}>
       <div className="container">
         <motion.div
           className="section-header"
@@ -61,6 +61,7 @@ export default function FAQ() {
               <button
                 className="faq-question"
                 aria-expanded={open === key}
+                aria-controls={`faq-ans-${key}`}
                 onClick={() => toggle(key)}
                 type="button"
               >
@@ -73,7 +74,9 @@ export default function FAQ() {
               <AnimatePresence initial={false}>
                 {open === key && (
                   <motion.div
+                    id={`faq-ans-${key}`}
                     className="faq-answer"
+                    role="region"
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}

@@ -6,7 +6,7 @@ import { useLang } from '@/contexts/LangContext';
 import { useCounter } from '@/hooks/useCounter';
 import { useInView }   from '@/hooks/useInView';
 
-const TIMELINE_KEYS = ['t1', 't2', 't3', 't4'] as const;
+const TIMELINE_KEYS = ['t2', 't3', 't4'] as const;
 
 export default function About() {
   const { t }  = useLang();
@@ -19,7 +19,7 @@ export default function About() {
   const TAGS = ['about.tag1', 'about.tag2', 'about.tag3', 'about.tag4'];
 
   return (
-    <section id="sobre" aria-label="Sobre mim" ref={sectionRef}>
+    <section id="sobre" aria-label={t('nav.about')} ref={sectionRef}>
       <div className="container">
         <motion.div
           className="section-header"
@@ -70,14 +70,6 @@ export default function About() {
                 quality={98}
                 priority
                 style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto' }}
-              />
-              <div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute', inset: 0,
-                  background: 'linear-gradient(180deg, transparent 50%, rgba(0,255,136,0.06))',
-                  borderRadius: '24px',
-                }}
               />
             </motion.div>
           </motion.div>

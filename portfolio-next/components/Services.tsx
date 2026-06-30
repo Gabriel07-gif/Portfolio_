@@ -65,7 +65,7 @@ export default function Services() {
   const { t } = useLang();
 
   return (
-    <section id="servicos" className="bg-alt" aria-label="Serviços">
+    <section id="servicos" className="bg-alt" aria-label={t('nav.services')}>
       <div className="container">
         <motion.div
           className="section-header"

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Cylinder body -->
+  <path d="M16 42 L16 92 Q16 116 64 116 Q112 116 112 92 L112 42" fill="rgba(59,130,246,0.10)" stroke="#3b82f6" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Top ellipse -->
+  <ellipse cx="64" cy="42" rx="48" ry="15" fill="rgba(59,130,246,0.20)" stroke="#3b82f6" stroke-width="4"/>
+  <!-- Second layer separator -->
+  <path d="M16 67 Q16 82 64 82 Q112 82 112 67" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-dasharray="7 5"/>
+  <!-- Third layer separator -->
+  <path d="M16 90 Q16 105 64 105 Q112 105 112 90" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="5 6" opacity="0.45"/>
+</svg>

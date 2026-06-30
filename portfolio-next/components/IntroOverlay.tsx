@@ -20,11 +20,12 @@ export default function IntroOverlay() {
   const barFillRef  = useRef<HTMLDivElement>(null);
   const pctRef      = useRef<HTMLSpanElement>(null);
 
-  const [hidden,  setHidden]  = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [glowing, setGlowing] = useState(false);
+  const [hidden,    setHidden]    = useState(false);
+  const [mounted,   setMounted]   = useState(false);
+  const [glowing,   setGlowing]   = useState(false);
+  const [isTouch,   setIsTouch]   = useState(false);
 
-  /* ── Check session / reduced-motion on client ── */
+  /* ── Check session / reduced-motion / touch on client ── */
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setHidden(true);
@@ -34,6 +35,7 @@ export default function IntroOverlay() {
       setHidden(true);
       return;
     }
+    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
     setMounted(true);
   }, []);
 
@@ -489,7 +491,7 @@ export default function IntroOverlay() {
         </div>
 
         <p className="intro-skip" aria-hidden="true">
-          <span>▶</span> {t('intro.skip')}
+          <span>▶</span> {isTouch ? t('intro.skip.touch') : t('intro.skip')}
         </p>
       </div>
 

@@ -63,7 +63,7 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         onError={() => setErrored(true)}
         style={{
           position: 'absolute', inset: 0,
@@ -119,7 +119,7 @@ function ProjectCard({
   return (
     <motion.article
       className={`project-card${project.featured ? ' project-card--featured' : ''}`}
-      data-cursor-label="ABRIR"
+      data-cursor-label={t('proj.cursor')}
       initial={{ opacity: 0, y: 70, scale: 0.94 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       whileHover={{ y: -8 }}
@@ -230,7 +230,7 @@ export default function Projects() {
   const [mediaMode, setMediaMode] = React.useState<'photo' | 'video'>('photo');
 
   return (
-    <section id="projetos" aria-label="Projetos">
+    <section id="projetos" aria-label={t('nav.projects')}>
       <div className="container">
         <motion.div
           className="section-header"
@@ -256,18 +256,22 @@ export default function Projects() {
           />
         </motion.div>
 
-        <div className="projects-mode-toggle" role="group" aria-label="Modo de visualização">
+        <div className="projects-mode-toggle" role="group" aria-label={t('proj.toggle.label')}>
           <button
+            type="button"
             className={`projects-mode-btn${mediaMode === 'photo' ? ' active' : ''}`}
+            aria-pressed={mediaMode === 'photo'}
             onClick={() => setMediaMode('photo')}
           >
-            <PhotoIcon /> Fotos
+            <PhotoIcon /> {t('proj.toggle.photo')}
           </button>
           <button
+            type="button"
             className={`projects-mode-btn${mediaMode === 'video' ? ' active' : ''}`}
+            aria-pressed={mediaMode === 'video'}
             onClick={() => setMediaMode('video')}
           >
-            <VideoIcon /> Vídeos
+            <VideoIcon /> {t('proj.toggle.video')}
           </button>
         </div>
 

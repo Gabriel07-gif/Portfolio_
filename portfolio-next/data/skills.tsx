@@ -1,30 +1,31 @@
 export type ChipData = {
   name:      string;
   img?:      string;
+  imgLight?: string;
   icon?:     React.ReactNode;
   letter?:   string;
   featured?: boolean;
 };
 
 export const FRONTEND: ChipData[] = [
-  { name: 'HTML5',      img: '/images/logo3.png' },
-  { name: 'CSS3',       img: '/images/logo2.png' },
-  { name: 'JavaScript', img: '/images/logo1.png' },
-  { name: 'TypeScript', img: '/images/logo13.png', featured: true },
-  { name: 'React',      img: '/images/logo14.png', featured: true },
-  { name: 'Next.js',    img: '/images/logo5.png',  featured: true },
+  { name: 'HTML5',      img: '/images/svg/html5.svg' },
+  { name: 'CSS3',       img: '/images/svg/css3.svg' },
+  { name: 'JavaScript', img: '/images/svg/javascript.svg' },
+  { name: 'TypeScript', img: '/images/svg/typescript.svg',  featured: true },
+  { name: 'React',      img: '/images/svg/react.svg',       featured: true },
+  { name: 'Next.js',    img: '/images/svg/nextjs-white.svg', imgLight: '/images/svg/nextjs-dark.svg', featured: true },
 ];
 
 export const BACKEND: ChipData[] = [
-  { name: 'Node.js',    img: '/images/logo15.png', featured: true },
-  { name: 'PostgreSQL', img: '/images/logo4.png' },
-  { name: 'REST APIs',  img: '/images/logo16.png' },
-  { name: 'SQL',        img: '/images/logo17.png' },
+  { name: 'Node.js',    img: '/images/svg/nodejs.svg',      featured: true },
+  { name: 'PostgreSQL', img: '/images/svg/postgresql.svg' },
+  { name: 'REST APIs',  img: '/images/svg/api.svg' },
+  { name: 'SQL',        img: '/images/svg/database.svg' },
 ];
 
 export const TOOLS: ChipData[] = [
-  { name: 'Git',    img: '/images/logo18.png' },
-  { name: 'Figma',  img: '/images/logo20.png' },
-  { name: 'Vercel', img: '/images/logo22.png' },
-  { name: 'Docker', img: '/images/logo19.png' },
+  { name: 'Git',    img: '/images/svg/git.svg' },
+  { name: 'Figma',  img: '/images/svg/figma.svg' },
+  { name: 'Vercel', img: '/images/svg/vercel-white.svg', imgLight: '/images/svg/vercel-dark.svg' },
+  { name: 'Docker', img: '/images/svg/docker.svg' },
 ];

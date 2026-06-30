@@ -16,7 +16,14 @@ function SkillChip({ chip, delay }: { chip: ChipData; delay: number }) {
     >
       <span className="skill-chip-icon" aria-hidden="true">
         {chip.icon ? chip.icon : chip.img ? (
-          <Image src={chip.img} alt={chip.name} fill loading="lazy" style={{ objectFit: 'contain', padding: '0px' }} />
+          chip.imgLight ? (
+            <>
+              <Image src={chip.img}      alt={chip.name} fill loading="lazy" style={{ objectFit: 'contain' }} className="skill-img-dark" />
+              <Image src={chip.imgLight} alt=""          fill loading="lazy" style={{ objectFit: 'contain' }} className="skill-img-light" aria-hidden="true" />
+            </>
+          ) : (
+            <Image src={chip.img} alt={chip.name} fill loading="lazy" style={{ objectFit: 'contain' }} />
+          )
         ) : (
           <span className="skill-chip-letter">{chip.letter}</span>
         )}
@@ -61,7 +68,7 @@ export default function Skills() {
   const { t } = useLang();
 
   return (
-    <section id="habilidades" className="bg-alt" aria-label="Habilidades">
+    <section id="habilidades" className="bg-alt" aria-label={t('nav.skills')}>
       <div className="container">
         <motion.div
           className="section-header"

@@ -54,19 +54,12 @@ export const metadata: Metadata = {
     url:         SITE_URL,
     locale:      'pt_BR',
     siteName:    'Gabriel Ricarte — Portfolio',
-    images: [{
-      url:    '/images/project-github.png',
-      width:  1200,
-      height: 630,
-      alt:    'Gabriel Ricarte — Desenvolvedor Full-Stack',
-    }],
   },
   twitter: {
     card:        'summary_large_image',
     title:       'Gabriel Ricarte | Dev Full-Stack',
     description: 'Criando experiências digitais modernas com React, Next.js e TypeScript.',
-    images:      ['/images/project-github.png'],
-    creator:     '@devgabriel_01',
+    creator:     '@ricarte.dev',
   },
 };
 
@@ -101,7 +94,7 @@ const jsonLd = {
       sameAs: [
         'https://github.com/gabriel07-gif',
         'https://www.linkedin.com/in/gabriel-lucas-439153308/',
-        'https://instagram.com/devgabriel_01',
+        'https://instagram.com/ricarte.dev',
       ],
       knowsAbout: [
         'React', 'Next.js', 'TypeScript', 'JavaScript',

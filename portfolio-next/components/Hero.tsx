@@ -100,7 +100,7 @@ export default function Hero() {
             >
               {NAME.split('').map((char, i) => (
                 <motion.span
-                  key={i}
+                  key={`name-char-${i}`}
                   className="hero-char"
                   variants={charVariants}
                   style={{ display: 'inline-block' }}

@@ -19,12 +19,12 @@ export default function TechTape() {
     <div className="tech-tape" aria-hidden="true" role="presentation">
       <div className="tech-tape-track">
         {row1.map((tech, i) => (
-          <span key={i}>{tech}</span>
+          <span key={`r1-${i}-${tech}`}>{tech}</span>
         ))}
       </div>
       <div className="tech-tape-track-rev">
         {row2.map((tech, i) => (
-          <span key={i}>{tech}</span>
+          <span key={`r2-${i}-${tech}`}>{tech}</span>
         ))}
       </div>
     </div>

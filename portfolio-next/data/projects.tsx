@@ -43,7 +43,7 @@ export const PROJECTS: Project[] = [
     githubUrl:  '',
     urlLabel:   'jurisflow-omega.vercel.app',
     videoSrc:   '/videos/jurivox.mp4',
-    screenshot: '',
+    screenshot: '/images/project-jurivox.png',
     fallback:   <MockJuriVox />,
     featured:   false,
     live:       true,

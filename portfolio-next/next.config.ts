@@ -47,8 +47,13 @@ const nextConfig: NextConfig = {
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
       {
-        /* Long-lived cache for public images */
+        /* Long-lived cache for public images and SVGs */
         source: '/images/(.*)',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }],
+      },
+      {
+        /* Long-lived cache for videos (large files, rarely change) */
+        source: '/videos/(.*)',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=86400' }],
       },
     ];

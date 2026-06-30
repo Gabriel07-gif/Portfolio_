@@ -70,6 +70,10 @@ const pt: Dict = {
   'proj3.title': 'Este Portfólio',
   'proj3.desc':  'Next.js 15, TypeScript, Framer Motion e Three.js na intro 3D. Multi-idioma (PT/EN/ES), tema dark/light e formulário de contato via API — construído do zero.',
   'proj.btn':    'Acessar',
+  'proj.cursor': 'ABRIR',
+  'proj.toggle.label': 'Modo de visualização',
+  'proj.toggle.photo': 'Fotos',
+  'proj.toggle.video': 'Vídeos',
 
   /* Skills */
   'section.skills.pre': 'Stack', 'section.skills.acc': ' Técnica',
@@ -130,6 +134,7 @@ const pt: Dict = {
   'footer.in':       'em Fortaleza, CE',
   'footer.builtWith': 'Feito com',
   'footer.top':      '↑ Topo',
+  'footer.back':     'Voltar ao topo',
 
   /* Toast */
   'toast.lang': '🇧🇷 Português selecionado',
@@ -158,9 +163,10 @@ const pt: Dict = {
   'service3.list.4': 'Design Systems',
 
   /* Intro overlay */
-  'intro.tag':  'Dev Full-Stack · Fortaleza, CE',
-  'intro.role': 'Desenvolvedor Web Full-Stack',
-  'intro.skip': 'Clique ou pressione ESC',
+  'intro.tag':       'Dev Full-Stack · Fortaleza, CE',
+  'intro.role':      'Desenvolvedor Web Full-Stack',
+  'intro.skip':      'Clique ou pressione ESC',
+  'intro.skip.touch':'Toque para continuar',
 
   /* Navbar aria-labels */
   'nav.theme.dark':  'Ativar tema claro',
@@ -233,6 +239,10 @@ const en: Dict = {
   'proj3.title': 'This Portfolio',
   'proj3.desc':  'Next.js 15, TypeScript, Framer Motion and Three.js for the 3D intro. Multi-language (PT/EN/ES), dark/light theme and contact API — built from scratch.',
   'proj.btn':    'Open',
+  'proj.cursor': 'OPEN',
+  'proj.toggle.label': 'View mode',
+  'proj.toggle.photo': 'Photos',
+  'proj.toggle.video': 'Videos',
 
   /* Skills */
   'section.skills.pre': 'Tech', 'section.skills.acc': ' Stack',
@@ -293,6 +303,7 @@ const en: Dict = {
   'footer.in':       'in Fortaleza, Brazil',
   'footer.builtWith': 'Built with',
   'footer.top':      '↑ Top',
+  'footer.back':     'Back to top',
 
   /* Toast */
   'toast.lang': '🇺🇸 English selected',
@@ -321,9 +332,10 @@ const en: Dict = {
   'service3.list.4': 'Design Systems',
 
   /* Intro overlay */
-  'intro.tag':  'Full-Stack Dev · Fortaleza, CE',
-  'intro.role': 'Full-Stack Web Developer',
-  'intro.skip': 'Click or press ESC',
+  'intro.tag':       'Full-Stack Dev · Fortaleza, CE',
+  'intro.role':      'Full-Stack Web Developer',
+  'intro.skip':      'Click or press ESC',
+  'intro.skip.touch':'Tap to continue',
 
   /* Navbar aria-labels */
   'nav.theme.dark':  'Enable light theme',
@@ -396,6 +408,10 @@ const es: Dict = {
   'proj3.title': 'Este Portfolio',
   'proj3.desc':  'Next.js 15, TypeScript, Framer Motion y Three.js para la intro 3D. Multi-idioma (PT/EN/ES), tema dark/light y API de contacto — construido desde cero.',
   'proj.btn':    'Abrir',
+  'proj.cursor': 'ABRIR',
+  'proj.toggle.label': 'Modo de visualización',
+  'proj.toggle.photo': 'Fotos',
+  'proj.toggle.video': 'Videos',
 
   /* Skills */
   'section.skills.pre': 'Stack', 'section.skills.acc': ' Técnico',
@@ -456,6 +472,7 @@ const es: Dict = {
   'footer.in':       'en Fortaleza, Brasil',
   'footer.builtWith': 'Hecho con',
   'footer.top':      '↑ Arriba',
+  'footer.back':     'Volver arriba',
 
   /* Toast */
   'toast.lang': '🇪🇸 Español seleccionado',
@@ -484,9 +501,10 @@ const es: Dict = {
   'service3.list.4': 'Design Systems',
 
   /* Intro overlay */
-  'intro.tag':  'Dev Full-Stack · Fortaleza, CE',
-  'intro.role': 'Desarrollador Web Full-Stack',
-  'intro.skip': 'Haz clic o presiona ESC',
+  'intro.tag':       'Dev Full-Stack · Fortaleza, CE',
+  'intro.role':      'Desarrollador Web Full-Stack',
+  'intro.skip':      'Haz clic o presiona ESC',
+  'intro.skip.touch':'Toca para continuar',
 
   /* Navbar aria-labels */
   'nav.theme.dark':  'Activar tema claro',

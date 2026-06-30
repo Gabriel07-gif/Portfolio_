@@ -14,11 +14,12 @@ interface FormState {
 
 function GmailIcon() {
   return (
-    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
-      <path d="M8.5 14.5L22 23.5l13.5-9" stroke="#EA4335" strokeWidth="1.5" strokeLinecap="round"/>
-      <rect x="8" y="14" width="28" height="17" rx="2"
-        fill="none" stroke="#EA4335" strokeWidth="1.5"/>
-      <path d="M8 14l6 6M36 14l-6 6" stroke="#EA4335" strokeWidth="1.5" strokeLinecap="round"/>
+    <svg width="44" height="44" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#4CAF50" d="M45 16.2l-5 2.75-5 4.75V40h7c1.657 0 3-1.343 3-3V16.2z"/>
+      <path fill="#1E88E5" d="M3 16.2l3.614 1.71L13 23.7V40H6c-1.657 0-3-1.343-3-3V16.2z"/>
+      <polygon fill="#E53935" points="35,11.2 24,19.45 13,11.2 12,17 13,23.7 24,31.95 35,23.7 36,17"/>
+      <path fill="#C62828" d="M3 12.298V16.2l10 7.5V11.2H6C4.342 11.2 3 12.342 3 12.298z"/>
+      <path fill="#FBC02D" d="M45 12.298V16.2l-10 7.5V11.2h7C43.658 11.2 45 12.342 45 12.298z"/>
     </svg>
   );
 }
@@ -34,10 +35,10 @@ type Social = {
 
 const SOCIALS: Social[] = [
   { key: 'facebook',  label: 'Facebook',  img: '/images/logo7.png',  url: 'https://www.facebook.com/profile.php?id=61585909988380' },
-  { key: 'instagram', label: 'Instagram', img: '/images/logo8.png',  url: 'https://instagram.com/devgabriel_01' },
+  { key: 'instagram', label: 'Instagram', img: '/images/logo8.png',  url: 'https://instagram.com/ricarte.dev' },
   { key: 'whatsapp',  label: 'WhatsApp',  img: '/images/logo11.png', url: 'https://wa.me/5585988485621' },
   { key: 'github',    label: 'GitHub',    img: '/images/logo10.png', imgLight: '/images/logo9.png', url: 'https://github.com/gabriel07-gif' },
-  { key: 'gmail',     label: 'Gmail',     icon: <GmailIcon />,       url: 'mailto:gabrielricarte000@gmail.com' },
+  { key: 'gmail',     label: 'Gmail',     icon: <GmailIcon />,       url: 'https://mail.google.com/mail/?view=cm&to=gabrielricarte000@gmail.com' },
   { key: 'linkedin',  label: 'LinkedIn',  img: '/images/logo12.png', url: 'https://www.linkedin.com/in/gabriel-lucas-439153308/' },
 ];
 
@@ -112,7 +113,7 @@ export default function Contact() {
     t('form.send');
 
   return (
-    <section id="contato" className="bg-alt" aria-label="Contato">
+    <section id="contato" className="bg-alt" aria-label={t('nav.contact')}>
       <div className="container">
         <motion.div
           className="section-header"
@@ -266,7 +267,7 @@ export default function Contact() {
                 {social.icon ? social.icon : social.key === 'github' ? (
                   <>
                     <Image src={social.img!}                  alt={social.label} width={44} height={44} loading="lazy" className="github-logo-dark"  />
-                    <Image src={social.imgLight ?? social.img!} alt={social.label} width={44} height={44} loading="lazy" className="github-logo-light" aria-hidden="true" />
+                    <Image src={social.imgLight ?? social.img!} alt="" width={44} height={44} loading="lazy" className="github-logo-light" aria-hidden="true" />
                   </>
                 ) : (
                   <Image src={social.img!} alt={social.label} width={44} height={44} loading="lazy" />
