@@ -18,6 +18,17 @@ export default function CustomCursor() {
     let mx = window.innerWidth / 2, my = window.innerHeight / 2;
     let rx = mx, ry = my;
     let visible = false;
+    let rafId   = 0;
+    let scale   = 1;
+
+    const loop = () => {
+      if (!visible) { rafId = 0; return; } /* stop ticking when cursor is off-screen */
+      rafId = requestAnimationFrame(loop);
+      rx += (mx - rx) * 0.13;
+      ry += (my - ry) * 0.13;
+      dot.style.transform  = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+      ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%) scale(${scale})`;
+    };
 
     const onMove = (e: MouseEvent) => {
       mx = e.clientX; my = e.clientY;
@@ -25,16 +36,16 @@ export default function CustomCursor() {
         dot.style.opacity  = '1';
         ring.style.opacity = '1';
         visible = true;
+        if (!rafId) rafId = requestAnimationFrame(loop); /* restart RAF on re-entry */
       }
     };
+
     const onLeave = () => {
       dot.style.opacity  = '0';
       ring.style.opacity = '0';
       visible = false;
+      /* loop() will exit on its next tick — no cancelAnimationFrame needed here */
     };
-
-    document.addEventListener('mousemove',  onMove,  { passive: true });
-    document.addEventListener('mouseleave', onLeave);
 
     const isInteractive = (el: Element | null): boolean =>
       !!el?.closest('a, button, [data-interactive]');
@@ -46,19 +57,13 @@ export default function CustomCursor() {
     const onOver = (e: MouseEvent) => {
       const target = e.target as Element;
       if (isInteractive(target)) ring.classList.add('hovered');
-
       const lbl = getCursorLabel(target);
-      if (lbl) {
-        label.textContent = lbl;
-        ring.classList.add('labeled');
-      }
+      if (lbl) { label.textContent = lbl; ring.classList.add('labeled'); }
     };
 
     const onOut = (e: MouseEvent) => {
-      const target   = e.target as Element;
-      const related  = e.relatedTarget as Element | null;
-      /* Only remove classes when leaving the interactive area entirely —
-         not when moving between parent and a child element inside it. */
+      const target  = e.target as Element;
+      const related = e.relatedTarget as Element | null;
       if (isInteractive(target) && !isInteractive(related))
         ring.classList.remove('hovered');
       if (getCursorLabel(target) && !getCursorLabel(related)) {
@@ -67,24 +72,15 @@ export default function CustomCursor() {
       }
     };
 
-    document.addEventListener('mouseover', onOver, { passive: true });
-    document.addEventListener('mouseout',  onOut,  { passive: true });
-
-    let scale = 1;
     const onDown = () => { scale = 0.72; };
     const onUp   = () => { scale = 1; };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('mouseup',   onUp);
 
-    let rafId = 0;
-    const loop = () => {
-      rafId = requestAnimationFrame(loop);
-      rx += (mx - rx) * 0.13;
-      ry += (my - ry) * 0.13;
-      dot.style.transform  = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
-      ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%) scale(${scale})`;
-    };
-    rafId = requestAnimationFrame(loop);
+    document.addEventListener('mousemove',  onMove,  { passive: true });
+    document.addEventListener('mouseleave', onLeave);
+    document.addEventListener('mouseover',  onOver,  { passive: true });
+    document.addEventListener('mouseout',   onOut,   { passive: true });
+    document.addEventListener('mousedown',  onDown);
+    document.addEventListener('mouseup',    onUp);
 
     return () => {
       document.removeEventListener('mousemove',  onMove);

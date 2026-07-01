@@ -69,11 +69,11 @@ export default function Navbar() {
 
   return (
     <header>
-      <nav className={`navbar${scrolled ? ' scrolled' : ''}`} id="navbar" aria-label="Menu principal">
+      <nav className={`navbar${scrolled ? ' scrolled' : ''}`} id="navbar" aria-label={t('nav.main.label')}>
         <a
           href="#inicio"
           className="logo"
-          aria-label="Gabriel — Início"
+          aria-label={t('nav.logo.label')}
           onClick={e => { e.preventDefault(); handleNavClick('#inicio'); }}
         >
           Gabriel

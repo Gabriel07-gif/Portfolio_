@@ -71,7 +71,7 @@ export default async function Image() {
               letterSpacing: '0.22em', textTransform: 'uppercase',
               fontWeight: 500,
             }}>
-              Desenvolvedor Web Full-Stack · Fortaleza, CE
+              Full-Stack Web Developer · Fortaleza, Brazil
             </span>
           </div>
 
@@ -137,7 +137,7 @@ export default async function Image() {
               width: 9, height: 9, borderRadius: 5,
               background: '#00ff88',
             }} />
-            Disponível para projetos
+            Available for projects
           </div>
         </div>
       </div>

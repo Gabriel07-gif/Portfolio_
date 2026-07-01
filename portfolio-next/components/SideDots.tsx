@@ -37,7 +37,7 @@ export default function SideDots() {
   };
 
   return (
-    <nav className="side-dots" id="sideDots" aria-label="Seções da página">
+    <nav className="side-dots" id="sideDots" aria-label={t('nav.sections.label')}>
       {SECTIONS.map(({ href, labelKey }) => (
         <a
           key={href}

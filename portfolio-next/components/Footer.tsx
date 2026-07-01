@@ -49,7 +49,7 @@ export default function Footer() {
         </div>
 
         {/* Built with */}
-        <div className="footer-stack" aria-label="Stack usada">
+        <div className="footer-stack" aria-label={t('footer.stack.label')}>
           <span className="footer-stack-label">{t('footer.builtWith')}</span>
           <div className="footer-stack-pills">
             {STACK.map(s => (

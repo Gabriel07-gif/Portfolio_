@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useLang } from '@/contexts/LangContext';
 
 export default function Error({
   error,
@@ -9,8 +10,12 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useLang();
+
   useEffect(() => {
-    console.error('[App Error]', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[App Error]', error);
+    }
   }, [error]);
 
   return (
@@ -35,7 +40,7 @@ export default function Error({
           backgroundClip: 'text',
         }}
       >
-        Erro
+        {t('error.code')}
       </div>
 
       <h1
@@ -44,7 +49,7 @@ export default function Error({
           color: 'var(--text, #e8eaf0)', margin: 0,
         }}
       >
-        Algo deu errado
+        {t('error.title')}
       </h1>
 
       <p
@@ -53,7 +58,7 @@ export default function Error({
           lineHeight: 1.75, margin: 0, fontSize: '0.95rem',
         }}
       >
-        Um erro inesperado aconteceu. Tente recarregar a página.
+        {t('error.desc')}
       </p>
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -67,7 +72,7 @@ export default function Error({
             border: 'none', cursor: 'pointer',
           }}
         >
-          Tentar novamente
+          {t('error.retry')}
         </button>
         <a
           href="/"
@@ -79,7 +84,7 @@ export default function Error({
             textDecoration: 'none',
           }}
         >
-          Voltar ao início
+          {t('error.back')}
         </a>
       </div>
 

@@ -1,9 +1,11 @@
 import type { NextConfig } from 'next';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const CSP = [
   "default-src 'self'",
-  /* Next.js requires unsafe-inline for inline scripts/styles and Framer Motion for inline transforms */
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  /* unsafe-eval only in development for Next.js HMR — never in production */
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: https:",
@@ -31,6 +33,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ['framer-motion'],
+  },
   images: {
     remotePatterns: [],
     formats: ['image/avif', 'image/webp'],

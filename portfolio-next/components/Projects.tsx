@@ -43,35 +43,49 @@ function VideoIcon() {
   );
 }
 
-function VideoPreview({ src, poster, fallback }: { src: string; poster?: string; fallback: React.ReactNode }) {
-  const [errored, setErrored] = React.useState(false);
+const PROJECT_IMG_SIZES = '(max-width: 700px) 100vw, (max-width: 1100px) calc(50vw - 32px), 460px';
 
-  if (errored) {
-    return (
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-        {fallback}
-      </div>
+function VideoPreview({ src, poster, fallback }: { src: string; poster?: string; fallback: React.ReactNode }) {
+  const [errored,   setErrored]   = React.useState(false);
+  const [inView,    setInView]    = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } },
+      { rootMargin: '300px' }
     );
-  }
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const placeholder = poster ? (
+    <Image
+      src={poster} alt="" fill
+      style={{ objectFit: 'cover', objectPosition: 'top' }}
+      sizes={PROJECT_IMG_SIZES}
+    />
+  ) : fallback;
 
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-      <video
-        src={src}
-        poster={poster}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        onError={() => setErrored(true)}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover', objectPosition: 'top',
-          display: 'block',
-        }}
-      />
+    <div ref={containerRef} style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+      {errored ? fallback : inView ? (
+        <video
+          src={src}
+          poster={poster}
+          autoPlay muted loop playsInline
+          preload="metadata"
+          onError={() => setErrored(true)}
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover', objectPosition: 'top',
+            display: 'block',
+          }}
+        />
+      ) : placeholder}
     </div>
   );
 }
@@ -159,7 +173,7 @@ function ProjectCard({
                     alt={t(project.titleKey)}
                     fill
                     style={{ objectFit: 'cover', objectPosition: 'top' }}
-                    sizes="(max-width: 768px) 100vw, 400px"
+                    sizes={PROJECT_IMG_SIZES}
                   />
                 ) : project.fallback
               }
@@ -171,7 +185,7 @@ function ProjectCard({
                 alt={t(project.titleKey)}
                 fill
                 style={{ objectFit: 'cover', objectPosition: 'top' }}
-                sizes="(max-width: 768px) 100vw, 400px"
+                sizes={PROJECT_IMG_SIZES}
               />
             </div>
           ) : (
@@ -184,7 +198,7 @@ function ProjectCard({
         <div className="project-card-meta">
           <span className="project-card-num">{String(index + 1).padStart(2, '0')}</span>
           {project.live && (
-            <span className="project-live-badge" aria-label="Projeto no ar">
+            <span className="project-live-badge" aria-label={t('proj.live.label')}>
               <span className="project-live-dot" aria-hidden="true" />
               LIVE
             </span>
@@ -193,7 +207,7 @@ function ProjectCard({
         <div className="project-tag">{t(project.tagKey)}</div>
         <h3>{t(project.titleKey)}</h3>
         <p>{t(project.descKey)}</p>
-        <div className="project-techs" aria-label="Tecnologias usadas">
+        <div className="project-techs" aria-label={t('proj.techs.label')}>
           {project.techs.map(tech => (
             <span key={tech}>{tech}</span>
           ))}
@@ -214,7 +228,7 @@ function ProjectCard({
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-outline magnetic btn-icon"
-              aria-label="Ver código no GitHub"
+              aria-label={t('proj.github.label')}
             >
               <GitHubIcon />
             </a>

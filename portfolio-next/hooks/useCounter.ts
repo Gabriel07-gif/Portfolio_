@@ -18,16 +18,20 @@ export function useCounter(
 
   useEffect(() => {
     if (!trigger) return;
+    let rafId = 0;
     const timer = setTimeout(() => {
       const start = performance.now();
       const tick = (now: number) => {
         const p = Math.min((now - start) / duration, 1);
         setValue(Math.round((1 - Math.pow(1 - p, 3)) * target));
-        if (p < 1) requestAnimationFrame(tick);
+        if (p < 1) rafId = requestAnimationFrame(tick);
       };
-      requestAnimationFrame(tick);
+      rafId = requestAnimationFrame(tick);
     }, delayMs);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(rafId);
+    };
   }, [target, duration, delayMs, trigger]);
 
   return value;

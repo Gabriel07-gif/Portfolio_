@@ -48,9 +48,6 @@ const pt: Dict = {
   'testimonial.label': 'O que dizem',
   /* Timeline */
   'timeline.title':    'Trajetória',
-  'timeline.t1.year':  '2022',
-  'timeline.t1.title': 'Início na Programação',
-  'timeline.t1.desc':  'Primeiros projetos em HTML, CSS e JavaScript para o negócio da família.',
   'timeline.t2.year':  '2023',
   'timeline.t2.title': 'Análise e Des. de Sistemas',
   'timeline.t2.desc':  'Ingresso na Estácio, Fortaleza — ADS. Foco em web full-stack.',
@@ -177,6 +174,33 @@ const pt: Dict = {
 
   /* Footer */
   'footer.rights': 'Todos os direitos reservados.',
+
+  /* Aria-labels */
+  'hero.label':          'Apresentação',
+  'hero.location.label': 'Localização',
+  'hero.stats.label':    'Estatísticas',
+  'about.tags.label':    'Áreas de atuação',
+  'about.stats.label':   'Números',
+  'backtop.label':       'Voltar ao topo da página',
+  'form.label':          'Formulário de contato',
+  'footer.stack.label':  'Stack usada',
+  'intro.dialog.label':  'Animação de entrada',
+  'nav.sections.label':  'Seções da página',
+  'nav.main.label':      'Menu principal',
+  'proj.live.label':     'Projeto no ar',
+  'proj.techs.label':    'Tecnologias usadas',
+  'proj.github.label':   'Ver código no GitHub',
+
+  /* i18n fixes */
+  'hero.location':    'Fortaleza, CE',
+  'about.photo.alt':  'Foto de perfil de Gabriel',
+  'nav.logo.label':   'Gabriel — Início',
+  'error.code':       'Erro',
+  'error.title':      'Algo deu errado',
+  'error.desc':       'Um erro inesperado aconteceu. Tente recarregar a página.',
+  'error.retry':      'Tentar novamente',
+  'error.back':       'Voltar ao início',
+  'notFound.code':    'erro: rota não resolvida · código 404',
 };
 
 const en: Dict = {
@@ -217,9 +241,6 @@ const en: Dict = {
   'testimonial.label': 'What they say',
   /* Timeline */
   'timeline.title':    'Journey',
-  'timeline.t1.year':  '2022',
-  'timeline.t1.title': 'Started Coding',
-  'timeline.t1.desc':  'First projects in HTML, CSS and JavaScript for the family business.',
   'timeline.t2.year':  '2023',
   'timeline.t2.title': 'Systems Analysis & Dev',
   'timeline.t2.desc':  'Enrolled at Estácio, Fortaleza — ADS. Focus on full-stack web.',
@@ -346,6 +367,33 @@ const en: Dict = {
 
   /* Footer */
   'footer.rights': 'All rights reserved.',
+
+  /* Aria-labels */
+  'hero.label':          'Presentation',
+  'hero.location.label': 'Location',
+  'hero.stats.label':    'Statistics',
+  'about.tags.label':    'Areas of expertise',
+  'about.stats.label':   'Numbers',
+  'backtop.label':       'Back to top',
+  'form.label':          'Contact form',
+  'footer.stack.label':  'Tech stack used',
+  'intro.dialog.label':  'Entry animation',
+  'nav.sections.label':  'Page sections',
+  'nav.main.label':      'Main menu',
+  'proj.live.label':     'Live project',
+  'proj.techs.label':    'Technologies used',
+  'proj.github.label':   'View code on GitHub',
+
+  /* i18n fixes */
+  'hero.location':    'Fortaleza, CE',
+  'about.photo.alt':  'Gabriel profile photo',
+  'nav.logo.label':   'Gabriel — Home',
+  'error.code':       'Error',
+  'error.title':      'Something went wrong',
+  'error.desc':       'An unexpected error occurred. Try reloading the page.',
+  'error.retry':      'Try again',
+  'error.back':       'Back to home',
+  'notFound.code':    'error: route not resolved · code 404',
 };
 
 const es: Dict = {
@@ -386,9 +434,6 @@ const es: Dict = {
   'testimonial.label': 'Lo que dicen',
   /* Timeline */
   'timeline.title':    'Trayectoria',
-  'timeline.t1.year':  '2022',
-  'timeline.t1.title': 'Inicio en Programación',
-  'timeline.t1.desc':  'Primeros proyectos en HTML, CSS y JavaScript para el negocio familiar.',
   'timeline.t2.year':  '2023',
   'timeline.t2.title': 'Análisis y Des. de Sistemas',
   'timeline.t2.desc':  'Ingreso en Estácio, Fortaleza — ADS. Enfoque en web full-stack.',
@@ -515,6 +560,33 @@ const es: Dict = {
 
   /* Footer */
   'footer.rights': 'Todos los derechos reservados.',
+
+  /* Aria-labels */
+  'hero.label':          'Presentación',
+  'hero.location.label': 'Ubicación',
+  'hero.stats.label':    'Estadísticas',
+  'about.tags.label':    'Áreas de trabajo',
+  'about.stats.label':   'Estadísticas',
+  'backtop.label':       'Volver al inicio',
+  'form.label':          'Formulario de contacto',
+  'footer.stack.label':  'Stack utilizada',
+  'intro.dialog.label':  'Animación de entrada',
+  'nav.sections.label':  'Secciones de la página',
+  'nav.main.label':      'Menú principal',
+  'proj.live.label':     'Proyecto en vivo',
+  'proj.techs.label':    'Tecnologías usadas',
+  'proj.github.label':   'Ver código en GitHub',
+
+  /* i18n fixes */
+  'hero.location':    'Fortaleza, CE',
+  'about.photo.alt':  'Foto de perfil de Gabriel',
+  'nav.logo.label':   'Gabriel — Inicio',
+  'error.code':       'Error',
+  'error.title':      'Algo salió mal',
+  'error.desc':       'Ocurrió un error inesperado. Intenta recargar la página.',
+  'error.retry':      'Intentar de nuevo',
+  'error.back':       'Volver al inicio',
+  'notFound.code':    'error: ruta no resuelta · código 404',
 };
 
 export const DICT: Record<Lang, Dict> = { pt, en, es };

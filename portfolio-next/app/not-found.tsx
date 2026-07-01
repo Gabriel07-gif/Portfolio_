@@ -91,7 +91,7 @@ export default function NotFound() {
           letterSpacing: '0.1em', marginTop: 24,
         }}
       >
-        erro: rota não resolvida · código 404
+        {t('notFound.code')}
       </motion.p>
     </div>
   );

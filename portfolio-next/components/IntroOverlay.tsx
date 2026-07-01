@@ -400,6 +400,20 @@ export default function IntroOverlay() {
         cancelAnimationFrame(rafId);
         if (!isMob) overlay.removeEventListener('mousemove', onMouse);
         window.removeEventListener('resize', onResize);
+
+        /* dispose all Three.js GPU resources */
+        sphere.geometry.dispose();
+        sphereMat.dispose();
+        shell.geometry.dispose();
+        shellMat.dispose();
+        orbits.forEach(l => {
+          l.geometry.dispose();
+          (l.material as ThreeTypes.LineBasicMaterial).dispose();
+        });
+        pGeo.dispose();
+        partMat.dispose();
+        sGeo.dispose();
+        starMat.dispose();
         spGeo.dispose();
         spMat.dispose();
         renderer.dispose();
@@ -429,7 +443,7 @@ export default function IntroOverlay() {
       id="intro-overlay"
       ref={overlayRef}
       role="dialog"
-      aria-label="Animação de entrada"
+      aria-label={t('intro.dialog.label')}
       aria-modal="true"
     >
       <canvas

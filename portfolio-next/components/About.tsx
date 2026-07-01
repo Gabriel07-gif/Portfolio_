@@ -64,11 +64,12 @@ export default function About() {
               <div className="img-border" />
               <Image
                 src="/images/fotonova.jpg"
-                alt="Foto de perfil de Gabriel"
+                alt={t('about.photo.alt')}
                 width={680}
                 height={760}
                 quality={98}
                 priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 45vw, 540px"
                 style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto' }}
               />
             </motion.div>
@@ -85,13 +86,13 @@ export default function About() {
             <p dangerouslySetInnerHTML={{ __html: t('about.p1') }} />
             <p dangerouslySetInnerHTML={{ __html: t('about.p2') }} />
 
-            <div className="about-tags" aria-label="Áreas de atuação">
+            <div className="about-tags" aria-label={t('about.tags.label')}>
               {TAGS.map(key => (
                 <span key={key}>{t(key)}</span>
               ))}
             </div>
 
-            <div className="about-stats" aria-label="Números">
+            <div className="about-stats" aria-label={t('about.stats.label')}>
               <div className="about-stat">
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
                   <span className="stat-num">{years}</span>

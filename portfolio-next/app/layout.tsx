@@ -84,7 +84,7 @@ const jsonLd = {
       jobTitle:    'Desenvolvedor Web Full-Stack',
       description: 'Desenvolvedor Web Full-Stack em Fortaleza, CE. Especializado em React, Next.js, TypeScript, Node.js e PostgreSQL.',
       url:   SITE_URL,
-      email: 'gabrielricarte000@gmail.com',
+      email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'gabrielricarte000@gmail.com',
       address: {
         '@type':         'PostalAddress',
         addressLocality: 'Fortaleza',

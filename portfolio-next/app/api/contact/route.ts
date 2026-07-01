@@ -104,12 +104,16 @@ export async function POST(req: NextRequest) {
         `,
       });
     } else {
-      console.log('[contact] SMTP not configured. Message received:', { name, email });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[contact] SMTP not configured. Message received:', { name, email });
+      }
     }
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error('[contact] Error:', err);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[contact] Error:', err);
+    }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -42,7 +42,7 @@ const SOCIALS: Social[] = [
   { key: 'linkedin',  label: 'LinkedIn',  img: '/images/logo12.png', url: 'https://www.linkedin.com/in/gabriel-lucas-439153308/' },
 ];
 
-const MAILTO_FALLBACK = 'gabrielricarte000@gmail.com';
+const MAILTO_FALLBACK = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'gabrielricarte000@gmail.com';
 
 export default function Contact() {
   const { t } = useLang();
@@ -154,7 +154,7 @@ export default function Contact() {
           className="contact-form"
           id="contactForm"
           noValidate
-          aria-label="Formulário de contato"
+          aria-label={t('form.label')}
           onSubmit={handleSubmit}
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}

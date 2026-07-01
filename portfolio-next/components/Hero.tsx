@@ -65,7 +65,7 @@ export default function Hero() {
 
 
   return (
-    <section id="inicio" className="hero" ref={sectionRef} aria-label="Apresentação">
+    <section id="inicio" className="hero" ref={sectionRef} aria-label={t('hero.label')}>
       <div
         className="hero-orb"
         ref={orbRef}
@@ -78,13 +78,13 @@ export default function Hero() {
 
           {/* ── LEFT ── */}
           <div>
-            <motion.div className="hero-location" {...fadeUp(0)} aria-label="Localização">
+            <motion.div className="hero-location" {...fadeUp(0)} aria-label={t('hero.location.label')}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
                   fill="currentColor" opacity=".9"/>
                 <circle cx="12" cy="9" r="2.5" fill="var(--bg)" />
               </svg>
-              Fortaleza, CE
+              {t('hero.location')}
             </motion.div>
 
             <motion.p className="hero-greeting" {...fadeUp(0.1)}>
@@ -152,7 +152,7 @@ export default function Hero() {
             </motion.div>
 
             {/* Stats row */}
-            <motion.div className="hero-stats" {...fadeUp(0.9)} aria-label="Estatísticas">
+            <motion.div className="hero-stats" {...fadeUp(0.9)} aria-label={t('hero.stats.label')}>
               <div>
                 <span className="stat-n">{yearsVal}</span>
                 <span className="stat-plus" aria-hidden="true">+</span>

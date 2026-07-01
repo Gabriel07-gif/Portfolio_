@@ -13,7 +13,12 @@ export function useInView<T extends Element = HTMLElement>(
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setInView(true); },
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          obs.disconnect(); /* only needs to fire once */
+        }
+      },
       { threshold },
     );
     obs.observe(el);
