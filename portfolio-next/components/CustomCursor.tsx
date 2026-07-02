@@ -8,7 +8,9 @@ export default function CustomCursor() {
   const labelRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (window.matchMedia('(pointer: coarse)').matches) return;
+    /* (any-pointer: fine) — true if ANY input device supports fine pointing
+       (mouse OR stylus), correctly handles hybrid tablets with both touchscreen and stylus */
+    if (!window.matchMedia('(any-pointer: fine)').matches) return;
 
     const dot   = dotRef.current;
     const ring  = ringRef.current;

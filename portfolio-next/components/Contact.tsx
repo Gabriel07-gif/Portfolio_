@@ -99,8 +99,8 @@ export default function Contact() {
       }
     } catch {
       /* API unreachable — open the user's mail client as fallback */
-      const sub  = encodeURIComponent(`Contato via Portfolio — ${form.name}`);
-      const body = encodeURIComponent(`${form.message}\n\nDe: ${form.name} <${form.email}>`);
+      const sub  = encodeURIComponent(`${t('form.fallback.subject')}${form.name}`);
+      const body = encodeURIComponent(`${form.message}\n\n${t('form.fallback.from')}${form.name} <${form.email}>`);
       window.open(`mailto:${MAILTO_FALLBACK}?subject=${sub}&body=${body}`, '_blank');
       showToast(t('form.fallback'));
       setStatus('idle');

@@ -8,7 +8,7 @@ export interface Project {
   descKey:    string;
   techs:      string[];
   url:        string;
-  githubUrl:  string;
+  githubUrl?: string;
   urlLabel:   string;
   videoSrc?:  string;
   screenshot: string;
@@ -25,7 +25,6 @@ export const PROJECTS: Project[] = [
     descKey:    'proj1.desc',
     techs:      ['HTML', 'CSS', 'JavaScript'],
     url:        'https://www.venezamotoseveiculos.com.br',
-    githubUrl:  '',
     urlLabel:   'venezamotoseveiculos.com.br',
     videoSrc:   '/videos/venezamotos.mp4',
     screenshot: '/images/project-venezamotos.png',
@@ -40,7 +39,6 @@ export const PROJECTS: Project[] = [
     descKey:    'proj2.desc',
     techs:      ['Next.js', 'TypeScript', 'Supabase', 'Clerk', 'Stripe', 'Tailwind'],
     url:        'https://jurisflow-omega.vercel.app/',
-    githubUrl:  '',
     urlLabel:   'jurisflow-omega.vercel.app',
     videoSrc:   '/videos/jurivox.mp4',
     screenshot: '/images/project-jurivox.png',

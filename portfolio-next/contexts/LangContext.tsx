@@ -31,7 +31,7 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l);
-    localStorage.setItem('g-lang', l);
+    try { localStorage.setItem('g-lang', l); } catch {}
     document.documentElement.lang = toLangAttr(l);
     document.title = translate(l, 'page.title');
   }, []);

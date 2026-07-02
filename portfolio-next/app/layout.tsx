@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import { headers } from 'next/headers';
 import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LangProvider }  from '@/contexts/LangContext';
@@ -130,17 +131,21 @@ const jsonLd = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get('x-nonce') ?? '';
+
   return (
     <html lang="pt-BR" data-theme="dark" suppressHydrationWarning>
       <head>
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* Inline theme script prevents FOUC */}
+        {/* Inline theme script prevents FOUC — nonce required for strict CSP */}
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var s=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',s);}catch(e){}})();`,
           }}

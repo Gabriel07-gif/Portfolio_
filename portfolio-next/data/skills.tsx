@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react';
+
 export type ChipData = {
   name:      string;
   img?:      string;
   imgLight?: string;
-  icon?:     React.ReactNode;
+  icon?:     ReactNode;
   letter?:   string;
   featured?: boolean;
 };

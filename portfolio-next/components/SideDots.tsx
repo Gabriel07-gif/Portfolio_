@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useLang } from '@/contexts/LangContext';
+import { useActiveSection } from '@/hooks/useActiveSection';
 
 const SECTIONS = [
   { href: '#inicio',      labelKey: 'nav.home'     },
@@ -15,20 +15,7 @@ const SECTIONS = [
 
 export default function SideDots() {
   const { t }  = useLang();
-  const [active, setActive] = useState('#inicio');
-
-  useEffect(() => {
-    const secs = document.querySelectorAll<HTMLElement>('section[id]');
-    const obs  = new IntersectionObserver(
-      entries => {
-        const visible = entries.find(e => e.isIntersecting);
-        if (visible) setActive(`#${visible.target.id}`);
-      },
-      { threshold: 0.4 }
-    );
-    secs.forEach(s => obs.observe(s));
-    return () => obs.disconnect();
-  }, []);
+  const [active, setActive] = useActiveSection();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();

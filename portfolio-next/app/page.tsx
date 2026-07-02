@@ -1,3 +1,4 @@
+import SkipLink      from '@/components/SkipLink';
 import Navbar        from '@/components/Navbar';
 import Hero          from '@/components/Hero';
 import TechTape      from '@/components/TechTape';
@@ -17,9 +18,7 @@ import ClientShell   from '@/components/ClientShell';
 export default function Home() {
   return (
     <>
-      <a href="#main-content" className="skip-to-content">
-        Pular para o conteúdo
-      </a>
+      <SkipLink />
 
       {/* Browser-only: intro overlay, custom cursor, particles, magnetic, smooth scroll */}
       <ClientShell />

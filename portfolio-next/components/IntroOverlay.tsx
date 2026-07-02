@@ -421,7 +421,7 @@ export default function IntroOverlay() {
     };
 
     let isCleaned = false;
-    const cleanupPromise = init();
+    const cleanupPromise = init().catch(() => undefined);
 
     return () => {
       isCleaned = true;

@@ -18,9 +18,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark');
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme') as Theme | null;
     const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const initial = saved ?? preferred;
+    let initial: Theme = preferred;
+    /* localStorage throws in private browsing (Safari) or when storage is blocked */
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark' || saved === 'light') initial = saved;
+    } catch {}
     setTheme(initial);
     document.documentElement.setAttribute('data-theme', initial);
   }, []);
@@ -28,7 +32,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggle = () => {
     setTheme(prev => {
       const next = prev === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('theme', next);
+      try { localStorage.setItem('theme', next); } catch {}
       document.documentElement.setAttribute('data-theme', next);
       return next;
     });

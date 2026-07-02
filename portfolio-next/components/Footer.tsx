@@ -2,6 +2,8 @@
 
 import { useLang } from '@/contexts/LangContext';
 
+const YEAR = new Date().getFullYear();
+
 const SOCIALS = [
   {
     label: 'GitHub',
@@ -81,7 +83,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-copy">
-        <p>&copy; {new Date().getFullYear()} Gabriel Ricarte &mdash; {t('footer.rights')}</p>
+        <p>&copy; {YEAR} Gabriel Ricarte &mdash; {t('footer.rights')}</p>
       </div>
     </footer>
   );

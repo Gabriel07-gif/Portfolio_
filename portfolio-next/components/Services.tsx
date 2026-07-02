@@ -108,7 +108,7 @@ export default function Services() {
               <div className="service-icon" aria-hidden="true">{svc.icon}</div>
               <h3>{t(svc.titleKey)}</h3>
               <p>{t(svc.descKey)}</p>
-              <ul className="service-list" aria-label={t('section.services.pre') + t('section.services.acc')}>
+              <ul className="service-list" aria-label={t(svc.titleKey)}>
                 {svc.listKeys.map(key => (
                   <li key={key}>{t(key)}</li>
                 ))}

@@ -6,9 +6,20 @@ const rateLimitStore = new Map<string, { count: number; reset: number }>();
 const RATE_WINDOW_MS = 60_000; // 1 minute window
 const RATE_LIMIT_MAX = 3;      // max 3 submissions per window per IP
 
+let lastCleanup = 0;
+
 function isRateLimited(ip: string): boolean {
-  const now  = Date.now();
-  const rec  = rateLimitStore.get(ip);
+  const now = Date.now();
+
+  // Evict expired entries every 5 minutes to prevent unbounded memory growth
+  if (now - lastCleanup > 300_000) {
+    lastCleanup = now;
+    for (const [key, rec] of rateLimitStore) {
+      if (now > rec.reset) rateLimitStore.delete(key);
+    }
+  }
+
+  const rec = rateLimitStore.get(ip);
   if (!rec || now > rec.reset) {
     rateLimitStore.set(ip, { count: 1, reset: now + RATE_WINDOW_MS });
     return false;
@@ -19,14 +30,21 @@ function isRateLimited(ip: string): boolean {
 }
 
 /* ── Input sanitization — strips newlines (SMTP header injection guard) ── */
+const HTML_ESCAPE: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#x27;',
+  '`': '&#x60;',
+};
+
 function sanitize(str: string, max: number): string {
   return String(str)
     .replace(/[\r\n]/g, ' ')
     .trim()
     .slice(0, max)
-    .replace(/[<>"'`]/g, c =>
-      ({ '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', '`': '&#x60;' }[c] ?? c)
-    );
+    .replace(/[&<>"'`]/g, c => HTML_ESCAPE[c]);
 }
 
 function validateEmail(email: string): boolean {

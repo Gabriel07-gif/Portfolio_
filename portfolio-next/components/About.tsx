@@ -1,10 +1,18 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useLang } from '@/contexts/LangContext';
 import { useCounter } from '@/hooks/useCounter';
 import { useInView }   from '@/hooks/useInView';
+
+function parseBold(str: string): ReactNode {
+  return str.split(/(<strong>.*?<\/strong>)/g).map((part, i) => {
+    const m = part.match(/^<strong>(.*?)<\/strong>$/);
+    return m ? <strong key={i}>{m[1]}</strong> : part;
+  });
+}
 
 const TIMELINE_KEYS = ['t2', 't3', 't4'] as const;
 
@@ -83,8 +91,8 @@ export default function About() {
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           >
-            <p dangerouslySetInnerHTML={{ __html: t('about.p1') }} />
-            <p dangerouslySetInnerHTML={{ __html: t('about.p2') }} />
+            <p>{parseBold(t('about.p1'))}</p>
+            <p>{parseBold(t('about.p2'))}</p>
 
             <div className="about-tags" aria-label={t('about.tags.label')}>
               {TAGS.map(key => (

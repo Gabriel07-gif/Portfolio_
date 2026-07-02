@@ -126,6 +126,8 @@ const pt: Dict = {
   'form.error.name':    'Nome obrigatório (máx. 80 caracteres)',
   'form.error.email':   'E-mail inválido',
   'form.error.message': 'Mensagem obrigatória (máx. 2000 caracteres)',
+  'form.fallback.subject': 'Contato via Portfolio — ',
+  'form.fallback.from':    'De: ',
 
   /* Footer */
   'footer.in':       'em Fortaleza, CE',
@@ -192,6 +194,7 @@ const pt: Dict = {
   'proj.github.label':   'Ver código no GitHub',
 
   /* i18n fixes */
+  'skip.content':     'Pular para o conteúdo',
   'hero.location':    'Fortaleza, CE',
   'about.photo.alt':  'Foto de perfil de Gabriel',
   'nav.logo.label':   'Gabriel — Início',
@@ -319,6 +322,8 @@ const en: Dict = {
   'form.error.name':    'Name is required (max 80 chars)',
   'form.error.email':   'Invalid email address',
   'form.error.message': 'Message is required (max 2000 chars)',
+  'form.fallback.subject': 'Contact via Portfolio — ',
+  'form.fallback.from':    'From: ',
 
   /* Footer */
   'footer.in':       'in Fortaleza, Brazil',
@@ -385,6 +390,7 @@ const en: Dict = {
   'proj.github.label':   'View code on GitHub',
 
   /* i18n fixes */
+  'skip.content':     'Skip to content',
   'hero.location':    'Fortaleza, CE',
   'about.photo.alt':  'Gabriel profile photo',
   'nav.logo.label':   'Gabriel — Home',
@@ -512,6 +518,8 @@ const es: Dict = {
   'form.error.name':    'Nombre requerido (máx. 80 caracteres)',
   'form.error.email':   'Email inválido',
   'form.error.message': 'Mensaje requerido (máx. 2000 caracteres)',
+  'form.fallback.subject': 'Contacto via Portfolio — ',
+  'form.fallback.from':    'De: ',
 
   /* Footer */
   'footer.in':       'en Fortaleza, Brasil',
@@ -578,6 +586,7 @@ const es: Dict = {
   'proj.github.label':   'Ver código en GitHub',
 
   /* i18n fixes */
+  'skip.content':     'Saltar al contenido',
   'hero.location':    'Fortaleza, CE',
   'about.photo.alt':  'Foto de perfil de Gabriel',
   'nav.logo.label':   'Gabriel — Inicio',
@@ -597,9 +606,12 @@ export function translate(lang: Lang, key: string): string {
 
 export function detectLang(): Lang {
   if (typeof window === 'undefined') return 'pt';
-  const saved = localStorage.getItem('g-lang') as Lang | null;
-  if (saved && DICT[saved]) return saved;
-  const br = (navigator.language || '').toLowerCase().slice(0, 2) as Lang;
-  if (DICT[br]) return br;
+  /* localStorage throws in private browsing (Safari) or when storage is blocked */
+  try {
+    const saved = localStorage.getItem('g-lang');
+    if (saved && saved in DICT) return saved as Lang;
+  } catch {}
+  const code = (navigator.language || '').toLowerCase().slice(0, 2);
+  if (code in DICT) return code as Lang;
   return 'pt';
 }

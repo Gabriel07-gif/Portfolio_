@@ -27,7 +27,7 @@ export default function Hero() {
   useEffect(() => {
     const hero = sectionRef.current;
     const orb  = orbRef.current;
-    if (!hero || !orb || window.matchMedia('(pointer: coarse)').matches) return;
+    if (!hero || !orb || !window.matchMedia('(any-pointer: fine)').matches) return;
     const onMove = (e: MouseEvent) => {
       const r = hero.getBoundingClientRect();
       orb.style.left = `${e.clientX - r.left}px`;

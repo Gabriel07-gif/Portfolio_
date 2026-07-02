@@ -59,6 +59,7 @@ export default function FAQ() {
               transition={{ duration: 0.5, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
             >
               <button
+                id={`faq-btn-${key}`}
                 className="faq-question"
                 aria-expanded={open === key}
                 aria-controls={`faq-ans-${key}`}
@@ -77,6 +78,7 @@ export default function FAQ() {
                     id={`faq-ans-${key}`}
                     className="faq-answer"
                     role="region"
+                    aria-labelledby={`faq-btn-${key}`}
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}

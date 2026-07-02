@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 
 export default function MagneticLayer() {
   useEffect(() => {
-    if (typeof window === 'undefined') return;
     if (window.matchMedia('(pointer: coarse)').matches) return;
 
     const STRENGTH = 0.4;
@@ -14,7 +13,7 @@ export default function MagneticLayer() {
       if (attached.has(el)) return;
       attached.add(el);
 
-      let rafId          = 0;
+      let rafId           = 0;
       let transitionTimer = 0;
 
       const onMove = (evt: Event) => {
@@ -46,10 +45,18 @@ export default function MagneticLayer() {
 
     scan();
 
-    const observer = new MutationObserver(scan);
+    /* Debounce to avoid scanning on every frame during animations */
+    let debounceId = 0;
+    const observer = new MutationObserver(() => {
+      clearTimeout(debounceId);
+      debounceId = window.setTimeout(scan, 150);
+    });
     observer.observe(document.body, { childList: true, subtree: true });
 
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(debounceId);
+      observer.disconnect();
+    };
   }, []);
 
   return null;

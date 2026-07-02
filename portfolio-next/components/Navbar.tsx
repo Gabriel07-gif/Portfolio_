@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLang } from '@/contexts/LangContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { type Lang } from '@/lib/i18n';
+import { useActiveSection } from '@/hooks/useActiveSection';
 
 const NAV_LINKS = [
   { href: '#inicio',      key: 'nav.home'     },
@@ -21,7 +22,7 @@ export default function Navbar() {
   const [scrolled,   setScrolled]  = useState(false);
   const [menuOpen,   setMenuOpen]  = useState(false);
   const [langOpen,   setLangOpen]  = useState(false);
-  const [active,     setActive]    = useState('#inicio');
+  const [active,     setActive]    = useActiveSection();
   const langRef = useRef<HTMLDivElement>(null);
 
   /* Navbar scroll effect */
@@ -29,20 +30,6 @@ export default function Navbar() {
     const onScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  /* Active section via IntersectionObserver */
-  useEffect(() => {
-    const sections = document.querySelectorAll<HTMLElement>('section[id]');
-    const obs = new IntersectionObserver(
-      entries => {
-        const visible = entries.find(e => e.isIntersecting);
-        if (visible) setActive(`#${visible.target.id}`);
-      },
-      { threshold: 0.4 }
-    );
-    sections.forEach(s => obs.observe(s));
-    return () => obs.disconnect();
   }, []);
 
   /* Close lang dropdown on outside click */

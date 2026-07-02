@@ -21,7 +21,9 @@ export default function SmoothScroll() {
       if (el === document.documentElement) {
         lenis.scrollTo(0);
       } else if (el) {
-        lenis.scrollTo(el, { offset: -80 });
+        const navbar = document.getElementById('navbar');
+        const offset = -(navbar?.offsetHeight ?? 80);
+        lenis.scrollTo(el, { offset });
       }
     };
     document.addEventListener('click', handleClick);
