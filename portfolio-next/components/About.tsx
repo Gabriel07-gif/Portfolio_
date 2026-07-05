@@ -57,10 +57,10 @@ export default function About() {
           {/* Profile image */}
           <motion.div
             className="about-image"
-            initial={{ opacity: 0, clipPath: 'inset(0 100% 0 0 round 24px)' }}
-            whileInView={{ opacity: 1, clipPath: 'inset(0 0% 0 0 round 24px)' }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 1.0, ease: [0.76, 0, 0.24, 1] }}
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           >
             <motion.div
               className="img-wrapper"

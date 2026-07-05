@@ -25,6 +25,12 @@ export default function IntroOverlay() {
   const [glowing,   setGlowing]   = useState(false);
   const [isTouch,   setIsTouch]   = useState(false);
 
+  /* ── Lock body scroll while overlay is visible ── */
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
   /* ── Check session / reduced-motion / touch on client ── */
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

@@ -397,13 +397,16 @@ section.bg-alt { background-color: var(--bg-alt); }
 
 /* ── INTRO OVERLAY ── */
 #intro-overlay {
-  position: fixed; inset: 0; z-index: 10000;
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 10000;
   background: radial-gradient(ellipse at center, #0a0a1a 0%, #05050f 70%);
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   cursor: pointer;
   overflow: hidden;
-  min-height: -webkit-fill-available;
+  padding-top:    env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 /* fade-out slide class added by JS on exit */
 #intro-overlay.intro-leaving {
@@ -419,7 +422,7 @@ section.bg-alt { background-color: var(--bg-alt); }
   user-select: none;
   max-width: 100%;
   width: 100%;
-  padding: 0 max(16px, 4vw);
+  padding: 0 max(16px, 4vw) 56px;
   box-sizing: border-box;
 }
 .intro-tag {
@@ -554,7 +557,13 @@ section.bg-alt { background-color: var(--bg-alt); }
 }
 
 /* ── HERO ── */
-.hero { min-height: 100vh; display: flex; align-items: center; position: relative; padding-top: 80px; }
+.hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex; align-items: center;
+  position: relative;
+  padding-top: 80px;
+}
 .hero-orb {
   position: absolute; width: 840px; height: 840px;
   background: radial-gradient(circle, rgba(0,255,136,0.07) 0%, rgba(0,170,255,0.04) 35%, transparent 65%);
@@ -895,6 +904,9 @@ section.bg-alt { background-color: var(--bg-alt); }
 }
 @media (max-width: 880px) {
   .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .about-image { order: 2; }
+  .about-text  { order: 1; }
+  .img-wrapper { aspect-ratio: 680 / 760; width: 100%; max-height: none; }
 }
 .img-wrapper {
   position: relative;
@@ -906,17 +918,22 @@ section.bg-alt { background-color: var(--bg-alt); }
   width: 100%; height: auto;
   display: block;
   border-radius: var(--r-lg);
+  position: relative;
+  z-index: 1;
 }
 .img-wrapper::after {
   content: '';
   position: absolute; inset: 0;
   background: linear-gradient(180deg, transparent 50%, rgba(0,255,136,0.06));
+  z-index: 2;
+  pointer-events: none;
 }
 .img-border {
   position: absolute; inset: -2px;
   border-radius: calc(var(--r-lg) + 2px);
   background: linear-gradient(135deg, rgba(0,255,136,0.3), transparent 50%, rgba(0,170,255,0.2));
-  z-index: -1;
+  z-index: 0;
+  pointer-events: none;
 }
 .about-text p {
   color: var(--muted);
@@ -1998,9 +2015,10 @@ a.magnetic, button.magnetic { will-change: transform; }
   inset: -1px;
   border-radius: calc(var(--r-lg) + 1px);
   background: linear-gradient(135deg, rgba(0,255,136,0.25), rgba(0,170,255,0.15), rgba(29,78,216,0.12));
-  z-index: -1;
+  z-index: 0;
   opacity: 0;
   transition: opacity 0.6s;
+  pointer-events: none;
 }
 .about-image:hover .img-wrapper::before { opacity: 1; }
 
@@ -2231,6 +2249,7 @@ a.magnetic, button.magnetic { will-change: transform; }
   .tech-tape { padding: 12px 0; }
   .tech-tape-track, .tech-tape-track-rev { gap: 24px; }
   .about-grid { gap: 20px; }
+  .img-wrapper { max-width: 480px; margin: 0 auto; }
   .skills-chips { gap: 8px; }
   .faq-question { padding: 16px 0; }
   .project-preview { height: 150px; }
@@ -2351,4 +2370,51 @@ a.magnetic, button.magnetic { will-change: transform; }
   .skill-chip-icon { width: 40px; height: 40px; }
   .section-num { font-size: clamp(2.5rem, 18vw, 4rem); }
   .navbar { padding: 0 12px; }
+}
+
+/* ── MOBILE HERO PADDING REDUCTION ── */
+@media (max-width: 900px) {
+  .hero { padding-bottom: 60px; }
+}
+@media (max-width: 620px) {
+  .hero { padding-bottom: 40px; }
+  /* hero-role: allow wrapping so cycling text doesn't overflow */
+  .hero-role { flex-wrap: wrap; }
+}
+
+/* ── INTRO OVERLAY: prevent name overflow on tiny screens ── */
+@media (max-width: 340px) {
+  .intro-name-first, .intro-name-last { font-size: clamp(1.6rem, 18vw, 3rem); letter-spacing: -0.04em; }
+  .intro-name-sep { display: none; }
+}
+
+/* ── STATUS CARD: compact on small mobile ── */
+@media (max-width: 480px) {
+  .status-card-wrap { max-width: 100%; }
+  .status-card-body { padding: 16px 16px 6px; }
+}
+
+/* ── HERO STATS: tighter on mobile ── */
+@media (max-width: 480px) {
+  .hero-stats { padding-top: 20px; gap: 16px; }
+  .stat-n { font-size: 2rem; }
+}
+
+/* ── SECTION HEADER: better spacing on tiny screens ── */
+@media (max-width: 480px) {
+  .section-header { padding-top: 32px; margin-bottom: 28px; }
+  .section-header h2 { font-size: clamp(1.8rem, 7vw, 2.4rem); }
+  .section-sub { font-size: 0.95rem; margin-top: 10px; }
+}
+
+/* ── ABOUT SECTION: ensure single-column has good spacing ── */
+@media (max-width: 880px) {
+  .about-text p { font-size: 0.98rem; line-height: 1.8; }
+  .about-stats { gap: 24px; }
+}
+
+/* ── PROJECTS MODE TOGGLE: smaller on mobile ── */
+@media (max-width: 360px) {
+  .projects-mode-toggle { width: 100%; justify-content: center; }
+  .projects-mode-btn { flex: 1; justify-content: center; }
 }
