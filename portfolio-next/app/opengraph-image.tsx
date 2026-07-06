@@ -122,7 +122,7 @@ export default async function Image() {
           position: 'relative', zIndex: 1,
         }}>
           <span style={{ color: 'rgba(136,146,176,0.7)', fontSize: 18 }}>
-            gabrielricartedev.com
+            {(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gabrielricartedev.com').replace('https://', '')}
           </span>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 10,

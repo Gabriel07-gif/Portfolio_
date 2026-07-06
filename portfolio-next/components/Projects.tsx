@@ -43,7 +43,7 @@ function VideoIcon() {
   );
 }
 
-const PROJECT_IMG_SIZES = '(max-width: 620px) 100vw, (max-width: 1100px) calc(50vw - 24px), 480px';
+const PROJECT_IMG_SIZES = '(max-width: 900px) calc(100vw - 48px), (max-width: 1400px) calc(50vw - 24px), 680px';
 
 function VideoPreview({ src, poster, fallback }: { src: string; poster?: string; fallback: React.ReactNode }) {
   const [errored,   setErrored]   = React.useState(false);
