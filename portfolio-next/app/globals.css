@@ -233,7 +233,7 @@ section.bg-alt { background-color: var(--bg-alt); }
 .glass-card:hover::before { opacity: 1; }
 .glass-card:hover {
   border-color: var(--border-h);
-  box-shadow: var(--shadow), 0 0 0 1px rgba(0,255,136,0.12), inset 0 1px 0 rgba(255,255,255,0.07);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(0,255,136,0.06), 0 0 0 1px rgba(0,255,136,0.12), inset 0 1px 0 rgba(255,255,255,0.07);
   transform: translateY(-5px);
 }
 
@@ -579,6 +579,20 @@ section.bg-alt { background-color: var(--bg-alt); }
 }
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+
+  /* Featured project card: collapse from side-by-side to vertical on tablet */
+  .project-card--featured {
+    display: block;
+  }
+  .project-card--featured .project-preview {
+    aspect-ratio: 16 / 9;
+    height: auto;
+    min-height: unset;
+  }
+  .project-card--featured .project-body {
+    border-left: none;
+    padding: 24px;
+  }
 }
 .hero-visual {
   display: flex; flex-direction: column;
@@ -1686,6 +1700,16 @@ kbd {
   .hero-stats { flex-wrap: wrap; gap: 20px; }
   .testimonial-text { font-size: 1.05rem; }
   .timeline-list { margin-left: 4px; }
+
+  /* Projects mode toggle: full width for better touch targets */
+  .projects-mode-toggle { width: 100%; box-sizing: border-box; }
+  .projects-mode-btn { flex: 1; justify-content: center; }
+
+  /* Status card: ensure full width on mobile hero */
+  .status-card-wrap { max-width: 100%; width: 100%; }
+
+  /* Hero visual: reduce floating gap */
+  .hero-visual { gap: 14px; }
 }
 @media (max-width: 620px) {
   section { padding: 76px 0; }
@@ -1724,6 +1748,17 @@ kbd {
   /* Project card meta mobile */
   .project-card-num       { font-size: 0.65rem; }
   .project-live-badge     { font-size: 0.58rem; padding: 2px 7px; }
+
+  /* Project card body: tighter padding on mobile */
+  .project-body { padding: 20px 16px; }
+  .project-card h3 { font-size: 1.08rem; }
+  .project-card p  { font-size: 0.88rem; }
+  .project-techs { gap: 6px; margin-bottom: 16px; }
+  .project-techs span { font-size: 0.68rem; padding: 2px 8px; }
+  .project-actions { gap: 8px; flex-wrap: nowrap; }
+  .btn { padding: 12px 22px; font-size: 0.9rem; }
+  .btn-icon { width: 44px; height: 44px; flex-shrink: 0; }
+  .projects-mode-toggle { margin-bottom: 32px; }
 }
 @media (max-width: 400px) {
   .container { padding: 0 16px; }
@@ -1735,6 +1770,46 @@ kbd {
   .bg-blobs              { display: none; }
   .tech-orb              { animation: none; }
   .project-card--featured { animation: none; filter: none; }
+}
+
+/* ── VERY SMALL PHONES (< 480px) ── */
+@media (max-width: 480px) {
+  .container { padding: 0 16px; }
+  .hero-badge { font-size: 0.75rem; padding: 6px 14px; }
+  .hero-desc { font-size: 0.97rem; }
+  .hero-buttons .btn { padding: 12px 18px; font-size: 0.86rem; }
+
+  /* Keep hero stats on one row but tighter */
+  .hero-stats { gap: 12px; }
+  .stat-n { font-size: 1.6rem; }
+  .hero-stat-div { height: 28px; }
+
+  /* Navbar logo smaller */
+  .logo { font-size: 1.2rem; }
+
+  /* Section header */
+  .section-header { margin-bottom: 28px; }
+
+  /* Service cards */
+  .service-card { padding: 20px 16px; }
+  .service-icon { width: 48px; height: 48px; margin-bottom: 16px; }
+
+  /* Project cards */
+  .project-body { padding: 16px 14px; }
+  .project-card h3 { font-size: 1rem; }
+  .project-card p  { font-size: 0.86rem; margin-bottom: 14px; }
+  .project-tag { font-size: 0.68rem; }
+  .btn-icon { width: 42px; height: 42px; }
+
+  /* About section: profile photo max width */
+  .img-wrapper { max-width: 320px; }
+
+  /* Skills chips */
+  .skill-chip { min-height: 92px; }
+
+  /* Footer */
+  .footer-inner { padding: 0 16px 24px; }
+  .footer-stack-pills { gap: 4px; }
 }
 
 /* ── SMALL SCREENS: navbar overflow prevention ── */
@@ -1756,10 +1831,13 @@ kbd {
   .skill-chip:hover    { transform: none !important; box-shadow: none !important; background: var(--bg-card) !important; border-color: var(--border) !important; }
   .glass-card:hover    { box-shadow: none !important; border-color: var(--border) !important; }
   .redes li:hover      { box-shadow: none !important; border-color: var(--border) !important; }
-  .project-card:hover  { box-shadow: none !important; }
+  .project-card:hover  { box-shadow: none !important; border-color: var(--border) !important; }
+  .btn:hover           { transform: none !important; box-shadow: none !important; filter: none !important; }
   .glass-card::before,
   .project-card::before,
   .service-card::before { display: none; }
+  /* Prevent btn-primary glow on tap linger */
+  .btn-primary { box-shadow: 0 4px 20px rgba(0,255,136,0.22), 0 1px 3px rgba(0,0,0,0.2); }
 }
 
 /* ── LIGHT MODE REFINEMENTS ── */
@@ -1981,9 +2059,6 @@ kbd {
 }
 
 /* ── SECTION NUMBER — gradient glow on appear ── */
-.section-num {
-  position: relative;
-}
 .section-num::after {
   content: '';
   position: absolute;
@@ -2018,17 +2093,9 @@ a.magnetic, button.magnetic { will-change: transform; }
   flex-direction: column;
 }
 
-/* ── SKILL CHIP hover glow ring ── */
-.skill-chip:hover {
-  box-shadow: 0 16px 52px rgba(0,255,136,0.20), 0 0 0 1px rgba(0,255,136,0.18);
-}
 
 /* ── SERVICE CARD — Framer Motion handles transform ── */
 
-/* ── GLASS CARD hover refinement ── */
-.glass-card:hover {
-  box-shadow: var(--shadow-lg), 0 0 40px rgba(0,255,136,0.06);
-}
 
 /* ── SCROLL PROGRESS — glow pulse ── */
 .scroll-progress {

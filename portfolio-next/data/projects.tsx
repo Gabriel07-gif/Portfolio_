@@ -55,6 +55,7 @@ export const PROJECTS: Project[] = [
     url:        'https://github.com/gabriel07-gif',
     githubUrl:  'https://github.com/gabriel07-gif',
     urlLabel:   'github.com/gabriel07-gif',
+    videoSrc:   '/videos/portfolio.mp4',
     screenshot: '/images/project-portfolio.png',
     fallback:   <MockPortfolio />,
     featured:   false,
