@@ -74,6 +74,8 @@ export default function IntroOverlay() {
       dismissed = true;
       clearTimeout(autoTimer);
       clearInterval(pctTimer);
+      window.removeEventListener('keydown', onKey);
+      overlay.removeEventListener('click', dismiss);
       /* Restore body scroll immediately — the component renders null after this
          but stays mounted in the React tree, so useEffect cleanup never runs. */
       document.body.style.overflow = '';

@@ -21,8 +21,6 @@
   --nav-bg:   rgba(4,4,14,0.65);
   --nav-bg-s: rgba(4,4,14,0.97);
   --dot-col:  rgba(255,255,255,0.03);
-  --glow-g:   rgba(0,255,136,0.12);
-  --glow-b:   rgba(0,170,255,0.10);
 }
 
 [data-theme="light"] {
@@ -41,8 +39,6 @@
   --nav-bg:    rgba(246,248,255,0.88);
   --nav-bg-s:  rgba(246,248,255,0.98);
   --dot-col:   rgba(37,99,235,0.07);
-  --glow-g:    rgba(37,99,235,0.09);
-  --glow-b:    rgba(14,165,233,0.07);
 }
 
 /* ── BASE RESET ── */
@@ -1514,11 +1510,6 @@ kbd {
 [data-theme="light"] .github-logo-dark  { display: none; }
 [data-theme="light"] .github-logo-light { display: block; }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-}
-
 /* ── BACKGROUND DOT GRID (replaces canvas particle network) ── */
 .bg-grid {
   position: fixed; inset: 0;
@@ -1647,6 +1638,8 @@ kbd {
 .blob {
   position: absolute;
   filter: blur(80px); opacity: 1;
+  will-change: transform;
+  contain: layout style;
 }
 .blob-1 {
   width: 600px; height: 600px;
@@ -2222,7 +2215,6 @@ a.magnetic, button.magnetic { will-change: transform; }
   .scroll-progress { transition: none; }
   .cursor-dot, .cursor-ring { display: none !important; }
   .project-live-dot { animation: none; opacity: 1; }
-  html { scroll-behavior: auto; }
 }
 
 /* ── ABOUT TIMELINE ── */

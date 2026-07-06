@@ -111,26 +111,30 @@ export async function POST(req: NextRequest) {
         `,
       });
 
-      /* Confirmation: reply to sender */
-      await transporter.sendMail({
-        from:    `"Gabriel Ricarte" <${SMTP_USER}>`,
-        to:      email,
-        subject: `Recebi sua mensagem, ${name}! — Gabriel Ricarte`,
-        html: `
-          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#05050f;color:#e8eaf0;border-radius:16px">
-            <h2 style="color:#00ff88;margin-bottom:8px">Mensagem recebida!</h2>
-            <p style="color:#b0b8cc;margin-bottom:24px">Obrigado por entrar em contato, <strong style="color:#e8eaf0">${name}</strong>.</p>
-            <p style="color:#b0b8cc;line-height:1.7">Recebi sua mensagem e responderei em até <strong style="color:#e8eaf0">24 horas</strong>. Enquanto isso, fique à vontade para me seguir nas redes.</p>
-            <hr style="border-color:rgba(255,255,255,0.08);margin:24px 0">
-            <p style="color:#6b7a99;font-size:0.85rem">Esta é uma confirmação automática — não precisa responder a este e-mail.</p>
-            <p style="color:#6b7a99;font-size:0.85rem;margin-top:4px">
-              <a href="https://github.com/gabriel07-gif" style="color:#00ff88;text-decoration:none">GitHub</a>
-              &nbsp;·&nbsp;
-              <a href="https://www.linkedin.com/in/gabriel-lucas-439153308/" style="color:#00ff88;text-decoration:none">LinkedIn</a>
-            </p>
-          </div>
-        `,
-      });
+      /* Confirmation: reply to sender — failure here should not fail the whole request */
+      try {
+        await transporter.sendMail({
+          from:    `"Gabriel Ricarte" <${SMTP_USER}>`,
+          to:      email,
+          subject: `Recebi sua mensagem, ${name}! — Gabriel Ricarte`,
+          html: `
+            <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#05050f;color:#e8eaf0;border-radius:16px">
+              <h2 style="color:#00ff88;margin-bottom:8px">Mensagem recebida!</h2>
+              <p style="color:#b0b8cc;margin-bottom:24px">Obrigado por entrar em contato, <strong style="color:#e8eaf0">${name}</strong>.</p>
+              <p style="color:#b0b8cc;line-height:1.7">Recebi sua mensagem e responderei em até <strong style="color:#e8eaf0">24 horas</strong>. Enquanto isso, fique à vontade para me seguir nas redes.</p>
+              <hr style="border-color:rgba(255,255,255,0.08);margin:24px 0">
+              <p style="color:#6b7a99;font-size:0.85rem">Esta é uma confirmação automática — não precisa responder a este e-mail.</p>
+              <p style="color:#6b7a99;font-size:0.85rem;margin-top:4px">
+                <a href="https://github.com/gabriel07-gif" style="color:#00ff88;text-decoration:none">GitHub</a>
+                &nbsp;·&nbsp;
+                <a href="https://www.linkedin.com/in/gabriel-lucas-439153308/" style="color:#00ff88;text-decoration:none">LinkedIn</a>
+              </p>
+            </div>
+          `,
+        });
+      } catch (replyErr) {
+        console.error('[contact] Auto-reply failed (message was delivered):', replyErr);
+      }
     } else {
       if (process.env.NODE_ENV === 'development') {
         console.log('[contact] SMTP not configured. Message received:', { name, email });
@@ -139,9 +143,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('[contact] Error:', err);
-    }
+    console.error('[contact] Error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
