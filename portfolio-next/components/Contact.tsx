@@ -98,9 +98,13 @@ export default function Contact() {
         setTimeout(() => setStatus('idle'), 3000);
       }
     } catch {
-      /* API unreachable — open the user's mail client as fallback */
+      /* API unreachable — open the user's mail client as fallback.
+         Truncate body to ~500 chars to stay under the ~2000-char mailto URL limit. */
+      const truncatedMsg = form.message.length > 500
+        ? `${form.message.slice(0, 500)}…`
+        : form.message;
       const sub  = encodeURIComponent(`${t('form.fallback.subject')}${form.name}`);
-      const body = encodeURIComponent(`${form.message}\n\n${t('form.fallback.from')}${form.name} <${form.email}>`);
+      const body = encodeURIComponent(`${truncatedMsg}\n\n${t('form.fallback.from')}${form.name} <${form.email}>`);
       window.open(`mailto:${MAILTO_FALLBACK}?subject=${sub}&body=${body}`, '_blank');
       showToast(t('form.fallback'));
       setStatus('idle');

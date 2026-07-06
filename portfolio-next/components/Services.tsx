@@ -55,10 +55,20 @@ const cardVariants = {
   }),
 };
 
+const spotlightRafMap = new WeakMap<Element, number>();
+
 function onSpotlight(e: React.MouseEvent<HTMLDivElement>) {
-  const rect = e.currentTarget.getBoundingClientRect();
-  e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-  e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+  const el = e.currentTarget;
+  const x = e.clientX;
+  const y = e.clientY;
+  if (spotlightRafMap.has(el)) return;
+  const rafId = requestAnimationFrame(() => {
+    spotlightRafMap.delete(el);
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty('--mouse-x', `${x - rect.left}px`);
+    el.style.setProperty('--mouse-y', `${y - rect.top}px`);
+  });
+  spotlightRafMap.set(el, rafId);
 }
 
 export default function Services() {

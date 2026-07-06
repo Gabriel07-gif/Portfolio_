@@ -74,6 +74,9 @@ export default function IntroOverlay() {
       dismissed = true;
       clearTimeout(autoTimer);
       clearInterval(pctTimer);
+      /* Restore body scroll immediately — the component renders null after this
+         but stays mounted in the React tree, so useEffect cleanup never runs. */
+      document.body.style.overflow = '';
 
       [contentRef.current, barWrapRef.current, pctWrapRef.current].forEach(el => {
         if (!el) return;
@@ -94,6 +97,10 @@ export default function IntroOverlay() {
     };
 
     const onKey = (e: KeyboardEvent) => {
+      /* Guard: after dismiss the overlay is gone but this listener stays attached
+         (component renders null without unmounting). Without this guard, every
+         spacebar press in a textarea would have e.preventDefault() called on it. */
+      if (dismissed) return;
       if (['Escape', 'Enter', ' '].includes(e.key)) {
         e.preventDefault();
         dismiss();

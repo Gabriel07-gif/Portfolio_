@@ -76,11 +76,21 @@ export async function POST(req: NextRequest) {
     const TO = process.env.CONTACT_EMAIL ?? 'gabrielricarte000@gmail.com';
 
     if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
+      const port = parseInt(SMTP_PORT ?? '587');
       const transporter = nodemailer.createTransport({
-        host:   SMTP_HOST,
-        port:   parseInt(SMTP_PORT ?? '587'),
-        secure: parseInt(SMTP_PORT ?? '587') === 465,
-        auth:   { user: SMTP_USER, pass: SMTP_PASS },
+        host:              SMTP_HOST,
+        port,
+        secure:            port === 465,
+        requireTLS:        port === 587,
+        connectionTimeout: 8000,
+        socketTimeout:     8000,
+        auth: {
+          user: SMTP_USER,
+          /* Gmail App Passwords are displayed with spaces for readability
+             but SMTP auth requires them without spaces. */
+          pass: SMTP_PASS.replace(/\s+/g, ''),
+        },
+        tls: { servername: SMTP_HOST },
       });
 
       /* Primary: notify Gabriel */

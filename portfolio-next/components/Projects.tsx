@@ -43,7 +43,7 @@ function VideoIcon() {
   );
 }
 
-const PROJECT_IMG_SIZES = '(max-width: 700px) 100vw, (max-width: 1100px) calc(50vw - 32px), 460px';
+const PROJECT_IMG_SIZES = '(max-width: 620px) 100vw, (max-width: 1100px) calc(50vw - 24px), 480px';
 
 function VideoPreview({ src, poster, fallback }: { src: string; poster?: string; fallback: React.ReactNode }) {
   const [errored,   setErrored]   = React.useState(false);
@@ -53,9 +53,10 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
   React.useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    const margin = window.innerWidth <= 768 ? '150px' : '300px';
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } },
-      { rootMargin: '300px' }
+      { rootMargin: margin }
     );
     obs.observe(el);
     return () => obs.disconnect();

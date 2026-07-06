@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LangProvider }  from '@/contexts/LangContext';
+import MotionProvider   from '@/components/MotionProvider';
 import VercelAnalytics  from '@/components/VercelAnalytics';
 
 const inter = Inter({
@@ -71,6 +72,7 @@ export const viewport: Viewport = {
   ],
   width:        'device-width',
   initialScale: 1,
+  viewportFit:  'cover',
 };
 
 const jsonLd = {
@@ -154,7 +156,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={`${inter.variable} ${jetbrainsMono.variable}`}>
         <ThemeProvider>
           <LangProvider>
-            {children}
+            <MotionProvider>
+              {children}
+            </MotionProvider>
           </LangProvider>
         </ThemeProvider>
         <VercelAnalytics />

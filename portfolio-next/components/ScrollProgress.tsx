@@ -9,19 +9,27 @@ export default function ScrollProgress() {
     const bar = barRef.current;
     if (!bar) return;
     let ticking = false;
+    let scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+
+    const updateMax = () => {
+      scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+    };
 
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        bar.style.width = max > 0 ? `${(window.scrollY / max) * 100}%` : '0%';
+        bar.style.width = scrollMax > 0 ? `${(window.scrollY / scrollMax) * 100}%` : '0%';
         ticking = false;
       });
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener('resize', updateMax, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', updateMax);
+    };
   }, []);
 
   return (

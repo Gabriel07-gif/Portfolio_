@@ -49,7 +49,7 @@ export default function MagneticLayer() {
     let debounceId = 0;
     const observer = new MutationObserver(() => {
       clearTimeout(debounceId);
-      debounceId = window.setTimeout(scan, 150);
+      debounceId = window.setTimeout(scan, 250);
     });
     observer.observe(document.body, { childList: true, subtree: true });
 

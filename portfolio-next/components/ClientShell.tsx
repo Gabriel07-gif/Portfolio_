@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const IntroOverlay   = dynamic(() => import('@/components/IntroOverlay'),   { ssr: false });
 const CustomCursor   = dynamic(() => import('@/components/CustomCursor'),   { ssr: false });
@@ -11,11 +12,21 @@ const SmoothScroll   = dynamic(() => import('@/components/SmoothScroll'),   { ss
 export default function ClientShell() {
   return (
     <>
-      <IntroOverlay />
-      <CustomCursor />
-      <ParticleCanvas />
-      <MagneticLayer />
-      <SmoothScroll />
+      <ErrorBoundary>
+        <IntroOverlay />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <CustomCursor />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <ParticleCanvas />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <MagneticLayer />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <SmoothScroll />
+      </ErrorBoundary>
     </>
   );
 }

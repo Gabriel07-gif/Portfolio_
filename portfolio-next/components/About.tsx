@@ -75,9 +75,9 @@ export default function About() {
                 alt={t('about.photo.alt')}
                 width={680}
                 height={760}
-                quality={98}
+                quality={85}
                 priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 45vw, 540px"
+                sizes="(max-width: 480px) calc(100vw - 48px), (max-width: 768px) 380px, (max-width: 1200px) 45vw, 360px"
                 style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto' }}
               />
             </motion.div>

@@ -134,7 +134,7 @@ export default function Hero() {
               </span>
             </motion.p>
 
-            <motion.p className="hero-desc" {...fadeUp(0.65)}>
+            <motion.p className="hero-desc" {...fadeUp(0.25)}>
               {t('hero.desc')}
             </motion.p>
 

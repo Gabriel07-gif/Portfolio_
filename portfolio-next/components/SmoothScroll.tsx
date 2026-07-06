@@ -22,7 +22,7 @@ export default function SmoothScroll() {
         lenis.scrollTo(0);
       } else if (el) {
         const navbar = document.getElementById('navbar');
-        const offset = -(navbar?.offsetHeight ?? 80);
+        const offset = -(navbar?.getBoundingClientRect().height ?? 80);
         lenis.scrollTo(el, { offset });
       }
     };

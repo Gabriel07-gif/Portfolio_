@@ -214,8 +214,8 @@ const en: Dict = {
 
   /* Hero */
   'hero.greeting':    'Hi, I am',
-  'hero.role.pre':    'Full-Stack',
-  'hero.role.title':  'Developer',
+  'hero.role.pre':    'Developer',
+  'hero.role.title':  'Full-Stack',
   'hero.desc':        'I build fast interfaces and reliable APIs — with attention to the details that separate a functional product from one people actually enjoy using.',
   'hero.btn.projects': 'View Projects',
   'hero.btn.contact':  'Talk to Me',
