@@ -57,9 +57,18 @@ portfolio-next/
 │   ├── layout.tsx          # RootLayout: metadados, JSON-LD, nonce, fonts, providers
 │   ├── page.tsx            # Página principal (todos os sections)
 │   ├── globals.css         # Todos os estilos (~2534 linhas)
+│   ├── manifest.ts         # PWA manifest (ícones, cores, display)
+│   ├── robots.ts           # robots.txt via Next.js
+│   ├── sitemap.ts          # sitemap.xml via Next.js
+│   ├── opengraph-image.tsx # OG image 1200×630 gerada dinamicamente (Edge)
+│   ├── apple-icon.tsx      # Apple touch icon gerado dinamicamente (Edge)
 │   └── api/
-│       └── contact/
-│           └── route.ts    # API de contato (Nodemailer + rate limiting)
+│       ├── contact/
+│       │   └── route.ts    # API de contato (Nodemailer + rate limiting)
+│       ├── icon192/
+│       │   └── route.tsx   # PWA icon 192×192 (Edge, ImageResponse)
+│       └── icon512/
+│           └── route.tsx   # PWA icon 512×512 (Edge, ImageResponse)
 ├── components/             # 25 componentes (ver tabela abaixo)
 ├── contexts/
 │   ├── ThemeContext.tsx     # dark/light — persiste em localStorage
@@ -253,8 +262,16 @@ public/videos/
 
 ## PWA
 
-Manifest em `public/manifest.webmanifest` (ou `app/manifest.ts`) com ícones:
-SVG, 180×180, 192×192, 512×512
+Manifest em `app/manifest.ts`. Ícones:
+
+| Fonte | Tamanho | Purpose |
+|---|---|---|
+| `/icon.svg` | any | maskable |
+| `/apple-icon.png` (estático em `public/`) | 180×180 | any |
+| `/api/icon192` (Edge route handler) | 192×192 | any |
+| `/api/icon512` (Edge route handler) | 512×512 | maskable |
+
+Os ícones 192 e 512 são gerados via `ImageResponse` com fundo escuro `#04040e` e letra "G" em verde `#00ff88`.
 
 ---
 

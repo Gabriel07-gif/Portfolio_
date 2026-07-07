@@ -79,10 +79,8 @@ export default function Hero() {
           {/* ── LEFT ── */}
           <div>
             <motion.div className="hero-location" {...fadeUp(0)} aria-label={t('hero.location.label')}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-                  fill="currentColor" opacity=".9"/>
-                <circle cx="12" cy="9" r="2.5" fill="var(--bg)" />
+              <svg width="7" height="7" viewBox="0 0 7 7" aria-hidden="true">
+                <circle cx="3.5" cy="3.5" r="3.5" fill="currentColor" />
               </svg>
               {t('hero.location')}
             </motion.div>
