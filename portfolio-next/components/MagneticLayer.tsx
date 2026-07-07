@@ -8,6 +8,7 @@ export default function MagneticLayer() {
 
     const STRENGTH = 0.4;
     const attached  = new WeakSet<Element>();
+    const cleanups: Array<() => void> = [];
 
     function attach(el: Element) {
       if (attached.has(el)) return;
@@ -38,6 +39,13 @@ export default function MagneticLayer() {
 
       el.addEventListener('mousemove',  onMove,  { passive: true });
       el.addEventListener('mouseleave', onLeave);
+
+      cleanups.push(() => {
+        cancelAnimationFrame(rafId);
+        clearTimeout(transitionTimer);
+        el.removeEventListener('mousemove',  onMove);
+        el.removeEventListener('mouseleave', onLeave);
+      });
     }
 
     const scan = () =>
@@ -56,6 +64,7 @@ export default function MagneticLayer() {
     return () => {
       clearTimeout(debounceId);
       observer.disconnect();
+      cleanups.forEach(fn => fn());
     };
   }, []);
 

@@ -1087,7 +1087,10 @@ section.bg-alt { background-color: var(--bg-alt); }
   position: absolute; bottom: 10px; right: 12px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.68rem; color: var(--muted);
+  transition: color 0.2s;
 }
+.form-char-count--warn   { color: #f59e0b; }
+.form-char-count--danger { color: #ef4444; }
 .form-submit-btn { margin-top: 8px; gap: 10px; }
 .form-submit-btn.loading { opacity: 0.78; pointer-events: none; }
 .form-submit-btn.success { background: linear-gradient(135deg, #00ff88, #00cc6a); }
@@ -1522,6 +1525,9 @@ kbd {
 .skills-categories {
   display: flex; flex-direction: column; gap: 44px;
 }
+.skills-category {
+  display: flex; flex-direction: column;
+}
 .skills-cat-header {
   display: flex; align-items: center; gap: 14px;
   margin-bottom: 18px;
@@ -1761,7 +1767,6 @@ kbd {
 /* ── PERFORMANCE: disable GPU-heavy effects on mobile ── */
 @media (max-width: 768px) {
   .bg-blobs              { display: none; }
-  .tech-orb              { animation: none; }
   .project-card--featured { animation: none; filter: none; }
 }
 
@@ -2346,7 +2351,6 @@ a.magnetic, button.magnetic { will-change: transform; }
 }
 @media (max-width: 768px) {
   .hero-orb { width: 380px; height: 380px; }
-  .side-dots { display: none; }
 }
 @media (max-width: 540px) {
   .hero-orb { display: none; }

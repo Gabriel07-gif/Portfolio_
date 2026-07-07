@@ -56,12 +56,21 @@ export const metadata: Metadata = {
     url:         SITE_URL,
     locale:      'pt_BR',
     siteName:    'Gabriel Ricarte — Portfolio',
+    images: [
+      {
+        url:    `${SITE_URL}/opengraph-image`,
+        width:  1200,
+        height: 630,
+        alt:    'Gabriel Ricarte — Dev Full-Stack',
+      },
+    ],
   },
   twitter: {
     card:        'summary_large_image',
     title:       'Gabriel Ricarte | Dev Full-Stack',
     description: 'Criando experiências digitais modernas com React, Next.js e TypeScript.',
     creator:     '@ricarte.dev',
+    images:      [`${SITE_URL}/opengraph-image`],
   },
 };
 

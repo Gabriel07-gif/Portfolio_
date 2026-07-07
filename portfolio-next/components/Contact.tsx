@@ -222,7 +222,10 @@ export default function Contact() {
             />
             <label htmlFor="formMsg">{t('form.message')}</label>
             <div className="form-focus-bar" aria-hidden="true" />
-            <span className="form-char-count" aria-hidden="true">{charCount} / 2000</span>
+            <span
+              className={`form-char-count${charCount > 1900 ? ' form-char-count--danger' : charCount > 1600 ? ' form-char-count--warn' : ''}`}
+              aria-hidden="true"
+            >{charCount} / 2000</span>
             {errors.message && <span id="err-message" className="form-error-msg" role="alert">{t(errors.message)}</span>}
           </div>
 
