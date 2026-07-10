@@ -93,9 +93,15 @@ export default function Contact() {
         showToast(t('form.rateLimit'));
         setTimeout(() => setStatus('idle'), 4000);
       } else {
-        setStatus('error');
-        showToast(t('form.error'));
-        setTimeout(() => setStatus('idle'), 3000);
+        /* Server error — fall back to mail client so the message still gets through */
+        const truncatedMsg = form.message.length > 500
+          ? `${form.message.slice(0, 500)}…`
+          : form.message;
+        const sub  = encodeURIComponent(`${t('form.fallback.subject')}${form.name}`);
+        const body = encodeURIComponent(`${truncatedMsg}\n\n${t('form.fallback.from')}${form.name} <${form.email}>`);
+        window.open(`mailto:${MAILTO_FALLBACK}?subject=${sub}&body=${body}`, '_blank');
+        showToast(t('form.fallback'));
+        setStatus('idle');
       }
     } catch {
       /* API unreachable — open the user's mail client as fallback.

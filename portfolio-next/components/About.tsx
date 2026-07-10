@@ -13,10 +13,9 @@ function parseBold(str: string): ReactNode {
     return m ? <strong key={i}>{m[1]}</strong> : part;
   });
 }
+const TIMELINE_KEYS = ['t2', 't3', 't4'] as const; 
 
-const TIMELINE_KEYS = ['t2', 't3', 't4'] as const;
-
-export default function About() {
+export default function About() { 
   const { t }  = useLang();
   const [sectionRef, inView] = useInView<HTMLElement>(0.1);
 
@@ -75,7 +74,7 @@ export default function About() {
                 alt={t('about.photo.alt')}
                 width={680}
                 height={760}
-                quality={85}
+                quality={92}
                 priority
                 sizes="(max-width: 480px) calc(100vw - 48px), (max-width: 768px) 380px, (max-width: 1200px) 45vw, 360px"
                 style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto' }}

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 import { useCounter } from '@/hooks/useCounter';
 
-const NAME = 'Gabriel';
+const NAME = 'Gabriel Ricarte';
 
 const CYCLE_ROLES: Record<string, string[]> = {
   pt: ['Full-Stack', 'Frontend', 'Back-End', 'TypeScript'],
@@ -96,16 +96,27 @@ export default function Hero() {
               animate="visible"
               style={{ perspective: 600 }}
             >
-              {NAME.split('').map((char, i) => (
-                <motion.span
-                  key={`name-char-${i}`}
-                  className="hero-char"
-                  variants={charVariants}
-                  style={{ display: 'inline-block' }}
-                >
-                  {char}
-                </motion.span>
-              ))}
+              {NAME.split('').map((char, i) =>
+                char === ' ' ? (
+                  <motion.span
+                    key={`name-char-${i}`}
+                    variants={{}}
+                    style={{ display: 'inline' }}
+                    aria-hidden="true"
+                  >
+                    {' '}
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key={`name-char-${i}`}
+                    className="hero-char"
+                    variants={charVariants}
+                    style={{ display: 'inline-block' }}
+                  >
+                    {char}
+                  </motion.span>
+                )
+              )}
             </motion.h1>
 
             {/* Role with cycling accent text */}

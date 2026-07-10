@@ -32,25 +32,28 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  /* Close lang dropdown on outside click or Escape */
+  /* Close lang dropdown on outside click — only listen while dropdown is open */
   useEffect(() => {
+    if (!langOpen) return;
     const onClick = (e: MouseEvent) => {
       if (langRef.current && !langRef.current.contains(e.target as Node)) {
         setLangOpen(false);
       }
     };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [langOpen]);
+
+  /* Close any open menu on Escape */
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setLangOpen(false);
         setMenuOpen(false);
       }
     };
-    document.addEventListener('click', onClick);
     document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('click', onClick);
-      document.removeEventListener('keydown', onKey);
-    };
+    return () => document.removeEventListener('keydown', onKey);
   }, []);
 
   const handleNavClick = (href: string) => {
