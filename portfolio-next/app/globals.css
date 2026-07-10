@@ -1852,27 +1852,27 @@ kbd {
 .status-card-wrap { position: relative; width: 100%; max-width: 380px; }
 .status-card-ambient {
   position: absolute; inset: -30px;
-  background: radial-gradient(ellipse at center, rgba(77,153,255,0.14) 0%, rgba(37,99,235,0.07) 40%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(0,255,136,0.05) 0%, rgba(0,170,255,0.03) 40%, transparent 70%);
   pointer-events: none; filter: blur(20px);
 }
 .status-card {
-  background: #0d1225;
-  border: 1px solid rgba(77,153,255,0.22);
+  background: #111124;
+  border: 1px solid rgba(255,255,255,0.09);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 24px 72px rgba(0,0,0,0.65), 0 0 0 0.5px rgba(77,153,255,0.08), inset 0 1px 0 rgba(77,153,255,0.07);
+  box-shadow: 0 24px 72px rgba(0,0,0,0.6);
   position: relative;
 }
 .status-card-header {
   display: flex; align-items: center; gap: 9px;
   padding: 13px 20px;
-  background: rgba(77,153,255,0.04);
-  border-bottom: 1px solid rgba(77,153,255,0.12);
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .status-live-dot {
   width: 7px; height: 7px; border-radius: 50%;
-  background: #4d9fff;
-  box-shadow: 0 0 8px rgba(77,153,255,0.75);
+  background: var(--accent);
+  box-shadow: 0 0 7px rgba(0,255,136,0.5);
   animation: pulseGlow 2.5s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -1889,7 +1889,7 @@ kbd {
   display: block;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.63rem;
-  color: rgba(77,153,255,0.95);
+  color: rgba(0,255,136,0.75);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: 7px;
@@ -1910,7 +1910,7 @@ kbd {
   transition: color 0.2s;
   text-decoration: none;
 }
-.status-row-link:hover { color: #4d9fff; }
+.status-row-link:hover { color: var(--accent); }
 .status-chips {
   display: flex; gap: 5px; flex-wrap: wrap;
 }
@@ -1918,41 +1918,47 @@ kbd {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.65rem;
   padding: 2px 7px;
-  background: rgba(77,153,255,0.09);
-  border: 1px solid rgba(77,153,255,0.24);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 5px;
-  color: rgba(180,215,255,0.90);
+  color: rgba(255,255,255,0.62);
 }
-.status-divider { height: 1px; background: rgba(77,153,255,0.12); margin: 0 0 18px; }
+.status-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 0 0 18px; }
 .status-stack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .status-stack-item {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.72rem;
   padding: 7px 10px;
-  background: rgba(77,153,255,0.12);
-  border: 1px solid rgba(77,153,255,0.28);
+  background: rgba(0,255,136,0.08);
+  border: 1px solid rgba(0,255,136,0.18);
   border-radius: 7px;
-  color: rgba(100,175,255,0.97);
+  color: rgba(0,255,136,0.88);
 }
 .status-card-footer {
   padding: 12px 20px;
-  border-top: 1px solid rgba(77,153,255,0.12);
+  border-top: 1px solid rgba(255,255,255,0.07);
   display: flex; align-items: center; gap: 7px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.68rem;
   color: rgba(255,255,255,0.42);
 }
-/* ── STATUS CARD: light mode → swap green accents to blue ── */
-[data-theme="light"] .status-row-label { color: rgba(37,99,235,0.85); }
-[data-theme="light"] .status-live-dot { background: #2563eb; box-shadow: 0 0 7px rgba(37,99,235,0.55); }
-[data-theme="light"] .status-stack-item {
-  background: rgba(37,99,235,0.12);
-  border-color: rgba(37,99,235,0.22);
-  color: rgba(37,99,235,0.92);
-}
+/* ── STATUS CARD: light mode → green with high contrast ── */
 [data-theme="light"] .status-card-ambient {
-  background: radial-gradient(ellipse at center, rgba(37,99,235,0.07) 0%, rgba(37,99,235,0.03) 40%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(0,255,136,0.16) 0%, rgba(0,220,110,0.08) 40%, transparent 70%);
 }
+[data-theme="light"] .status-live-dot { background: #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.90); }
+[data-theme="light"] .status-row-label { color: #00ff88; }
+[data-theme="light"] .status-chips span {
+  background: rgba(0,255,136,0.13);
+  border-color: rgba(0,255,136,0.32);
+  color: rgba(180,255,220,0.97);
+}
+[data-theme="light"] .status-stack-item {
+  background: rgba(0,255,136,0.14);
+  border-color: rgba(0,255,136,0.34);
+  color: #00ff88;
+}
+[data-theme="light"] .status-row-link:hover { color: #00ff88; }
 [data-theme="light"] .skill-chip::before { background: radial-gradient(circle at 50% 0%, rgba(37,99,235,0.09) 0%, transparent 65%); }
 [data-theme="light"] .skill-chip:hover { border-color: rgba(37,99,235,0.45); box-shadow: 0 16px 52px rgba(37,99,235,0.18), 0 0 0 1px rgba(37,99,235,0.16); background: rgba(37,99,235,0.03); }
 
