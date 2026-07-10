@@ -397,6 +397,15 @@ section.bg-alt { background-color: var(--bg-alt); }
 }
 .tech-tape-track-rev span::before { content: '◆'; color: var(--accent-2); margin-right: 10px; font-size: 0.55rem; }
 
+/* ── INTRO BLOCKER: SSR div que cobre o conteúdo antes do JS montar o overlay ── */
+#g-intro-blocker {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #04040e;
+  pointer-events: none;
+}
+
 /* ── INTRO OVERLAY ── */
 #intro-overlay {
   position: fixed;

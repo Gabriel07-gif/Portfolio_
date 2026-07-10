@@ -33,11 +33,24 @@ export default function IntroOverlay() {
 
   /* ── Check session / reduced-motion / touch on client ── */
   useEffect(() => {
+    const blocker = document.getElementById('g-intro-blocker') as HTMLElement | null;
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.body.style.overflow = '';
+      if (blocker) blocker.remove();
       setHidden(true);
       return;
     }
     if (sessionStorage.getItem('g-intro-done')) {
+      document.body.style.overflow = '';
+      if (blocker) {
+        let removed = false;
+        const removeBlocker = () => { if (!removed) { removed = true; blocker.remove(); } };
+        blocker.style.transition = 'opacity 0.25s ease';
+        blocker.style.opacity = '0';
+        blocker.addEventListener('transitionend', removeBlocker, { once: true });
+        setTimeout(removeBlocker, 350);
+      }
       setHidden(true);
       return;
     }
@@ -47,6 +60,10 @@ export default function IntroOverlay() {
 
   useEffect(() => {
     if (!mounted) return;
+    /* #intro-overlay is now painted (useEffect fires after browser paint).
+       Remove the SSR blocker so it doesn't sit beneath the overlay forever. */
+    const blocker = document.getElementById('g-intro-blocker');
+    if (blocker) blocker.remove();
     const canvas  = canvasRef.current;
     const overlay = overlayRef.current;
     if (!canvas || !overlay) return;
