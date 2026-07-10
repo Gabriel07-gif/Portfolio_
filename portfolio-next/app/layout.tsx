@@ -49,6 +49,9 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   category: 'technology',
+  verification: {
+    google: 'google20fd0911b4fd577f',
+  },
   openGraph: {
     title:       'Gabriel Ricarte | Dev Full-Stack',
     description: 'Criando experiências digitais modernas com React, Next.js e TypeScript. Disponível para projetos freelance e oportunidades CLT.',
