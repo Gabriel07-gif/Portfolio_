@@ -773,9 +773,9 @@ section.bg-alt { background-color: var(--bg-alt); }
 .service-card:hover .service-icon { transform: translateY(-4px); }
 .service-card h3 {
   font-size: 1.22rem; margin-bottom: 12px;
-  font-weight: 800; letter-spacing: -0.02em;
+  font-weight: 800; letter-spacing: -0.02em; overflow-wrap: break-word;
 }
-.service-card p { color: var(--muted); font-size: 0.94rem; line-height: 1.78; margin-bottom: 22px; }
+.service-card p { color: var(--muted); font-size: 0.94rem; line-height: 1.78; margin-bottom: 22px; overflow-wrap: break-word; }
 .service-list {
   list-style: none;
   display: flex; flex-direction: column; gap: 9px;
@@ -920,8 +920,8 @@ section.bg-alt { background-color: var(--bg-alt); }
   padding: 4px 10px; border-radius: 6px;
   margin-bottom: 12px;
 }
-.project-card h3 { font-size: 1.18rem; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
-.project-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.75; margin-bottom: 18px; }
+.project-card h3 { font-size: 1.18rem; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; overflow-wrap: break-word; }
+.project-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.75; margin-bottom: 18px; overflow-wrap: break-word; }
 .project-techs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .project-techs span {
   font-family: 'JetBrains Mono', monospace;
@@ -2606,4 +2606,64 @@ a.magnetic, button.magnetic { will-change: transform; }
 @media (max-width: 360px) {
   .projects-mode-toggle { width: 100%; justify-content: center; }
   .projects-mode-btn { flex: 1; justify-content: center; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PERFORMANCE + RESPONSIVENESS — final refinements
+   ═══════════════════════════════════════════════════════════ */
+
+/* Text overflow safety net for variable-length content */
+.project-card h3, .project-card p,
+.service-card h3, .service-card p,
+.about-text p { overflow-wrap: break-word; }
+
+/* On touch devices the magnetic JS effect never runs — remove the
+   compositing hint so the browser doesn't allocate GPU layers for nothing */
+@media (pointer: coarse) {
+  .magnetic, a.magnetic, button.magnetic { will-change: auto; }
+  .skill-chip { will-change: auto; }
+}
+
+/* Reduce navbar blur to half on small screens (GPU cost vs. visual gain) */
+@media (max-width: 540px) {
+  .navbar {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* About stats: wrap to 2-per-row at 420px so numbers don't crunch */
+@media (max-width: 420px) {
+  .about-stats { flex-wrap: wrap; gap: 16px 24px; }
+  .about-stat { min-width: calc(50% - 12px); }
+}
+
+/* Timeline: tighter vertical rhythm on small screens */
+@media (max-width: 480px) {
+  .about-timeline { margin-top: 24px; }
+  .timeline-item { padding-bottom: 16px; }
+  .timeline-meta { gap: 8px; }
+}
+
+/* Contact desc: let it fill width on narrow viewports */
+@media (max-width: 640px) {
+  .contact-desc { max-width: 100% !important; }
+}
+
+/* Skill chips: intermediate size at 580–768px (prevents oversized chips on tablets) */
+@media (min-width: 581px) and (max-width: 768px) {
+  .skill-chip { width: 116px; height: 116px; min-height: 116px; padding: 16px 8px 12px; }
+  .skill-chip-icon { width: 68px; height: 68px; }
+}
+
+/* Section padding: intermediate step for 620–768px range */
+@media (max-width: 768px) and (min-width: 621px) {
+  section { padding: 80px 0; }
+}
+
+/* Ensure hero heading doesn't clip on landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero { min-height: auto; padding: 100px 0 48px; }
+  .hero-scroll { display: none; }
+  .hero-orb { display: none; }
 }

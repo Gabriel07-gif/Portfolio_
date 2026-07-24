@@ -235,12 +235,12 @@ export default function Hero() {
                   >
                     <span className="status-row-label">last shipped</span>
                     <a
-                      href="https://www.venezamotoseveiculos.com.br"
+                      href="https://jurisflow-omega.vercel.app/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="status-row-link"
                     >
-                      venezamotos
+                      jurivox
                       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                         <path d="M4 1H1v10h10V8M7 1h4m0 0v4M11 1 5.5 6.5"
                           stroke="currentColor" strokeWidth="1.4"
@@ -251,7 +251,7 @@ export default function Hero() {
                       className="status-chips"
                       variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } } }}
                     >
-                      {['HTML', 'CSS', 'JavaScript'].map(tech => (
+                      {['Next.js', 'TypeScript', 'Supabase'].map(tech => (
                         <motion.span
                           key={tech}
                           variants={{ hidden: { opacity: 0, scale: 0.7 }, visible: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 18 } } }}

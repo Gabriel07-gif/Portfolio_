@@ -18,11 +18,11 @@ function SkillChip({ chip, delay }: { chip: ChipData; delay: number }) {
         {chip.icon ? chip.icon : chip.img ? (
           chip.imgLight ? (
             <>
-              <Image src={chip.img}      alt={chip.name} fill loading="lazy" style={{ objectFit: 'contain' }} className="skill-img-dark" />
-              <Image src={chip.imgLight} alt=""          fill loading="lazy" style={{ objectFit: 'contain' }} className="skill-img-light" aria-hidden="true" />
+              <Image src={chip.img}      alt={chip.name} fill loading="lazy" sizes="80px" style={{ objectFit: 'contain' }} className="skill-img-dark" />
+              <Image src={chip.imgLight} alt=""          fill loading="lazy" sizes="80px" style={{ objectFit: 'contain' }} className="skill-img-light" aria-hidden="true" />
             </>
           ) : (
-            <Image src={chip.img} alt={chip.name} fill loading="lazy" style={{ objectFit: 'contain' }} />
+            <Image src={chip.img} alt={chip.name} fill loading="lazy" sizes="80px" style={{ objectFit: 'contain' }} />
           )
         ) : (
           <span className="skill-chip-letter">{chip.letter}</span>

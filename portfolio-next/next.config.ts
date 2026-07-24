@@ -17,6 +17,9 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [],
     formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 2592000, /* 30 days — static portfolio images rarely change */
+    deviceSizes: [320, 480, 640, 768, 1024, 1200, 1920],
+    imageSizes:  [16, 32, 48, 64, 80, 96, 128, 256],
   },
   async headers() {
     return [

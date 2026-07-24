@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 
@@ -73,6 +74,8 @@ function onSpotlight(e: React.MouseEvent<HTMLDivElement>) {
 
 export default function Services() {
   const { t } = useLang();
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => { setIsTouch(window.matchMedia('(pointer: coarse)').matches); }, []);
 
   return (
     <section id="servicos" className="bg-alt" aria-label={t('nav.services')}>
@@ -112,8 +115,8 @@ export default function Services() {
               whileInView="visible"
               viewport={{ once: true, margin: '-60px' }}
               variants={cardVariants}
-              whileHover={{ y: -8, transition: { type: 'spring', stiffness: 300, damping: 24 } }}
-              onMouseMove={onSpotlight}
+              whileHover={isTouch ? {} : { y: -8, transition: { type: 'spring', stiffness: 300, damping: 24 } }}
+              onMouseMove={isTouch ? undefined : onSpotlight}
             >
               <div className="service-icon" aria-hidden="true">{svc.icon}</div>
               <h3>{t(svc.titleKey)}</h3>

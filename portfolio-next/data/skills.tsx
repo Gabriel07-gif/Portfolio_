@@ -23,6 +23,8 @@ export const BACKEND: ChipData[] = [
   { name: 'PostgreSQL', img: '/images/svg/postgresql.svg' },
   { name: 'REST APIs',  img: '/images/svg/api.svg' },
   { name: 'SQL',        img: '/images/svg/database.svg' },
+  { name: 'Java',       img: '/images/svg/java.svg' },
+  { name: '.NET',       img: '/images/svg/dotnet.svg' },
 ];
 
 export const TOOLS: ChipData[] = [
@@ -30,4 +32,5 @@ export const TOOLS: ChipData[] = [
   { name: 'Figma',  img: '/images/svg/figma.svg' },
   { name: 'Vercel', img: '/images/svg/vercel-white.svg', imgLight: '/images/svg/vercel-dark.svg' },
   { name: 'Docker', img: '/images/svg/docker.svg' },
+  { name: 'AWS',    img: '/images/svg/aws.svg' },
 ];
