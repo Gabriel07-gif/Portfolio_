@@ -174,6 +174,7 @@ section.bg-alt { background-color: var(--bg-alt); }
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 14px 30px; border-radius: 12px;
+  min-height: 44px;
   font-weight: 700; font-size: 0.95rem; letter-spacing: 0.01em;
   transition: all 0.3s var(--ease);
   position: relative; overflow: hidden;
@@ -1096,6 +1097,9 @@ section.bg-alt { background-color: var(--bg-alt); }
 .form-char-count--warn   { color: #f59e0b; }
 .form-char-count--danger { color: #ef4444; }
 .form-submit-btn { margin-top: 8px; gap: 10px; }
+@media (max-width: 480px) {
+  .form-submit-btn { width: 100%; justify-content: center; }
+}
 .form-submit-btn.loading { opacity: 0.78; pointer-events: none; }
 .form-submit-btn.success { background: linear-gradient(135deg, #00ff88, #00cc6a); }
 .form-submit-btn .spinner { animation: spin 0.75s linear infinite; flex-shrink: 0; }
@@ -1473,6 +1477,7 @@ footer {
 /* ── PROJECT ACTIONS ── */
 .project-actions {
   display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  position: relative; z-index: 2;
 }
 .btn-icon {
   width: 44px; height: 44px;
@@ -1480,6 +1485,7 @@ footer {
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
+.btn-icon svg { display: block; flex-shrink: 0; pointer-events: none; }
 
 /* ── PROJECT PREVIEW (portfolio) ── */
 .preview-portfolio {
@@ -1755,7 +1761,7 @@ kbd {
   .project-card p  { font-size: 0.88rem; }
   .project-techs { gap: 6px; margin-bottom: 16px; }
   .project-techs span { font-size: 0.68rem; padding: 2px 8px; }
-  .project-actions { gap: 8px; flex-wrap: nowrap; }
+  .project-actions { gap: 8px; flex-wrap: wrap; }
   .btn { padding: 12px 22px; font-size: 0.9rem; }
   .btn-icon { width: 44px; height: 44px; flex-shrink: 0; }
   .projects-mode-toggle { margin-bottom: 32px; }
@@ -1765,10 +1771,20 @@ kbd {
   .redelink  { padding: 14px 16px; }
 }
 
-/* ── PERFORMANCE: disable GPU-heavy effects on mobile ── */
+/* ── PERFORMANCE + VISUAL: mobile project card improvements ── */
 @media (max-width: 768px) {
-  .bg-blobs              { display: none; }
+  .bg-blobs               { display: none; }
   .project-card--featured { animation: none; filter: none; }
+  .project-card {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+    border-color: rgba(255,255,255,0.10);
+  }
+  .project-card--featured {
+    border-color: rgba(0,255,136,0.20);
+    box-shadow: 0 6px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,255,136,0.10);
+  }
+  [data-theme="light"] .project-card { box-shadow: 0 4px 20px rgba(0,0,0,0.10); }
+  [data-theme="light"] .project-card--featured { box-shadow: 0 6px 28px rgba(37,99,235,0.12); }
 }
 
 /* ── VERY SMALL PHONES (< 480px) ── */
@@ -1811,10 +1827,16 @@ kbd {
   .footer-stack-pills { gap: 4px; }
 }
 
-/* ── SMALL SCREENS: navbar overflow prevention ── */
+/* ── SMALL SCREENS: navbar + button layout ── */
 @media (max-width: 380px) {
   .navbar    { padding: 0 16px; }
   .lang-code { display: none; }
+  .project-actions .btn:not(.btn-icon) {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+  }
+  .btn-icon { flex-shrink: 0; }
 }
 
 /* ── TOUCH: disable stuck hover states ── */
@@ -1838,6 +1860,34 @@ kbd {
   .service-card::before { display: none; }
   /* Prevent btn-primary glow on tap linger */
   .btn-primary { box-shadow: 0 4px 20px rgba(0,255,136,0.22), 0 1px 3px rgba(0,0,0,0.2); }
+  /* Reset image/video scale on touch */
+  .project-card:hover .project-preview img,
+  .project-card:hover .project-preview video { transform: none !important; }
+  .project-card:hover .preview-body span { transform: none !important; filter: none !important; }
+}
+
+/* ── TOUCH: active feedback (substitute for hover) ── */
+@media (pointer: coarse) {
+  .btn:active {
+    transform: scale(0.96) !important;
+    opacity: 0.88;
+    transition: transform 0.08s ease, opacity 0.08s ease;
+  }
+  .btn-outline:active {
+    background: rgba(0,255,136,0.14) !important;
+    border-color: var(--accent) !important;
+  }
+  [data-theme="light"] .btn-outline:active {
+    background: rgba(37,99,235,0.12) !important;
+    border-color: var(--accent) !important;
+  }
+  .back-top:active,
+  .footer-social-btn:active { transform: scale(0.94) !important; opacity: 0.85; }
+  .skill-chip:active { transform: scale(0.95) !important; opacity: 0.9; }
+  .project-card:active { border-color: rgba(0,255,136,0.28) !important; transition: border-color 0.08s ease; }
+  [data-theme="light"] .project-card:active { border-color: rgba(37,99,235,0.28) !important; }
+  .redes li:active { transform: scale(0.97) !important; opacity: 0.88; transition: transform 0.08s ease, opacity 0.08s ease; }
+  .projects-mode-btn:active { opacity: 0.78 !important; transform: scale(0.97) !important; }
 }
 
 /* ── LIGHT MODE REFINEMENTS ── */
@@ -1850,6 +1900,9 @@ kbd {
 [data-theme="light"] .service-card::before { background: radial-gradient(400px circle at var(--mouse-x, -300px) var(--mouse-y, -300px), rgba(37,99,235,0.07), transparent 70%); }
 [data-theme="light"] .project-card:hover { border-color: rgba(37,99,235,0.35); box-shadow: var(--shadow-lg), 0 0 60px rgba(37,99,235,0.08); }
 [data-theme="light"] .project-card::before { background: radial-gradient(380px circle at var(--mouse-x,50%) var(--mouse-y,50%), rgba(37,99,235,0.06), transparent 55%); }
+[data-theme="light"] .preview-chrome { background: rgba(0,0,0,0.04); border-bottom-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .preview-url { color: rgba(0,0,0,0.38); }
+[data-theme="light"] .preview-open { color: rgba(0,0,0,0.28); }
 [data-theme="light"] .project-tag { background: rgba(37,99,235,0.08); color: var(--accent); }
 [data-theme="light"] .project-techs span { background: rgba(14,165,233,0.07); border-color: rgba(14,165,233,0.2); color: #0369a1; }
 [data-theme="light"] .section-num { opacity: 0.18; }
@@ -2049,11 +2102,18 @@ kbd {
   vertical-align: baseline;
 }
 
-/* ── PROJECT CARD — preserve 3D for tilt ── */
+/* ── PROJECT CARD — preserve 3D for tilt (desktop only) ── */
 .project-card {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
   will-change: transform;
+}
+@media (max-width: 768px) {
+  .project-card {
+    -webkit-transform-style: flat;
+    transform-style: flat;
+    will-change: auto;
+  }
 }
 
 /* ── SKILL CHIP — scale pop on appear ── */
@@ -2414,6 +2474,10 @@ a.magnetic, button.magnetic { will-change: transform; }
 @media (max-width: 500px) {
   .service-card { padding: 20px 16px; }
   .preview-url { font-size: 0.6rem; }
+  .preview-chrome { height: 28px; padding: 0 8px; gap: 6px; }
+  .preview-dots { gap: 4px; }
+  .preview-dots i { width: 7px; height: 7px; }
+  .preview-body { top: 28px; }
 }
 
 /* Footer */

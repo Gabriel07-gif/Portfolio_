@@ -137,10 +137,10 @@ function ProjectCard({
       data-cursor-label={t('proj.cursor')}
       initial={{ opacity: 0, y: 70, scale: 0.94 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      whileHover={{ y: -8 }}
+      whileHover={isTouch ? {} : { y: -8 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.9, delay: index * 0.14, ease: [0.34, 1.56, 0.64, 1] }}
-      style={isTouch ? { transformPerspective: 900 } : { rotateX, rotateY, transformPerspective: 900 }}
+      style={isTouch ? {} : { rotateX, rotateY, transformPerspective: 900 }}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >
