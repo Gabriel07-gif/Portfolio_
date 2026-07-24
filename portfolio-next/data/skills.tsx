@@ -22,7 +22,7 @@ export const BACKEND: ChipData[] = [
   { name: 'Node.js',    img: '/images/svg/nodejs.svg',      featured: true },
   { name: 'PostgreSQL', img: '/images/svg/postgresql.svg' },
   { name: 'REST APIs',  img: '/images/svg/api.svg' },
-  { name: 'SQL',        img: '/images/svg/database.svg' },
+  { name: 'Python',     img: '/images/svg/python.svg' },
   { name: 'Java',       img: '/images/svg/java.svg' },
   { name: '.NET',       img: '/images/svg/dotnet.svg' },
 ];
