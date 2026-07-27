@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     card:        'summary_large_image',
     title:       'Gabriel Ricarte | Dev Full-Stack',
     description: 'Criando experiências digitais modernas com React, Next.js e TypeScript.',
-    creator:     '@ricarte.dev',
+    creator:     '@ricarte.sites',
     images:      [`${SITE_URL}/opengraph-image`],
   },
 };
@@ -109,7 +109,7 @@ const jsonLd = {
       sameAs: [
         'https://github.com/gabriel07-gif',
         'https://www.linkedin.com/in/gabriel-lucas-439153308/',
-        'https://instagram.com/ricarte.dev',
+        'https://instagram.com/ricarte.sites',
       ],
       knowsAbout: [
         'React', 'Next.js', 'TypeScript', 'JavaScript',
