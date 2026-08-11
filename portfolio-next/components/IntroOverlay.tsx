@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type * as ThreeTypes from 'three';
 import { useLang } from '@/contexts/LangContext';
 
@@ -9,6 +9,11 @@ const ENTRY_DUR = 2.6;
 
 const GABRIEL = 'GABRIEL'.split('');
 const RICARTE = 'RICARTE'.split('');
+
+const SPARK_COLORS = ['#00ff88', '#00aaff', '#5533ff'];
+const SPARK_COUNT  = 12;
+
+type Spark = { left: number; top: number; size: number; delay: number; dur: number; color: string };
 
 export default function IntroOverlay() {
   const { t } = useLang();
@@ -23,7 +28,21 @@ export default function IntroOverlay() {
   const [hidden,    setHidden]    = useState(false);
   const [mounted,   setMounted]   = useState(false);
   const [glowing,   setGlowing]   = useState(false);
-  const [isTouch,   setIsTouch]   = useState(false);
+  /* Lazy init (not an effect) so the first paint already knows — this component
+     is loaded with { ssr: false }, so `window` is always available here. */
+  const [isTouch]                 = useState(() => window.matchMedia('(pointer: coarse)').matches);
+
+  const sparks = useMemo<Spark[]>(() => {
+    if (!isTouch) return [];
+    return Array.from({ length: SPARK_COUNT }, (_, i) => ({
+      left:  Math.random() * 100,
+      top:   8 + Math.random() * 70,
+      size:  3 + Math.random() * 3,
+      delay: Math.random() * 4,
+      dur:   2.6 + Math.random() * 2.2,
+      color: SPARK_COLORS[i % SPARK_COLORS.length],
+    }));
+  }, [isTouch]);
 
   /* ── Lock body scroll while overlay is visible ── */
   useEffect(() => {
@@ -54,7 +73,6 @@ export default function IntroOverlay() {
       setHidden(true);
       return;
     }
-    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
     setMounted(true);
   }, []);
 
@@ -68,7 +86,6 @@ export default function IntroOverlay() {
     const overlay = overlayRef.current;
     if (!canvas || !overlay) return;
 
-    const isTouch  = window.matchMedia('(pointer: coarse)').matches;
     const W        = window.innerWidth;
     const H        = window.innerHeight;
     const isMob    = W < 768;
@@ -166,6 +183,10 @@ export default function IntroOverlay() {
     /* ── DESKTOP PATH: Three.js ── */
     const init = async () => {
       const THREE = await import('three');
+      /* User dismissed (click/Escape/Enter/Space) while the chunk was still
+         loading — dismiss() already ran the CSS-fade-out path below (since
+         rafId was still 0), so don't build a scene nobody will ever see. */
+      if (dismissed) return;
 
       /* renderer */
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMob, alpha: true });
@@ -330,6 +351,33 @@ export default function IntroOverlay() {
       };
       window.addEventListener('resize', onResize, { passive: true });
 
+      /* ── DISPOSAL: guarded so it's safe to call from the exit animation
+         AND from the effect cleanup below without double-disposing ── */
+      let disposedAlready = false;
+      const disposeAll = () => {
+        if (disposedAlready) return;
+        disposedAlready = true;
+        cancelAnimationFrame(rafId);
+        if (!isMob) overlay.removeEventListener('mousemove', onMouse);
+        window.removeEventListener('resize', onResize);
+
+        sphere.geometry.dispose();
+        sphereMat.dispose();
+        shell.geometry.dispose();
+        shellMat.dispose();
+        orbits.forEach(l => {
+          l.geometry.dispose();
+          (l.material as ThreeTypes.LineBasicMaterial).dispose();
+        });
+        pGeo.dispose();
+        partMat.dispose();
+        sGeo.dispose();
+        starMat.dispose();
+        spGeo.dispose();
+        spMat.dispose();
+        renderer.dispose();
+      };
+
       /* ── ANIMATION LOOP ── */
       const t0 = performance.now();
 
@@ -411,7 +459,7 @@ export default function IntroOverlay() {
           });
 
           if (exitProg >= 1) {
-            cancelAnimationFrame(rafId);
+            disposeAll();
             if (overlay) {
               overlay.classList.add('intro-leaving');
               setTimeout(() => {
@@ -428,28 +476,7 @@ export default function IntroOverlay() {
 
       rafId = requestAnimationFrame(animate);
 
-      return () => {
-        cancelAnimationFrame(rafId);
-        if (!isMob) overlay.removeEventListener('mousemove', onMouse);
-        window.removeEventListener('resize', onResize);
-
-        /* dispose all Three.js GPU resources */
-        sphere.geometry.dispose();
-        sphereMat.dispose();
-        shell.geometry.dispose();
-        shellMat.dispose();
-        orbits.forEach(l => {
-          l.geometry.dispose();
-          (l.material as ThreeTypes.LineBasicMaterial).dispose();
-        });
-        pGeo.dispose();
-        partMat.dispose();
-        sGeo.dispose();
-        starMat.dispose();
-        spGeo.dispose();
-        spMat.dispose();
-        renderer.dispose();
-      };
+      return disposeAll;
     };
 
     let isCleaned = false;
@@ -486,6 +513,30 @@ export default function IntroOverlay() {
       />
       <div className="intro-grid"      aria-hidden="true" />
       <div className="intro-scanlines" aria-hidden="true" />
+
+      {isTouch && (
+        <div className="intro-mobile-fx" aria-hidden="true">
+          <span className="intro-mobile-orb intro-mobile-orb--1" />
+          <span className="intro-mobile-orb intro-mobile-orb--2" />
+          <span className="intro-mobile-orb intro-mobile-orb--3" />
+          {sparks.map((s, i) => (
+            <span
+              key={i}
+              className="intro-mobile-spark"
+              style={{
+                left: `${s.left}%`,
+                top: `${s.top}%`,
+                width: s.size,
+                height: s.size,
+                background: s.color,
+                boxShadow: `0 0 6px 1px ${s.color}`,
+                animationDelay: `${s.delay}s`,
+                animationDuration: `${s.dur}s`,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="intro-content" ref={contentRef}>
         <p className="intro-tag" aria-hidden="true">

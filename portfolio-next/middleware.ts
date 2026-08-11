@@ -8,12 +8,12 @@ export function middleware(request: NextRequest) {
   const csp = [
     "default-src 'self'",
     isDev
-      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-      : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com"
+      : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://va.vercel-scripts.com`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: https:",
-    "connect-src 'self'",
+    "connect-src 'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com",
     "media-src 'self'",
     "object-src 'none'",
     "frame-ancestors 'none'",

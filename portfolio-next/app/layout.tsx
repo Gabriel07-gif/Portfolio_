@@ -152,14 +152,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="pt-BR" data-theme="dark" suppressHydrationWarning>
       <head>
         <meta name="referrer" content="strict-origin-when-cross-origin" />
+        {/* suppressHydrationWarning: browsers clear the reflected `nonce`
+            attribute after applying it (CSP nonce side-channel protection),
+            so the client always reads it back as "" — a real DOM behavior,
+            not a mismatch, so React's warning would be a false positive. */}
         <script
           nonce={nonce}
+          suppressHydrationWarning
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {/* Inline theme script prevents FOUC — nonce required for strict CSP */}
         <script
           nonce={nonce}
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var s=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',s);}catch(e){}})();`,
           }}

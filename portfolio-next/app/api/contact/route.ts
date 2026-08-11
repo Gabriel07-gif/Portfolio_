@@ -52,9 +52,15 @@ function validateEmail(email: string): boolean {
 }
 
 export async function POST(req: NextRequest) {
-  /* Rate limit by IP */
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-           ?? req.headers.get('x-real-ip')
+  /* Rate limit by IP.
+     x-forwarded-for is client-appendable — a spoofed value prepended by the
+     caller lands first in the list, so the left-most entry can't be trusted.
+     x-real-ip is set directly by the edge/proxy and can't be forged by the
+     client; when only x-forwarded-for is present, the right-most entry is the
+     one added by the hop closest to us, so it's the least spoofable there. */
+  const xff = req.headers.get('x-forwarded-for');
+  const ip  = req.headers.get('x-real-ip')
+           ?? xff?.split(',').pop()?.trim()
            ?? 'unknown';
   if (isRateLimited(ip)) {
     return NextResponse.json(
@@ -63,7 +69,16 @@ export async function POST(req: NextRequest) {
     );
   }
   try {
-    const body    = await req.json();
+    const body = await req.json();
+
+    /* Honeypot — hidden form field real users never fill in. Bots that skip
+       the page's JS and POST here directly bypass the client-side check in
+       Contact.tsx, so it must also be enforced here. Respond as if the
+       message was sent so scrapers don't learn the field is a trap. */
+    if (typeof body.website === 'string' && body.website.trim()) {
+      return NextResponse.json({ ok: true });
+    }
+
     const name    = sanitize(body.name    ?? '', 80);
     const email   = sanitize(body.email   ?? '', 120);
     const message = sanitize(body.message ?? '', 2000);

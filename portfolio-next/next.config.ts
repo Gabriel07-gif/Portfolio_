@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 2592000, /* 30 days — static portfolio images rarely change */
     deviceSizes: [320, 480, 640, 768, 1024, 1200, 1920],
     imageSizes:  [16, 32, 48, 64, 80, 96, 128, 256],
+    qualities:   [75, 92], /* 75 = next/image default, 92 = About.tsx profile photo */
   },
   async headers() {
     return [
