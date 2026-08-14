@@ -148,6 +148,7 @@ export default async function Image() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imgSrc}
+              alt="Gabriel Ricarte"
               width={260}
               height={260}
               style={{

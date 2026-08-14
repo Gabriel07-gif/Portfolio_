@@ -14,7 +14,7 @@ export default function BackTop() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleClick = () => {
+  const handleClick = () => { 
     const lenis = getLenisInstance();
     if (lenis) lenis.scrollTo(0);
     else window.scrollTo({ top: 0, behavior: 'smooth' });

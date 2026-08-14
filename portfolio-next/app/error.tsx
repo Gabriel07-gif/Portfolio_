@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import { useLang } from '@/contexts/LangContext';
 
 export default function Error({
@@ -74,7 +75,7 @@ export default function Error({
         >
           {t('error.retry')}
         </button>
-        <a
+        <Link
           href="/"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -85,7 +86,7 @@ export default function Error({
           }}
         >
           {t('error.back')}
-        </a>
+        </Link>
       </div>
 
       {error.digest && (

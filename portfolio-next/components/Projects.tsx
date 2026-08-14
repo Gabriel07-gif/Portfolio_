@@ -45,6 +45,8 @@ function VideoIcon() {
 
 const PROJECT_IMG_SIZES = '(max-width: 900px) calc(100vw - 48px), (max-width: 1400px) calc(50vw - 24px), 680px';
 
+const tiltRafMap = new WeakMap<Element, number>();
+
 function VideoPreview({ src, poster, fallback }: { src: string; poster?: string; fallback: React.ReactNode }) {
   const [errored,   setErrored]   = React.useState(false);
   const [inView,    setInView]    = React.useState(false);
@@ -118,11 +120,25 @@ function ProjectCard({
 
   const onMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (isTouch) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    mouseX.set((e.clientX - r.left)  / r.width);
-    mouseY.set((e.clientY - r.top)   / r.height);
-    e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - r.left}px`);
-    e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
+    const el = e.currentTarget;
+    const x  = e.clientX;
+    const y  = e.clientY;
+    const r  = el.getBoundingClientRect();
+    mouseX.set((x - r.left) / r.width);
+    mouseY.set((y - r.top)  / r.height);
+
+    /* --mouse-x/--mouse-y only drive a CSS spotlight background, so they can
+       lag a frame behind the (already-smooth) spring-driven tilt above —
+       rAF-coalesced the same way Services.tsx's card spotlight is, so a burst
+       of mousemove events costs at most one style write per frame. */
+    if (tiltRafMap.has(el)) return;
+    const rafId = requestAnimationFrame(() => {
+      tiltRafMap.delete(el);
+      const rect = el.getBoundingClientRect();
+      el.style.setProperty('--mouse-x', `${x - rect.left}px`);
+      el.style.setProperty('--mouse-y', `${y - rect.top}px`);
+    });
+    tiltRafMap.set(el, rafId);
   };
 
   const onMouseLeave = () => {

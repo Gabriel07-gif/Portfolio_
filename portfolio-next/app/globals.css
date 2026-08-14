@@ -571,43 +571,45 @@ section.bg-alt { background-color: var(--bg-alt); }
 /* ── INTRO MOBILE FX: CSS-only entrance for touch devices (no Three.js) ──
    transform/opacity only, no filter:blur or border-radius morphing — those
    are what .bg-blobs uses and is exactly why .bg-blobs is display:none on
-   mobile (see below). Soft edges come from the radial-gradient itself. */
+   mobile (see below). Soft edges come from the radial-gradient itself.
+   Both glows are anchored dead-center (50%/50%) on purpose: an earlier
+   version used three randomly-scattered orbs + sparks, and the large
+   corner orb's brightness pulled the eye toward it hard enough that the
+   (already perfectly centered) name read as off-center. A shared center
+   anchor makes the background symmetric by construction. */
 .intro-mobile-fx {
   position: absolute; inset: 0;
   pointer-events: none;
   overflow: hidden;
 }
-.intro-mobile-orb {
+.intro-mobile-glow {
   position: absolute;
+  top: 50%; left: 50%;
   border-radius: 50%;
   will-change: transform, opacity;
   contain: layout style paint;
-  width: clamp(180px, 55vw, 300px);
-  height: clamp(180px, 55vw, 300px);
 }
-.intro-mobile-orb--1 {
-  top: 6%; left: -10%;
-  background: radial-gradient(circle, rgba(0,255,136,0.30), transparent 70%);
-  animation: introOrbDrift1 9s ease-in-out infinite;
+.intro-mobile-glow--a {
+  width: clamp(320px, 130vw, 640px);
+  height: clamp(320px, 130vw, 640px);
+  background: radial-gradient(circle, rgba(0,255,136,0.22), transparent 68%);
+  animation: introGlowBreathe 7s ease-in-out infinite;
 }
-.intro-mobile-orb--2 {
-  bottom: 2%; right: -12%;
-  background: radial-gradient(circle, rgba(0,170,255,0.24), transparent 70%);
-  animation: introOrbDrift2 11s ease-in-out infinite;
+.intro-mobile-glow--b {
+  width: clamp(220px, 90vw, 440px);
+  height: clamp(220px, 90vw, 440px);
+  background: radial-gradient(circle, rgba(0,170,255,0.20), transparent 70%);
+  animation: introGlowBreathe 8s ease-in-out infinite 1.6s;
 }
-.intro-mobile-orb--3 {
-  top: 40%; left: 55%;
-  background: radial-gradient(circle, rgba(85,51,255,0.20), transparent 70%);
-  animation: introOrbDrift3 13s ease-in-out infinite;
-}
-.intro-mobile-spark {
+.intro-mobile-sweep {
   position: absolute;
-  border-radius: 50%;
-  opacity: 0;
+  top: -10%; bottom: -10%;
+  left: 0;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.10) 50%, transparent);
   will-change: transform, opacity;
-  animation-name: introSparkTwinkle;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+  opacity: 0;
+  animation: introSweep 2.2s cubic-bezier(0.16,1,0.3,1) 0.6s 1 both;
 }
 
 /* ── HERO ── */
@@ -624,7 +626,7 @@ section.bg-alt { background-color: var(--bg-alt); }
   border-radius: 50%; pointer-events: none;
   top: 50%; left: 50%; transform: translate(-50%, -50%);
   filter: blur(60px);
-  transition: all 1.5s cubic-bezier(0.2,0,0,1);
+  transition: transform 1.5s cubic-bezier(0.2,0,0,1);
 }
 .hero-grid {
   display: grid;
@@ -1464,21 +1466,15 @@ footer {
   55%  { opacity: 0.5; transform: scale(1.06); filter: blur(3px); }
   100% { opacity: 0; transform: scale(1.12); filter: blur(10px); }
 }
-@keyframes introOrbDrift1 {
-  0%, 100% { transform: translate(0,0) scale(1);           opacity: 0.55; }
-  50%      { transform: translate(18px,-14px) scale(1.08); opacity: 0.8; }
+@keyframes introGlowBreathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 0.6; }
+  50%      { transform: translate(-50%, -50%) scale(1.14); opacity: 0.95; }
 }
-@keyframes introOrbDrift2 {
-  0%, 100% { transform: translate(0,0) scale(1);          opacity: 0.45; }
-  50%      { transform: translate(-16px,12px) scale(1.1); opacity: 0.7; }
-}
-@keyframes introOrbDrift3 {
-  0%, 100% { transform: translate(0,0) scale(0.95);       opacity: 0.35; }
-  50%      { transform: translate(12px,16px) scale(1.05); opacity: 0.6; }
-}
-@keyframes introSparkTwinkle {
-  0%, 100% { opacity: 0;   transform: scale(0.6); }
-  50%      { opacity: 0.9; transform: scale(1); }
+@keyframes introSweep {
+  0%   { transform: translateX(-140%); opacity: 0; }
+  20%  { opacity: 0.85; }
+  55%  { opacity: 0.5; }
+  100% { transform: translateX(340%); opacity: 0; }
 }
 
 @keyframes pulse {

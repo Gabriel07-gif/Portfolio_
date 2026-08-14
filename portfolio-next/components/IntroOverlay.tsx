@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type * as ThreeTypes from 'three';
 import { useLang } from '@/contexts/LangContext';
 
@@ -9,11 +9,6 @@ const ENTRY_DUR = 2.6;
 
 const GABRIEL = 'GABRIEL'.split('');
 const RICARTE = 'RICARTE'.split('');
-
-const SPARK_COLORS = ['#00ff88', '#00aaff', '#5533ff'];
-const SPARK_COUNT  = 12;
-
-type Spark = { left: number; top: number; size: number; delay: number; dur: number; color: string };
 
 export default function IntroOverlay() {
   const { t } = useLang();
@@ -31,18 +26,6 @@ export default function IntroOverlay() {
   /* Lazy init (not an effect) so the first paint already knows — this component
      is loaded with { ssr: false }, so `window` is always available here. */
   const [isTouch]                 = useState(() => window.matchMedia('(pointer: coarse)').matches);
-
-  const sparks = useMemo<Spark[]>(() => {
-    if (!isTouch) return [];
-    return Array.from({ length: SPARK_COUNT }, (_, i) => ({
-      left:  Math.random() * 100,
-      top:   8 + Math.random() * 70,
-      size:  3 + Math.random() * 3,
-      delay: Math.random() * 4,
-      dur:   2.6 + Math.random() * 2.2,
-      color: SPARK_COLORS[i % SPARK_COLORS.length],
-    }));
-  }, [isTouch]);
 
   /* ── Lock body scroll while overlay is visible ── */
   useEffect(() => {
@@ -98,9 +81,10 @@ export default function IntroOverlay() {
     let exitProg  = 0;
     let dismissed = false;
     let mX = 0, mY = 0;
-    let autoTimer:  ReturnType<typeof setTimeout>;
-    let pctTimer:   ReturnType<typeof setInterval>;
-    let glowTimer:  ReturnType<typeof setTimeout>;
+    /* autoTimer/pctTimer/glowTimer are declared further down, at their
+       single assignment — dismiss() and the cleanups below only ever run
+       asynchronously (event/timeout/unmount), well after that point, so the
+       closures over these bindings are safe despite the later declaration. */
 
     /* ── shared dismiss logic ── */
     const dismiss = () => {
@@ -156,17 +140,17 @@ export default function IntroOverlay() {
 
     /* ── percent counter (always) ── */
     const t0pct = Date.now();
-    pctTimer = setInterval(() => {
+    const pctTimer = setInterval(() => {
       const pct = Math.min(Math.round(((Date.now() - t0pct) / TOTAL_MS) * 100), 100);
       if (pctRef.current) pctRef.current.textContent = String(pct);
       if (pct >= 100) clearInterval(pctTimer);
     }, 40);
 
     /* ── glow on RICARTE after last letter lands (always) ── */
-    glowTimer = setTimeout(() => setGlowing(true), Math.round((1.05 + 6 * 0.08 + 0.65) * 1000));
+    const glowTimer = setTimeout(() => setGlowing(true), Math.round((1.05 + 6 * 0.08 + 0.65) * 1000));
 
     /* ── auto-dismiss (always) ── */
-    autoTimer = setTimeout(dismiss, TOTAL_MS);
+    const autoTimer = setTimeout(dismiss, TOTAL_MS);
 
     /* ── TOUCH PATH: CSS-only, skip Three.js ── */
     if (isTouch) {
@@ -493,7 +477,10 @@ export default function IntroOverlay() {
       overlay.removeEventListener('click', dismiss);
       cleanupPromise.then(fn => { if (isCleaned) fn?.(); }).catch(() => {});
     };
-  }, [mounted]);
+    /* isTouch never changes after its lazy useState init (no setter is ever
+       called), so listing it here doesn't change when this effect re-runs —
+       it just satisfies exhaustive-deps since the effect does read it. */
+  }, [mounted, isTouch]);
 
   if (hidden) return null;
 
@@ -516,25 +503,9 @@ export default function IntroOverlay() {
 
       {isTouch && (
         <div className="intro-mobile-fx" aria-hidden="true">
-          <span className="intro-mobile-orb intro-mobile-orb--1" />
-          <span className="intro-mobile-orb intro-mobile-orb--2" />
-          <span className="intro-mobile-orb intro-mobile-orb--3" />
-          {sparks.map((s, i) => (
-            <span
-              key={i}
-              className="intro-mobile-spark"
-              style={{
-                left: `${s.left}%`,
-                top: `${s.top}%`,
-                width: s.size,
-                height: s.size,
-                background: s.color,
-                boxShadow: `0 0 6px 1px ${s.color}`,
-                animationDelay: `${s.delay}s`,
-                animationDuration: `${s.dur}s`,
-              }}
-            />
-          ))}
+          <span className="intro-mobile-glow intro-mobile-glow--a" />
+          <span className="intro-mobile-glow intro-mobile-glow--b" />
+          <span className="intro-mobile-sweep" />
         </div>
       )}
 

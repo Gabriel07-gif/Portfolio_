@@ -23,18 +23,29 @@ export default function Hero() {
   const projsVal = useCounter(8,  1600, { delayMs: 2000 });
   const techsVal = useCounter(15, 1200, { delayMs: 2200 });
 
-  /* Orb follows cursor */
+  /* Orb follows cursor — transform (not left/top) so this is compositor-only
+     and never triggers layout; rAF-batched to coalesce bursts of mousemove
+     events into at most one style write per frame. */
   useEffect(() => {
     const hero = sectionRef.current;
     const orb  = orbRef.current;
     if (!hero || !orb || !window.matchMedia('(any-pointer: fine)').matches) return;
+
+    let rafId = 0;
     const onMove = (e: MouseEvent) => {
       const r = hero.getBoundingClientRect();
-      orb.style.left = `${e.clientX - r.left}px`;
-      orb.style.top  = `${e.clientY - r.top}px`;
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        orb.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+      });
     };
     hero.addEventListener('mousemove', onMove, { passive: true });
-    return () => hero.removeEventListener('mousemove', onMove);
+    return () => {
+      cancelAnimationFrame(rafId);
+      hero.removeEventListener('mousemove', onMove);
+    };
   }, []);
 
   /* Cycle through roles every 2.8 s */
@@ -70,7 +81,6 @@ export default function Hero() {
         className="hero-orb"
         ref={orbRef}
         aria-hidden="true"
-        style={{ transform: 'translate(-50%, -50%)' }}
       />
 
       <div className="container" style={{ position: 'relative', zIndex: 2 }}>
