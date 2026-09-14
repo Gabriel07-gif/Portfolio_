@@ -36,7 +36,7 @@ type Social = {
 const SOCIALS: Social[] = [
   { key: 'facebook',  label: 'Facebook',  img: '/images/logo7.png',  url: 'https://www.facebook.com/profile.php?id=61585909988380' },
   { key: 'instagram', label: 'Instagram', img: '/images/logo8.png',  url: 'https://instagram.com/ricarte.sites' },
-  { key: 'whatsapp',  label: 'WhatsApp',  img: '/images/logo11.png', url: 'https://wa.me/5585988485621' },
+  { key: 'whatsapp',  label: 'WhatsApp',  img: '/images/logo11.png', url: 'https://wa.me/5522998486903' },
   { key: 'github',    label: 'GitHub',    img: '/images/logo10.png', imgLight: '/images/logo9.png', url: 'https://github.com/gabriel07-gif' },
   { key: 'gmail',     label: 'Gmail',     icon: <GmailIcon />,       url: 'https://mail.google.com/mail/?view=cm&to=gabrielricarte000@gmail.com' },
   { key: 'linkedin',  label: 'LinkedIn',  img: '/images/logo12.png', url: 'https://www.linkedin.com/in/gabriel-lucas-439153308/' },
