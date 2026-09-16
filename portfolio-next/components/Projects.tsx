@@ -50,19 +50,43 @@ const tiltRafMap = new WeakMap<Element, number>();
 function VideoPreview({ src, poster, fallback }: { src: string; poster?: string; fallback: React.ReactNode }) {
   const [errored,   setErrored]   = React.useState(false);
   const [inView,    setInView]    = React.useState(false);
+  const [isTouch,   setIsTouch]   = React.useState(true);
+  const [requested, setRequested] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   React.useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const margin = window.innerWidth <= 768 ? '150px' : '300px';
+    const touch = window.matchMedia('(pointer: coarse)').matches;
+    setIsTouch(touch);
+    const margin = touch ? '0px' : '300px';
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect(); } },
+      ([entry]) => setInView(entry.isIntersecting),
       { rootMargin: margin }
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
+
+  React.useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (inView && (!isTouch || requested) && !document.hidden) {
+      void video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [inView, isTouch, requested]);
+
+  React.useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.hidden) videoRef.current?.pause();
+      else if (inView && (!isTouch || requested)) void videoRef.current?.play().catch(() => {});
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, [inView, isTouch, requested]);
 
   const placeholder = poster ? (
     <Image
@@ -74,12 +98,14 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
 
   return (
     <div ref={containerRef} style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-      {errored ? fallback : inView ? (
+      {errored ? fallback : inView && (!isTouch || requested) ? (
         <video
+          ref={videoRef}
           src={src}
           poster={poster}
-          autoPlay muted loop playsInline
-          preload="metadata"
+          autoPlay={!isTouch} muted loop playsInline
+          controls={isTouch}
+          preload="none"
           onError={() => setErrored(true)}
           style={{
             position: 'absolute', inset: 0,
@@ -88,7 +114,23 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
             display: 'block',
           }}
         />
-      ) : placeholder}
+      ) : (
+        <>
+          {placeholder}
+          {isTouch && inView && (
+            <button
+              type="button"
+              className="project-video-play"
+              onClick={() => setRequested(true)}
+              aria-label="Play project preview"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m9 7 7 5-7 5V7Z" fill="currentColor" />
+              </svg>
+            </button>
+          )}
+        </>
+      )}
     </div>
   );
 }

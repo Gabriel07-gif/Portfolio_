@@ -6,6 +6,7 @@ const Spline = lazy(() => import('@splinetool/react-spline'))
 interface SplineSceneProps {
   scene: string
   className?: string
+  fallback?: ReactNode
 }
 
 interface SplineErrorBoundaryProps {
@@ -36,12 +37,40 @@ class SplineErrorBoundary extends Component<SplineErrorBoundaryProps, SplineErro
   }
 }
 
-export function SplineScene({ scene, className }: SplineSceneProps) {
+export function SplineScene({ scene, className, fallback }: SplineSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [shouldLoad, setShouldLoad] = useState(false)
 
+  /* A remote WebGL scene is the largest interactive cost on the page. Keep it
+     for desktop, but use the supplied visual fallback on touch, reduced-motion,
+     and compact layouts where it would compete with scrolling for GPU time. */
+  const [canUse3D, setCanUse3D] = useState(false)
+
   useEffect(() => {
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => {
+      setCanUse3D(
+        finePointer.matches &&
+        !reducedMotion.matches &&
+        window.innerWidth >= 1024,
+      )
+    }
+
+    update()
+    finePointer.addEventListener('change', update)
+    reducedMotion.addEventListener('change', update)
+    window.addEventListener('resize', update, { passive: true })
+    return () => {
+      finePointer.removeEventListener('change', update)
+      reducedMotion.removeEventListener('change', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!canUse3D) return
     const container = containerRef.current
     if (!container) return
 
@@ -52,7 +81,7 @@ export function SplineScene({ scene, className }: SplineSceneProps) {
     observer.observe(container)
 
     return () => observer.disconnect()
-  }, [])
+  }, [canUse3D])
 
   useEffect(() => {
     if (!isVisible) return
@@ -77,7 +106,7 @@ export function SplineScene({ scene, className }: SplineSceneProps) {
             </div>
           }
         >
-          {shouldLoad && isVisible ? <Spline scene={scene} className={className} /> : null}
+          {canUse3D && shouldLoad && isVisible ? <Spline scene={scene} className={className} /> : fallback ?? null}
         </Suspense>
       </SplineErrorBoundary>
     </div>

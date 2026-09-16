@@ -663,6 +663,56 @@ section.bg-alt { background-color: var(--bg-alt); }
 .hero-spline-card {
   height: 480px;
 }
+.hero-scene-fallback {
+  position: relative;
+  width: 100%; height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(0,255,136,0.14), transparent 28%),
+    radial-gradient(circle at center, rgba(0,170,255,0.09), transparent 54%),
+    linear-gradient(135deg, #050914, #03050b);
+}
+.hero-scene-fallback::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(0,255,136,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0,170,255,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(circle, black, transparent 70%);
+  mask-image: radial-gradient(circle, black, transparent 70%);
+}
+.hero-scene-core,
+.hero-scene-orbit {
+  position: absolute;
+  border-radius: 50%;
+  transform: translateZ(0);
+}
+.hero-scene-core {
+  width: 26%; aspect-ratio: 1;
+  background: radial-gradient(circle at 35% 30%, #d7fff0 0 3%, #00ff88 18%, #008b74 46%, transparent 69%);
+  box-shadow: 0 0 42px rgba(0,255,136,0.42);
+  animation: heroScenePulse 3.4s ease-in-out infinite;
+}
+.hero-scene-orbit {
+  width: 54%; aspect-ratio: 1;
+  border: 1px solid rgba(0,255,136,0.42);
+  box-shadow: inset 0 0 18px rgba(0,255,136,0.08);
+  animation: heroSceneOrbit 12s linear infinite;
+}
+.hero-scene-orbit--one { transform: rotateX(68deg) rotateZ(12deg); }
+.hero-scene-orbit--two {
+  width: 72%;
+  border-color: rgba(0,170,255,0.32);
+  animation-direction: reverse;
+  animation-duration: 16s;
+  transform: rotateX(68deg) rotateZ(-42deg);
+}
+@keyframes heroScenePulse {
+  0%, 100% { transform: scale(0.94); opacity: 0.78; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+@keyframes heroSceneOrbit { to { rotate: 1turn; } }
 .hero-location {
   display: inline-flex; align-items: center; gap: 5px;
   font-family: 'JetBrains Mono', monospace;
@@ -945,6 +995,21 @@ section.bg-alt { background-color: var(--bg-alt); }
 .project-card:hover .project-preview video {
   transform: scale(1.04);
 }
+.project-video-play {
+  position: absolute; z-index: 2;
+  top: 50%; left: 50%;
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255,255,255,0.42);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(4, 12, 18, 0.78);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 0 6px rgba(0,255,136,0.10);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.project-video-play:active { transform: translate(-50%, -50%) scale(0.92); }
 .preview-car {
   background: linear-gradient(140deg, #091a0f, #0a1526, #0d1c28);
 }

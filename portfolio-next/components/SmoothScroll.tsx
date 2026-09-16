@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import Lenis from 'lenis';
 import { setLenisInstance } from '@/lib/lenis-instance';
 
 export default function SmoothScroll() {
@@ -14,8 +13,9 @@ export default function SmoothScroll() {
        on anchor clicks and rely entirely on the listener below to actually
        move the page — so it must stay registered in every case, just with
        a plain native scroll standing in for Lenis when skipped. */
-    const lenis = (reduceMotion || isTouch) ? null : new Lenis({ lerp: 0.1, smoothWheel: true });
-    if (lenis) setLenisInstance(lenis);
+    let lenis: import('lenis').default | null = null;
+    let disposed = false;
+    let rafId = 0;
 
     const handleClick = (e: MouseEvent) => {
       const anchor = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement | null;
@@ -37,20 +37,28 @@ export default function SmoothScroll() {
       const top = el
         ? el.getBoundingClientRect().top + window.scrollY - (document.getElementById('navbar')?.getBoundingClientRect().height ?? 80)
         : 0;
-      window.scrollTo({ top, behavior: reduceMotion ? 'instant' : 'smooth' });
+      window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
     };
     document.addEventListener('click', handleClick);
 
-    let rafId = 0;
-    if (lenis) {
-      const raf = (time: number) => {
-        lenis.raf(time);
+    /* Keep native scrolling on touch devices. Importing Lenis itself is deferred
+       too, so mobile does not download a library it will never instantiate. */
+    if (!reduceMotion && !isTouch) {
+      void import('lenis').then(({ default: Lenis }) => {
+        if (disposed) return;
+        lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+        setLenisInstance(lenis);
+
+        const raf = (time: number) => {
+          lenis?.raf(time);
+          rafId = requestAnimationFrame(raf);
+        };
         rafId = requestAnimationFrame(raf);
-      };
-      rafId = requestAnimationFrame(raf);
+      });
     }
 
     return () => {
+      disposed = true;
       if (rafId) cancelAnimationFrame(rafId);
       document.removeEventListener('click', handleClick);
       if (lenis) {

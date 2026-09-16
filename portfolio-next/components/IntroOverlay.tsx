@@ -5,6 +5,7 @@ import type * as ThreeTypes from 'three';
 import { useLang } from '@/contexts/LangContext';
 
 const TOTAL_MS  = 6000;
+const TOUCH_TOTAL_MS = 3000;
 const ENTRY_DUR = 2.6;
 
 const GABRIEL = 'GABRIEL'.split('');
@@ -68,6 +69,9 @@ export default function IntroOverlay() {
     const canvas  = canvasRef.current;
     const overlay = overlayRef.current;
     if (!canvas || !overlay) return;
+    /* On a touch screen, six seconds with scrolling locked reads as a frozen
+       page. The CSS-only intro keeps its full sequence, just at a mobile pace. */
+    const totalMs = isTouch ? TOUCH_TOTAL_MS : TOTAL_MS;
 
     const W        = window.innerWidth;
     const H        = window.innerHeight;
@@ -132,7 +136,7 @@ export default function IntroOverlay() {
 
     /* ── progress bar (always) ── */
     if (barFillRef.current) {
-      barFillRef.current.style.transition = `width ${TOTAL_MS}ms linear`;
+      barFillRef.current.style.transition = `width ${totalMs}ms linear`;
       requestAnimationFrame(() => {
         if (barFillRef.current) barFillRef.current.style.width = '100%';
       });
@@ -141,16 +145,19 @@ export default function IntroOverlay() {
     /* ── percent counter (always) ── */
     const t0pct = Date.now();
     pctTimer = setInterval(() => {
-      const pct = Math.min(Math.round(((Date.now() - t0pct) / TOTAL_MS) * 100), 100);
+      const pct = Math.min(Math.round(((Date.now() - t0pct) / totalMs) * 100), 100);
       if (pctRef.current) pctRef.current.textContent = String(pct);
       if (pct >= 100 && pctTimer) clearInterval(pctTimer);
     }, 40);
 
     /* ── glow on RICARTE after last letter lands (always) ── */
-    const glowTimer = setTimeout(() => setGlowing(true), Math.round((1.05 + 6 * 0.08 + 0.65) * 1000));
+    const glowTimer = setTimeout(
+      () => setGlowing(true),
+      Math.min(Math.round((1.05 + 6 * 0.08 + 0.65) * 1000), Math.round(totalMs * 0.72)),
+    );
 
     /* ── auto-dismiss (always) ── */
-    autoTimer = setTimeout(dismiss, TOTAL_MS);
+    autoTimer = setTimeout(dismiss, totalMs);
 
     /* ── TOUCH PATH: CSS-only, skip Three.js ── */
     if (isTouch) {

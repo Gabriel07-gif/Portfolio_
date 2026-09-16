@@ -210,6 +210,13 @@ export default function Hero() {
                 <SplineScene 
                   scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
                   className="w-full h-full"
+                  fallback={
+                    <div className="hero-scene-fallback" aria-hidden="true">
+                      <div className="hero-scene-orbit hero-scene-orbit--one" />
+                      <div className="hero-scene-orbit hero-scene-orbit--two" />
+                      <div className="hero-scene-core" />
+                    </div>
+                  }
                 />
               </div>
             </Card>
