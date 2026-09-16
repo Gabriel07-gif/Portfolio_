@@ -27,9 +27,8 @@ export default function Hero() {
   const projsVal = useCounter(8,  1600, { delayMs: 2000 });
   const techsVal = useCounter(15, 1200, { delayMs: 2200 });
 
-  /* Touch and compact layouts retain the hero's motion, but avoid work that
-     competes with scrolling: 3D perspective, blur interpolation and spotlight
-     springs. The remote WebGL scene is independently gated in SplineScene. */
+  /* Touch and compact layouts render static content. This keeps the copy and
+     actions usable even when a browser throttles motion while scrolling. */
   useEffect(() => {
     const query = window.matchMedia(
       '(max-width: 900px), (pointer: coarse), (prefers-reduced-motion: reduce)',
@@ -78,24 +77,18 @@ export default function Hero() {
     visible: { opacity: 1, transition: { staggerChildren: 0.055, delayChildren: 0.3 } },
   };
   const charVariants = {
-    hidden: isLightweight
-      ? { opacity: 0, y: -28 }
-      : { opacity: 0, y: -60, rotateX: 90 },
-    visible: isLightweight
-      ? { opacity: 1, y: 0, transition: { duration: 0.42, ease: [0.16, 1, 0.3, 1] as const } }
-      : { opacity: 1, y: 0, rotateX: 0, transition: { type: 'spring' as const, stiffness: 200, damping: 18 } },
+    hidden: { opacity: 0, y: -60, rotateX: 90 },
+    visible: { opacity: 1, y: 0, rotateX: 0, transition: { type: 'spring' as const, stiffness: 200, damping: 18 } },
   };
-  const fadeUp = (delay = 0) => ({
-    initial: { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0, transition: { duration: isLightweight ? 0.45 : 0.6, delay, ease: [0.16, 1, 0.3, 1] as const } },
-  });
+  const fadeUp = (delay = 0) => isLightweight
+    ? {}
+    : {
+        initial: { opacity: 0, y: 24 },
+        animate: { opacity: 1, y: 0, transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const } },
+      };
 
   const roleMotion = isLightweight
-    ? {
-        initial: { opacity: 0, y: 10 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: -10 },
-      }
+    ? {}
     : {
         initial: { opacity: 0, y: 14, filter: 'blur(6px)' },
         animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
@@ -132,9 +125,9 @@ export default function Hero() {
             <motion.h1
               className="hero-name"
               variants={nameVariants}
-              initial="hidden"
-              animate="visible"
-              style={{ perspective: 600 }}
+              initial={isLightweight ? false : 'hidden'}
+              animate={isLightweight ? false : 'visible'}
+              style={isLightweight ? undefined : { perspective: 600 }}
             >
               {NAME.split('').map((char, i) =>
                 char === ' ' ? (
@@ -221,21 +214,20 @@ export default function Hero() {
           </div>
 
           {/* ── RIGHT: 3D SPLINE ROBOT SCENE & SPOTLIGHT ── */}
+          {!isLightweight && (
           <motion.div
             className="hero-visual"
-            initial={isLightweight ? { opacity: 0, y: 28 } : { opacity: 0, x: 80, rotateY: -24 }}
-            animate={isLightweight ? { opacity: 1, y: 0 } : { opacity: 1, x: 0, rotateY: 0 }}
-            transition={{ duration: isLightweight ? 0.55 : 0.9, delay: isLightweight ? 0.25 : 0.5, ease: [0.16, 1, 0.3, 1] }}
-            style={isLightweight ? undefined : { perspective: 900 }}
+            initial={{ opacity: 0, x: 80, rotateY: -24 }}
+            animate={{ opacity: 1, x: 0, rotateY: 0 }}
+            transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            style={{ perspective: 900 }}
             aria-hidden="true"
           >
             <Card className="hero-spline-card w-full bg-black/[0.94] relative overflow-hidden border border-white/10 shadow-2xl rounded-2xl flex flex-col">
-              {!isLightweight && (
-                <Spotlight
-                  className="-top-40 left-0 md:left-60 md:-top-20"
-                  fill="white"
-                />
-              )}
+              <Spotlight
+                className="-top-40 left-0 md:left-60 md:-top-20"
+                fill="white"
+              />
               <div className="w-full h-full relative z-10">
                 <SplineScene 
                   scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
@@ -261,22 +253,25 @@ export default function Hero() {
               {t('hero.available')}
             </motion.div>
           </motion.div>
+          )}
         </div>
       </div>
 
-      <motion.div
-        className="hero-scroll"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.2, duration: 0.8 }}
-        aria-hidden="true"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M12 5v14M5 13l7 7 7-7"
-            stroke="currentColor" strokeWidth="1.5"
-            strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </motion.div>
+      {!isLightweight && (
+        <motion.div
+          className="hero-scroll"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.2, duration: 0.8 }}
+          aria-hidden="true"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 13l7 7 7-7"
+              stroke="currentColor" strokeWidth="1.5"
+              strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </motion.div>
+      )}
     </section>
   );
 }

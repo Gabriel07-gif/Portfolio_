@@ -2795,3 +2795,45 @@ a.magnetic, button.magnetic { will-change: transform; }
   .hero-scroll { display: none; }
   .hero-orb { display: none; }
 }
+
+/* ── TOUCH-FIRST HERO ──
+   The 3D card is decorative. Keeping it in the first mobile section made the
+   hero several viewports tall and its canvas could capture a swipe on some
+   mobile browsers. Mobile now prioritizes content, direct actions and native
+   vertical scrolling; the richer visual remains available on tablet/desktop. */
+@media (max-width: 767px) {
+  .hero {
+    min-height: 100dvh;
+    min-height: 100svh;
+    align-items: center;
+    padding-top: calc(88px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    touch-action: pan-y;
+  }
+  .hero-grid { gap: 0; width: 100%; }
+  .hero-visual { display: none; }
+  .hero-desc { margin-bottom: 28px; line-height: 1.75; }
+  .hero-buttons { gap: 10px; }
+  .hero-buttons .btn { flex: 1 1 140px; justify-content: center; }
+  .hero-stats {
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 28px;
+    padding-top: 20px;
+  }
+  .hero-stat-div { display: none; }
+}
+
+@media (max-width: 900px) {
+  .hero-orb { display: none; }
+}
+
+/* Avoid continuous full-screen compositing work while a phone is scrolling. */
+@media (pointer: coarse) {
+  .noise-overlay { display: none; }
+  .blob {
+    animation: none;
+    filter: blur(56px);
+    will-change: auto;
+  }
+}

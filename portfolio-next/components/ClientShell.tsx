@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
-const IntroOverlay   = dynamic(() => import('@/components/IntroOverlay'),   { ssr: false });
 const CustomCursor   = dynamic(() => import('@/components/CustomCursor'),   { ssr: false });
 const MagneticLayer  = dynamic(() => import('@/components/MagneticLayer'),  { ssr: false });
 const SmoothScroll   = dynamic(() => import('@/components/SmoothScroll'),   { ssr: false });
@@ -22,9 +21,6 @@ export default function ClientShell() {
 
   return (
     <>
-      <ErrorBoundary>
-        <IntroOverlay />
-      </ErrorBoundary>
       {/* A CSS-only grid needs no client-side chunk. */}
       <div className="bg-grid" aria-hidden="true" />
       {hasFinePointer && (
