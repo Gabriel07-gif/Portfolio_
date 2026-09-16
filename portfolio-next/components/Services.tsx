@@ -75,7 +75,12 @@ function onSpotlight(e: React.MouseEvent<HTMLDivElement>) {
 export default function Services() {
   const { t } = useLang();
   const [isTouch, setIsTouch] = useState(false);
-  useEffect(() => { setIsTouch(window.matchMedia('(pointer: coarse)').matches); }, []);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   return (
     <section id="servicos" className="bg-alt" aria-label={t('nav.services')}>

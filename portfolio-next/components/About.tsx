@@ -75,7 +75,7 @@ export default function About() {
                 width={680}
                 height={760}
                 quality={92}
-                priority
+                loading="lazy"
                 sizes="(max-width: 480px) calc(100vw - 48px), (max-width: 768px) 380px, (max-width: 1200px) 45vw, 360px"
                 style={{ objectFit: 'cover', objectPosition: 'top center', borderRadius: '24px', width: '100%', height: 'auto' }}
               />

@@ -655,6 +655,9 @@ section.bg-alt { background-color: var(--bg-alt); }
   align-items: center; justify-content: center;
   gap: 20px;
 }
+.hero-spline-card {
+  height: 480px;
+}
 .hero-location {
   display: inline-flex; align-items: center; gap: 5px;
   font-family: 'JetBrains Mono', monospace;
@@ -2501,6 +2504,7 @@ a.magnetic, button.magnetic { will-change: transform; }
   .project-preview { min-height: 200px; }
 }
 @media (max-width: 768px) {
+  .hero-spline-card { height: min(420px, 112vw); }
   .project-preview { min-height: 180px; }
 }
 

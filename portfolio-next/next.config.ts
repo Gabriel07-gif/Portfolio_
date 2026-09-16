@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'path';
 
 /* CSP is handled per-request by middleware.ts (nonce-based in production) */
 const securityHeaders = [
@@ -10,6 +11,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: path.resolve(__dirname),
   poweredByHeader: false,
   experimental: {
     optimizePackageImports: ['framer-motion'],
@@ -27,11 +29,6 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: securityHeaders,
-      },
-      {
-        /* Immutable cache for hashed Next.js chunks */
-        source: '/_next/static/(.*)',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
       {
         /* Long-lived cache for public images and SVGs */

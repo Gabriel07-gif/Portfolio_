@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 import { useCounter } from '@/hooks/useCounter';
+import { SplineScene } from '@/components/ui/splite';
+import { Spotlight } from '@/components/ui/spotlight';
+import { Card } from '@/components/ui/card';
 
 const NAME = 'Gabriel Ricarte';
 
@@ -55,9 +58,6 @@ export default function Hero() {
     }, 2800);
     return () => clearInterval(id);
   }, [lang]);
-
-  /* Reset index on language change */
-  useEffect(() => { setRoleIdx(0); }, [lang]);
 
   const nameVariants = {
     hidden:  { opacity: 0 },
@@ -192,7 +192,7 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* ── RIGHT: CODE CARD ── */}
+          {/* ── RIGHT: 3D SPLINE ROBOT SCENE & SPOTLIGHT ── */}
           <motion.div
             className="hero-visual"
             initial={{ opacity: 0, x: 80, rotateY: -24 }}
@@ -201,117 +201,18 @@ export default function Hero() {
             style={{ perspective: 900 }}
             aria-hidden="true"
           >
-            <motion.div
-              className="status-card-wrap"
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', repeatType: 'loop' }}
-            >
-              <div className="status-card-ambient" />
-              <div className="status-card">
-                <div className="status-card-header">
-                  <span className="status-live-dot" />
-                  <span className="status-card-label-top">dev · status</span>
-                </div>
-                <motion.div
-                  className="status-card-body"
-                  initial="hidden"
-                  animate="visible"
-                  variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.18, delayChildren: 1.0 } } }}
-                >
-                  <motion.div
-                    className="status-row"
-                    variants={{ hidden: { opacity: 0, x: 24 }, visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } } }}
-                  >
-                    <span className="status-row-label">building now</span>
-                    <a
-                      href="https://www.gabrielricartedev.com.br/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="status-row-link"
-                    >
-                      portfolio_
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M4 1H1v10h10V8M7 1h4m0 0v4M11 1 5.5 6.5"
-                          stroke="currentColor" strokeWidth="1.4"
-                          strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </a>
-                    <motion.div
-                      className="status-chips"
-                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } } }}
-                    >
-                      {['Next.js', 'Three.js', 'Framer Motion'].map(tech => (
-                        <motion.span
-                          key={tech}
-                          variants={{ hidden: { opacity: 0, scale: 0.7 }, visible: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 18 } } }}
-                        >{tech}</motion.span>
-                      ))}
-                    </motion.div>
-                  </motion.div>
-
-                  <div className="status-divider" />
-
-                  <motion.div
-                    className="status-row"
-                    variants={{ hidden: { opacity: 0, x: 24 }, visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } } }}
-                  >
-                    <span className="status-row-label">last shipped</span>
-                    <a
-                      href="https://jurisflow-omega.vercel.app/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="status-row-link"
-                    >
-                      jurivox
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M4 1H1v10h10V8M7 1h4m0 0v4M11 1 5.5 6.5"
-                          stroke="currentColor" strokeWidth="1.4"
-                          strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </a>
-                    <motion.div
-                      className="status-chips"
-                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } } }}
-                    >
-                      {['Next.js', 'TypeScript', 'Supabase'].map(tech => (
-                        <motion.span
-                          key={tech}
-                          variants={{ hidden: { opacity: 0, scale: 0.7 }, visible: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 18 } } }}
-                        >{tech}</motion.span>
-                      ))}
-                    </motion.div>
-                  </motion.div>
-
-                  <div className="status-divider" />
-
-                  <motion.div
-                    className="status-row"
-                    style={{ marginBottom: 0 }}
-                    variants={{ hidden: { opacity: 0, x: 24 }, visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } } }}
-                  >
-                    <span className="status-row-label">focus stack</span>
-                    <motion.div
-                      className="status-stack-grid"
-                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } } }}
-                    >
-                      {(['React', 'TypeScript', 'Node.js', 'PostgreSQL'] as const).map(tech => (
-                        <motion.span
-                          key={tech}
-                          className="status-stack-item"
-                          variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 260, damping: 20 } } }}
-                        >{tech}</motion.span>
-                      ))}
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
-                <div className="status-card-footer">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                  </svg>
-                  <span>gabriel07-gif</span>
-                </div>
+            <Card className="hero-spline-card w-full bg-black/[0.94] relative overflow-hidden border border-white/10 shadow-2xl rounded-2xl flex flex-col">
+              <Spotlight
+                className="-top-40 left-0 md:left-60 md:-top-20"
+                fill="white"
+              />
+              <div className="w-full h-full relative z-10">
+                <SplineScene 
+                  scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                  className="w-full h-full"
+                />
               </div>
-            </motion.div>
+            </Card>
 
             <motion.div
               className="hero-badge"

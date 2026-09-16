@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, startTransition } from 'react';
 import { type Lang, LANG_META, detectLang, translate } from '@/lib/i18n';
 
 const toLangAttr = (l: Lang) => l === 'pt' ? 'pt-BR' : l;
@@ -24,7 +24,7 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const detected = detectLang();
-    setLangState(detected);
+    startTransition(() => setLangState(detected));
     document.documentElement.lang = toLangAttr(detected);
     document.title = translate(detected, 'page.title');
   }, []);

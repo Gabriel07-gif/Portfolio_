@@ -40,7 +40,7 @@ export default function IntroOverlay() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.body.style.overflow = '';
       if (blocker) blocker.remove();
-      setHidden(true);
+      queueMicrotask(() => setHidden(true));
       return;
     }
     if (sessionStorage.getItem('g-intro-done')) {
@@ -53,10 +53,10 @@ export default function IntroOverlay() {
         blocker.addEventListener('transitionend', removeBlocker, { once: true });
         setTimeout(removeBlocker, 350);
       }
-      setHidden(true);
+      queueMicrotask(() => setHidden(true));
       return;
     }
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
   }, []);
 
   useEffect(() => {
@@ -81,17 +81,17 @@ export default function IntroOverlay() {
     let exitProg  = 0;
     let dismissed = false;
     let mX = 0, mY = 0;
-    /* autoTimer/pctTimer/glowTimer are declared further down, at their
-       single assignment — dismiss() and the cleanups below only ever run
-       asynchronously (event/timeout/unmount), well after that point, so the
-       closures over these bindings are safe despite the later declaration. */
+    // eslint-disable-next-line prefer-const
+    let autoTimer: ReturnType<typeof setTimeout> | undefined;
+    // eslint-disable-next-line prefer-const
+    let pctTimer: ReturnType<typeof setInterval> | undefined;
 
     /* ── shared dismiss logic ── */
     const dismiss = () => {
       if (dismissed) return;
       dismissed = true;
-      clearTimeout(autoTimer);
-      clearInterval(pctTimer);
+      if (autoTimer) clearTimeout(autoTimer);
+      if (pctTimer) clearInterval(pctTimer);
       window.removeEventListener('keydown', onKey);
       overlay.removeEventListener('click', dismiss);
       /* Restore body scroll immediately — the component renders null after this
@@ -140,17 +140,17 @@ export default function IntroOverlay() {
 
     /* ── percent counter (always) ── */
     const t0pct = Date.now();
-    const pctTimer = setInterval(() => {
+    pctTimer = setInterval(() => {
       const pct = Math.min(Math.round(((Date.now() - t0pct) / TOTAL_MS) * 100), 100);
       if (pctRef.current) pctRef.current.textContent = String(pct);
-      if (pct >= 100) clearInterval(pctTimer);
+      if (pct >= 100 && pctTimer) clearInterval(pctTimer);
     }, 40);
 
     /* ── glow on RICARTE after last letter lands (always) ── */
     const glowTimer = setTimeout(() => setGlowing(true), Math.round((1.05 + 6 * 0.08 + 0.65) * 1000));
 
     /* ── auto-dismiss (always) ── */
-    const autoTimer = setTimeout(dismiss, TOTAL_MS);
+    autoTimer = setTimeout(dismiss, TOTAL_MS);
 
     /* ── TOUCH PATH: CSS-only, skip Three.js ── */
     if (isTouch) {

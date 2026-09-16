@@ -61,7 +61,7 @@ export default async function Image() {
           flex: 1,
           padding: '0 80px',
           gap: 64,
-          position: 'relative', zIndex: 1,
+          position: 'relative',
         }}>
 
           {/* Left: text */}
@@ -142,7 +142,6 @@ export default async function Image() {
               position: 'absolute', inset: 0,
               borderRadius: '50%',
               border: '3px solid #04040e',
-              zIndex: 1,
             }} />
             {/* Photo */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -156,7 +155,6 @@ export default async function Image() {
                 objectFit: 'cover',
                 objectPosition: 'center top',
                 position: 'relative',
-                zIndex: 2,
               }}
             />
           </div>
@@ -167,7 +165,7 @@ export default async function Image() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '20px 80px',
           borderTop: '1px solid rgba(255,255,255,0.06)',
-          position: 'relative', zIndex: 1,
+          position: 'relative',
         }}>
           <span style={{ color: 'rgba(136,146,176,0.7)', fontSize: 18 }}>
             {(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gabrielricartedev.com').replace('https://', '')}

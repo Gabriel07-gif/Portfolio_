@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, startTransition } from 'react';
 
 type Theme = 'dark' | 'light';
 
@@ -18,14 +18,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark');
 
   useEffect(() => {
-    const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    let initial: Theme = preferred;
+    let initial: Theme = 'dark';
     /* localStorage throws in private browsing (Safari) or when storage is blocked */
     try {
       const saved = localStorage.getItem('theme');
       if (saved === 'dark' || saved === 'light') initial = saved;
     } catch {}
-    setTheme(initial);
+    startTransition(() => setTheme(initial));
     document.documentElement.setAttribute('data-theme', initial);
   }, []);
 

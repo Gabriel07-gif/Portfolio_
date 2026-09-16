@@ -29,7 +29,7 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-/* ── Input sanitization — strips newlines (SMTP header injection guard) ── */
+/* ── Input sanitization ── */
 const HTML_ESCAPE: Record<string, string> = {
   '&': '&amp;',
   '<': '&lt;',
@@ -39,9 +39,16 @@ const HTML_ESCAPE: Record<string, string> = {
   '`': '&#x60;',
 };
 
-function sanitize(str: string, max: number): string {
+function sanitizeHeader(str: string, max: number): string {
   return String(str)
     .replace(/[\r\n]/g, ' ')
+    .trim()
+    .slice(0, max)
+    .replace(/[&<>"'`]/g, c => HTML_ESCAPE[c]);
+}
+
+function sanitizeBody(str: string, max: number): string {
+  return String(str)
     .trim()
     .slice(0, max)
     .replace(/[&<>"'`]/g, c => HTML_ESCAPE[c]);
@@ -79,9 +86,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    const name    = sanitize(body.name    ?? '', 80);
-    const email   = sanitize(body.email   ?? '', 120);
-    const message = sanitize(body.message ?? '', 2000);
+    const name    = sanitizeHeader(body.name    ?? '', 80);
+    const email   = sanitizeHeader(body.email   ?? '', 120);
+    const message = sanitizeBody(body.message ?? '', 2000);
 
     if (!name || !email || !message || !validateEmail(email)) {
       return NextResponse.json({ error: 'Invalid fields' }, { status: 400 });

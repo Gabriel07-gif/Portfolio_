@@ -115,7 +115,10 @@ function ProjectCard({
   /* Disable 3D tilt on touch devices */
   const [isTouch, setIsTouch] = React.useState(false);
   React.useEffect(() => {
-    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+    const frame = requestAnimationFrame(() => {
+      setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   const onMouseMove = (e: React.MouseEvent<HTMLElement>) => {
