@@ -27,7 +27,10 @@ export default function Navbar() {
 
   /* Navbar scroll effect */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => {
+      const next = window.scrollY > 60;
+      setScrolled(current => current === next ? current : next);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);

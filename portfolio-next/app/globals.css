@@ -74,6 +74,8 @@
 html {
   scroll-behavior: auto;
   scroll-padding-top: 80px;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -82,6 +84,7 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   line-height: 1.72;
   overflow-x: hidden;
+  max-width: 100%;
   overflow-wrap: break-word;
   overscroll-behavior-y: contain;
   -webkit-font-smoothing: antialiased;
@@ -359,6 +362,8 @@ section.bg-alt { background-color: var(--bg-alt); }
 /* ── TECH TAPE ── */
 .tech-tape {
   overflow: hidden;
+  contain: paint;
+  max-width: 100%;
   padding: 18px 0;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
