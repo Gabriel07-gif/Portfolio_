@@ -21,9 +21,17 @@ export function useCounter(
     let rafId = 0;
     const timer = setTimeout(() => {
       const start = performance.now();
+      let lastValue = -1;
       const tick = (now: number) => {
         const p = Math.min((now - start) / duration, 1);
-        setValue(Math.round((1 - Math.pow(1 - p, 3)) * target));
+        const nextValue = Math.round((1 - Math.pow(1 - p, 3)) * target);
+        /* The visible number changes only a handful of times. Avoid rerendering
+           the whole hero on every animation frame when the rounded value has
+           not changed yet. */
+        if (nextValue !== lastValue) {
+          lastValue = nextValue;
+          setValue(nextValue);
+        }
         if (p < 1) rafId = requestAnimationFrame(tick);
       };
       rafId = requestAnimationFrame(tick);

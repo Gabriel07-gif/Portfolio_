@@ -21,10 +21,24 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const orbRef     = useRef<HTMLDivElement>(null);
   const [roleIdx,  setRoleIdx]  = useState(0);
+  const [isLightweight, setIsLightweight] = useState(true);
 
   const yearsVal = useCounter(2,  1400, { delayMs: 1800 });
   const projsVal = useCounter(8,  1600, { delayMs: 2000 });
   const techsVal = useCounter(15, 1200, { delayMs: 2200 });
+
+  /* Touch and compact layouts retain the hero's motion, but avoid work that
+     competes with scrolling: 3D perspective, blur interpolation and spotlight
+     springs. The remote WebGL scene is independently gated in SplineScene. */
+  useEffect(() => {
+    const query = window.matchMedia(
+      '(max-width: 900px), (pointer: coarse), (prefers-reduced-motion: reduce)',
+    );
+    const update = () => setIsLightweight(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
 
   /* Orb follows cursor — transform (not left/top) so this is compositor-only
      and never triggers layout; rAF-batched to coalesce bursts of mousemove
@@ -64,13 +78,29 @@ export default function Hero() {
     visible: { opacity: 1, transition: { staggerChildren: 0.055, delayChildren: 0.3 } },
   };
   const charVariants = {
-    hidden:  { opacity: 0, y: -60, rotateX: 90 },
-    visible: { opacity: 1, y: 0, rotateX: 0, transition: { type: 'spring' as const, stiffness: 200, damping: 18 } },
+    hidden: isLightweight
+      ? { opacity: 0, y: -28 }
+      : { opacity: 0, y: -60, rotateX: 90 },
+    visible: isLightweight
+      ? { opacity: 1, y: 0, transition: { duration: 0.42, ease: [0.16, 1, 0.3, 1] as const } }
+      : { opacity: 1, y: 0, rotateX: 0, transition: { type: 'spring' as const, stiffness: 200, damping: 18 } },
   };
   const fadeUp = (delay = 0) => ({
     initial: { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as const } },
+    animate: { opacity: 1, y: 0, transition: { duration: isLightweight ? 0.45 : 0.6, delay, ease: [0.16, 1, 0.3, 1] as const } },
   });
+
+  const roleMotion = isLightweight
+    ? {
+        initial: { opacity: 0, y: 10 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -10 },
+      }
+    : {
+        initial: { opacity: 0, y: 14, filter: 'blur(6px)' },
+        animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+        exit: { opacity: 0, y: -14, filter: 'blur(6px)' },
+      };
 
   const roles = CYCLE_ROLES[lang] ?? CYCLE_ROLES.pt;
 
@@ -141,9 +171,7 @@ export default function Hero() {
                   <motion.span
                     key={roles[roleIdx]}
                     className="accent-text"
-                    initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }}
-                    animate={{ opacity: 1, y: 0,  filter: 'blur(0px)' }}
-                    exit={{    opacity: 0, y: -14, filter: 'blur(6px)' }}
+                    {...roleMotion}
                     transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
                     style={{ display: 'inline-block' }}
                   >
@@ -195,17 +223,19 @@ export default function Hero() {
           {/* ── RIGHT: 3D SPLINE ROBOT SCENE & SPOTLIGHT ── */}
           <motion.div
             className="hero-visual"
-            initial={{ opacity: 0, x: 80, rotateY: -24 }}
-            animate={{ opacity: 1, x: 0, rotateY: 0 }}
-            transition={{ duration: 0.9, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            style={{ perspective: 900 }}
+            initial={isLightweight ? { opacity: 0, y: 28 } : { opacity: 0, x: 80, rotateY: -24 }}
+            animate={isLightweight ? { opacity: 1, y: 0 } : { opacity: 1, x: 0, rotateY: 0 }}
+            transition={{ duration: isLightweight ? 0.55 : 0.9, delay: isLightweight ? 0.25 : 0.5, ease: [0.16, 1, 0.3, 1] }}
+            style={isLightweight ? undefined : { perspective: 900 }}
             aria-hidden="true"
           >
             <Card className="hero-spline-card w-full bg-black/[0.94] relative overflow-hidden border border-white/10 shadow-2xl rounded-2xl flex flex-col">
-              <Spotlight
-                className="-top-40 left-0 md:left-60 md:-top-20"
-                fill="white"
-              />
+              {!isLightweight && (
+                <Spotlight
+                  className="-top-40 left-0 md:left-60 md:-top-20"
+                  fill="white"
+                />
+              )}
               <div className="w-full h-full relative z-10">
                 <SplineScene 
                   scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
