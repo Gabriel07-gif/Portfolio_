@@ -17,8 +17,7 @@ export default function SideDots() {
   const { t }  = useLang();
   const [active, setActive] = useActiveSection();
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
+  const handleClick = (href: string) => {
     setActive(href);
     /* Lenis (SmoothScroll) intercepts anchor clicks at document level */
   };
@@ -32,7 +31,7 @@ export default function SideDots() {
           data-label={t(labelKey)}
           className={`side-dot${active === href ? ' active' : ''}`}
           aria-label={t(labelKey)}
-          onClick={e => handleClick(e, href)}
+          onClick={() => handleClick(href)}
         />
       ))}
     </nav>

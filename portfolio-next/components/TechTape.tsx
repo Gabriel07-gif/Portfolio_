@@ -1,5 +1,8 @@
 'use client';
 
+import { useRef } from 'react';
+import { useElementActive } from '@/hooks/useElementActive';
+
 const TECHS = [
   'HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'React', 'Next.js',
   'Node.js', 'PostgreSQL', 'Git', 'GitHub', 'REST APIs',
@@ -12,11 +15,13 @@ const TECHS_2 = [
 ];
 
 export default function TechTape() {
+  const ref = useRef<HTMLDivElement>(null);
+  const active = useElementActive(ref);
   const row1 = [...TECHS,   ...TECHS];
   const row2 = [...TECHS_2, ...TECHS_2];
 
   return (
-    <div className="tech-tape" aria-hidden="true" role="presentation">
+    <div ref={ref} className="tech-tape" data-motion-paused={!active} aria-hidden="true" role="presentation">
       <div className="tech-tape-track">
         {row1.map((tech, i) => (
           <span key={`r1-${i}-${tech}`}>{tech}</span>

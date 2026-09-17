@@ -13,7 +13,7 @@ export default function ClientShell() {
   const [hasFinePointer, setHasFinePointer] = useState(false);
 
   useEffect(() => {
-    const query = window.matchMedia('(any-pointer: fine)');
+    const query = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
     const update = () => setHasFinePointer(query.matches);
     update();
     query.addEventListener('change', update);

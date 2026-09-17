@@ -172,7 +172,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className={`${inter.variable} ${jetbrainsMono.variable}`}>
-        <div id="g-intro-blocker" aria-hidden="true" />
         <noscript>
           <div style={{ padding: '2rem', textAlign: 'center', fontFamily: 'sans-serif', background: '#04040e', color: '#e8eaf0', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             Este site requer JavaScript. Please enable JavaScript in your browser.

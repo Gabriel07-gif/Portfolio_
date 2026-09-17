@@ -26,46 +26,23 @@ export default function IntroOverlay() {
   const [glowing,   setGlowing]   = useState(false);
   /* Lazy init (not an effect) so the first paint already knows — this component
      is loaded with { ssr: false }, so `window` is always available here. */
-  const [isTouch]                 = useState(() => window.matchMedia('(pointer: coarse)').matches);
-
-  /* ── Lock body scroll while overlay is visible ── */
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
-  }, []);
+  const [isTouch] = useState(() => window.matchMedia('(pointer: coarse), (max-width: 900px)').matches);
 
   /* ── Check session / reduced-motion / touch on client ── */
   useEffect(() => {
-    const blocker = document.getElementById('g-intro-blocker') as HTMLElement | null;
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.body.style.overflow = '';
-      if (blocker) blocker.remove();
+    let alreadySeen = false;
+    try { alreadySeen = sessionStorage.getItem('g-intro-done') === '1'; } catch {}
+    if (alreadySeen || window.location.hash || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       queueMicrotask(() => setHidden(true));
-      return;
-    }
-    if (sessionStorage.getItem('g-intro-done')) {
-      document.body.style.overflow = '';
-      if (blocker) {
-        let removed = false;
-        const removeBlocker = () => { if (!removed) { removed = true; blocker.remove(); } };
-        blocker.style.transition = 'opacity 0.25s ease';
-        blocker.style.opacity = '0';
-        blocker.addEventListener('transitionend', removeBlocker, { once: true });
-        setTimeout(removeBlocker, 350);
-      }
-      queueMicrotask(() => setHidden(true));
+      document.documentElement.dataset.introComplete = 'true';
+      window.dispatchEvent(new Event('portfolio:intro-complete'));
       return;
     }
     queueMicrotask(() => setMounted(true));
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
-    /* #intro-overlay is now painted (useEffect fires after browser paint).
-       Remove the SSR blocker so it doesn't sit beneath the overlay forever. */
-    const blocker = document.getElementById('g-intro-blocker');
-    if (blocker) blocker.remove();
+    if (!mounted || hidden) return;
     const canvas  = canvasRef.current;
     const overlay = overlayRef.current;
     if (!canvas || !overlay) return;
@@ -84,6 +61,20 @@ export default function IntroOverlay() {
     let isExiting = false;
     let exitProg  = 0;
     let dismissed = false;
+    let finished = false;
+    let exitTimer: ReturnType<typeof setTimeout> | undefined;
+    let progressFrame = 0;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      // Storage is optional; its failure must never prevent dismissal.
+      try { sessionStorage.setItem('g-intro-done', '1'); } catch {}
+      setHidden(true);
+      document.documentElement.dataset.introComplete = 'true';
+      window.dispatchEvent(new Event('portfolio:intro-complete'));
+    };
+    // A stalled WebGL frame or a lost context cannot leave an overlay behind.
+    const safetyTimer = setTimeout(finish, totalMs + 2200);
     let mX = 0, mY = 0;
     // eslint-disable-next-line prefer-const
     let autoTimer: ReturnType<typeof setTimeout> | undefined;
@@ -98,9 +89,9 @@ export default function IntroOverlay() {
       if (pctTimer) clearInterval(pctTimer);
       window.removeEventListener('keydown', onKey);
       overlay.removeEventListener('click', dismiss);
-      /* Restore body scroll immediately — the component renders null after this
-         but stays mounted in the React tree, so useEffect cleanup never runs. */
-      document.body.style.overflow = '';
+      overlay.removeEventListener('touchstart', dismiss);
+      overlay.style.pointerEvents = 'none';
+      exitTimer = setTimeout(finish, isTouch || rafId === 0 ? 900 : 1800);
 
       [contentRef.current, barWrapRef.current, pctWrapRef.current].forEach(el => {
         if (!el) return;
@@ -111,10 +102,6 @@ export default function IntroOverlay() {
       if (isTouch || rafId === 0) {
         /* No Three.js running — CSS fade directly */
         overlay.classList.add('intro-leaving');
-        setTimeout(() => {
-          sessionStorage.setItem('g-intro-done', '1');
-          setHidden(true);
-        }, 900);
       } else {
         isExiting = true;
       }
@@ -133,12 +120,14 @@ export default function IntroOverlay() {
 
     window.addEventListener('keydown', onKey);
     overlay.addEventListener('click', dismiss, { once: true });
+    overlay.addEventListener('touchstart', dismiss, { once: true, passive: true });
+    canvas.addEventListener('webglcontextlost', dismiss, { once: true });
 
     /* ── progress bar (always) ── */
     if (barFillRef.current) {
-      barFillRef.current.style.transition = `width ${totalMs}ms linear`;
-      requestAnimationFrame(() => {
-        if (barFillRef.current) barFillRef.current.style.width = '100%';
+      barFillRef.current.style.transition = `transform ${totalMs}ms linear`;
+      progressFrame = requestAnimationFrame(() => {
+        if (barFillRef.current) barFillRef.current.style.transform = 'scaleX(1)';
       });
     }
 
@@ -148,7 +137,7 @@ export default function IntroOverlay() {
       const pct = Math.min(Math.round(((Date.now() - t0pct) / totalMs) * 100), 100);
       if (pctRef.current) pctRef.current.textContent = String(pct);
       if (pct >= 100 && pctTimer) clearInterval(pctTimer);
-    }, 40);
+    }, 100);
 
     /* ── glow on RICARTE after last letter lands (always) ── */
     const glowTimer = setTimeout(
@@ -163,11 +152,17 @@ export default function IntroOverlay() {
     if (isTouch) {
       return () => {
         dismissed = true;
+        finished = true;
+        clearTimeout(exitTimer);
+        clearTimeout(safetyTimer);
+        cancelAnimationFrame(progressFrame);
         clearTimeout(autoTimer);
         clearTimeout(glowTimer);
         clearInterval(pctTimer);
         window.removeEventListener('keydown', onKey);
         overlay.removeEventListener('click', dismiss);
+        overlay.removeEventListener('touchstart', dismiss);
+        canvas.removeEventListener('webglcontextlost', dismiss);
       };
     }
 
@@ -453,10 +448,6 @@ export default function IntroOverlay() {
             disposeAll();
             if (overlay) {
               overlay.classList.add('intro-leaving');
-              setTimeout(() => {
-                sessionStorage.setItem('g-intro-done', '1');
-                setHidden(true);
-              }, 900);
             }
             return;
           }
@@ -476,18 +467,24 @@ export default function IntroOverlay() {
     return () => {
       isCleaned = true;
       dismissed = true;
+      finished = true;
+      clearTimeout(exitTimer);
+      clearTimeout(safetyTimer);
+      cancelAnimationFrame(progressFrame);
       cancelAnimationFrame(rafId);
       clearTimeout(autoTimer);
       clearTimeout(glowTimer);
       clearInterval(pctTimer);
       window.removeEventListener('keydown', onKey);
       overlay.removeEventListener('click', dismiss);
+      overlay.removeEventListener('touchstart', dismiss);
+      canvas.removeEventListener('webglcontextlost', dismiss);
       cleanupPromise.then(fn => { if (isCleaned) fn?.(); }).catch(() => {});
     };
     /* isTouch never changes after its lazy useState init (no setter is ever
        called), so listing it here doesn't change when this effect re-runs —
        it just satisfies exhaustive-deps since the effect does read it. */
-  }, [mounted, isTouch]);
+  }, [mounted, isTouch, hidden]);
 
   if (hidden) return null;
 

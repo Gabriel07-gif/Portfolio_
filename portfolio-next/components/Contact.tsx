@@ -50,6 +50,7 @@ export default function Contact() {
   const [errors, setErrors] = useState<Partial<Omit<FormState, 'website'>>>({});
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [charCount, setCharCount] = useState(0);
+  const [fallbackHref, setFallbackHref] = useState('');
 
   const validate = (): boolean => {
     const errs: Partial<Omit<FormState, 'website'>> = {};
@@ -70,16 +71,27 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (status === 'loading') return;
     /* Honeypot check — bot filled the hidden field */
     if (form.website) return;
     if (!validate()) return;
     setStatus('loading');
+    setFallbackHref('');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    const offerEmail = () => {
+      const sub = encodeURIComponent(`${t('form.fallback.subject')}${form.name}`);
+      const body = encodeURIComponent(`${form.message.slice(0, 500)}\n\n${t('form.fallback.from')}${form.name} <${form.email}>`);
+      setFallbackHref(`mailto:${MAILTO_FALLBACK}?subject=${sub}&body=${body}`);
+      setStatus('error');
+    };
     try {
       const { website: _hp, ...payload } = form;
       const res = await fetch('/api/contact', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),
+        signal: controller.signal,
       });
       if (res.ok) {
         setStatus('success');
@@ -93,27 +105,12 @@ export default function Contact() {
         showToast(t('form.rateLimit'));
         setTimeout(() => setStatus('idle'), 4000);
       } else {
-        /* Server error — fall back to mail client so the message still gets through */
-        const truncatedMsg = form.message.length > 500
-          ? `${form.message.slice(0, 500)}…`
-          : form.message;
-        const sub  = encodeURIComponent(`${t('form.fallback.subject')}${form.name}`);
-        const body = encodeURIComponent(`${truncatedMsg}\n\n${t('form.fallback.from')}${form.name} <${form.email}>`);
-        window.open(`mailto:${MAILTO_FALLBACK}?subject=${sub}&body=${body}`, '_blank');
-        showToast(t('form.fallback'));
-        setStatus('idle');
+        offerEmail();
       }
     } catch {
-      /* API unreachable — open the user's mail client as fallback.
-         Truncate body to ~500 chars to stay under the ~2000-char mailto URL limit. */
-      const truncatedMsg = form.message.length > 500
-        ? `${form.message.slice(0, 500)}…`
-        : form.message;
-      const sub  = encodeURIComponent(`${t('form.fallback.subject')}${form.name}`);
-      const body = encodeURIComponent(`${truncatedMsg}\n\n${t('form.fallback.from')}${form.name} <${form.email}>`);
-      window.open(`mailto:${MAILTO_FALLBACK}?subject=${sub}&body=${body}`, '_blank');
-      showToast(t('form.fallback'));
-      setStatus('idle');
+      offerEmail();
+    } finally {
+      clearTimeout(timeout);
     }
   };
 
@@ -189,6 +186,7 @@ export default function Contact() {
                 type="text" id="formName" name="name"
                 placeholder=" " required autoComplete="name"
                 maxLength={80} aria-required="true"
+                aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? 'err-name' : undefined}
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
@@ -203,6 +201,7 @@ export default function Contact() {
                 type="email" id="formEmail" name="email"
                 placeholder=" " required autoComplete="email"
                 maxLength={120} aria-required="true"
+                aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? 'err-email' : undefined}
                 value={form.email}
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
@@ -219,6 +218,7 @@ export default function Contact() {
               id="formMsg" name="message" rows={5}
               placeholder=" " required maxLength={2000}
               aria-required="true"
+              aria-invalid={!!errors.message}
               aria-describedby={errors.message ? 'err-message' : undefined}
               value={form.message}
               onChange={e => {
@@ -257,6 +257,12 @@ export default function Contact() {
             )}
             <span className="submit-label">{btnLabel}</span>
           </button>
+          {fallbackHref && (
+            <div role="status" className="form-fallback">
+              <p>{t('form.error')}</p>
+              <a className="btn btn-outline" href={fallbackHref}>{t('form.fallback.link')}</a>
+            </div>
+          )}
         </motion.form>
 
         <p className="redes-label">{t('contact.or')}</p>

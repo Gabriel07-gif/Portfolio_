@@ -25,3 +25,5 @@ yarn-error.log*
 
 # Vercel
 .vercel
+test-results/
+playwright-report/

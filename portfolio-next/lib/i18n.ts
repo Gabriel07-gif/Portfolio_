@@ -126,6 +126,7 @@ const pt: Dict = {
   'form.error.name':    'Nome obrigatório (máx. 80 caracteres)',
   'form.error.email':   'E-mail inválido',
   'form.error.message': 'Mensagem obrigatória (máx. 2000 caracteres)',
+  'form.fallback.link': 'Continuar por e-mail',
   'form.fallback.subject': 'Contato via Portfolio — ',
   'form.fallback.from':    'De: ',
 
@@ -322,6 +323,7 @@ const en: Dict = {
   'form.error.name':    'Name is required (max 80 chars)',
   'form.error.email':   'Invalid email address',
   'form.error.message': 'Message is required (max 2000 chars)',
+  'form.fallback.link': 'Continue by email',
   'form.fallback.subject': 'Contact via Portfolio — ',
   'form.fallback.from':    'From: ',
 
@@ -518,6 +520,7 @@ const es: Dict = {
   'form.error.name':    'Nombre requerido (máx. 80 caracteres)',
   'form.error.email':   'Email inválido',
   'form.error.message': 'Mensaje requerido (máx. 2000 caracteres)',
+  'form.fallback.link': 'Continuar por email',
   'form.fallback.subject': 'Contacto via Portfolio — ',
   'form.fallback.from':    'De: ',
 

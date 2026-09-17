@@ -31,9 +31,26 @@ export default function Navbar() {
       const next = window.scrollY > 60;
       setScrolled(current => current === next ? current : next);
     };
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  /* Close the compact menu on outside interaction or a desktop resize. */
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!(event.target as Element).closest('#navbar')) setMenuOpen(false);
+    };
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const onResize = () => { if (desktop.matches) setMenuOpen(false); };
+    document.addEventListener('pointerdown', onPointerDown, { passive: true });
+    desktop.addEventListener('change', onResize);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      desktop.removeEventListener('change', onResize);
+    };
+  }, [menuOpen]);
 
   /* Close lang dropdown on outside click — only listen while dropdown is open */
   useEffect(() => {
@@ -77,7 +94,7 @@ export default function Navbar() {
           href="#inicio"
           className="logo"
           aria-label={t('nav.logo.label')}
-          onClick={e => { e.preventDefault(); handleNavClick('#inicio'); }}
+          onClick={() => handleNavClick('#inicio')}
         >
           Gabriel
         </a>
@@ -88,7 +105,8 @@ export default function Navbar() {
               <a
                 href={href}
                 className={active === href ? 'active' : ''}
-                onClick={e => { e.preventDefault(); handleNavClick(href); }}
+                onClick={() => handleNavClick(href)}
+                aria-current={active === href ? 'location' : undefined}
               >
                 {t(key)}
                 {active === href && (
@@ -117,7 +135,7 @@ export default function Navbar() {
                   strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <ul className={`lang-menu${langOpen ? ' open' : ''}`} role="listbox" aria-label={t('nav.lang')}>
+            <ul className={`lang-menu${langOpen ? ' open' : ''}`} role="listbox" aria-label={t('nav.lang')} inert={!langOpen}>
               {(['pt', 'en', 'es'] as Lang[]).map(l => (
                 <li
                   key={l}
@@ -172,7 +190,7 @@ export default function Navbar() {
             aria-expanded={menuOpen}
             aria-controls="navLinks"
             type="button"
-            onClick={() => setMenuOpen(o => !o)}
+            onClick={() => { setMenuOpen(o => !o); setLangOpen(false); }}
           >
             <span aria-hidden="true" />
             <span aria-hidden="true" />

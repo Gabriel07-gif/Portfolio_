@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLang } from '@/contexts/LangContext';
 import { useCounter } from '@/hooks/useCounter';
+import { useElementActive } from '@/hooks/useElementActive';
 import { SplineScene } from '@/components/ui/splite';
 import { Spotlight } from '@/components/ui/spotlight';
 import { Card } from '@/components/ui/card';
@@ -19,6 +20,7 @@ const CYCLE_ROLES: Record<string, string[]> = {
 export default function Hero() {
   const { t, lang } = useLang();
   const sectionRef = useRef<HTMLElement>(null);
+  const isActive = useElementActive(sectionRef);
   const orbRef     = useRef<HTMLDivElement>(null);
   const [roleIdx,  setRoleIdx]  = useState(0);
   const [isLightweight, setIsLightweight] = useState(true);
@@ -46,7 +48,7 @@ export default function Hero() {
   useEffect(() => {
     const hero = sectionRef.current;
     const orb  = orbRef.current;
-    if (!hero || !orb || !window.matchMedia('(any-pointer: fine)').matches) return;
+    if (!hero || !orb || isLightweight) return;
 
     let rafId = 0;
     const onMove = (e: MouseEvent) => {
@@ -63,15 +65,16 @@ export default function Hero() {
       cancelAnimationFrame(rafId);
       hero.removeEventListener('mousemove', onMove);
     };
-  }, []);
+  }, [isLightweight]);
 
   /* Cycle through roles every 2.8 s */
   useEffect(() => {
+    if (!isActive || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const id = setInterval(() => {
       setRoleIdx(i => (i + 1) % (CYCLE_ROLES[lang]?.length ?? CYCLE_ROLES.pt.length));
     }, 2800);
     return () => clearInterval(id);
-  }, [lang]);
+  }, [lang, isActive]);
 
   const nameVariants = {
     hidden:  { opacity: 0 },
@@ -106,7 +109,7 @@ export default function Hero() {
 
 
   return (
-    <section id="inicio" className="hero" ref={sectionRef} aria-label={t('hero.label')}>
+    <section id="inicio" className="hero" ref={sectionRef} data-motion-paused={!isActive} aria-label={t('hero.label')}>
       <div
         className="hero-orb"
         ref={orbRef}
@@ -135,28 +138,19 @@ export default function Hero() {
               initial="hidden"
               animate="visible"
               style={{ perspective: 600 }}
+              aria-label={NAME}
             >
-              {NAME.split('').map((char, i) =>
-                char === ' ' ? (
-                  <motion.span
-                    key={`name-char-${i}`}
-                    variants={{}}
-                    style={{ display: 'inline' }}
-                    aria-hidden="true"
-                  >
-                    {' '}
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key={`name-char-${i}`}
-                    className="hero-char"
-                    variants={charVariants}
-                    style={{ display: 'inline-block' }}
-                  >
-                    {char}
-                  </motion.span>
-                )
-              )}
+              {NAME.split(' ').map(word => (
+                <span key={word}>
+                  <span className="hero-name-word" aria-hidden="true">
+                    {word.split('').map((char, i) => (
+                      <motion.span key={i} className="hero-char" variants={charVariants}>
+                        {char}
+                      </motion.span>
+                    ))}
+                  </span>
+                </span>
+              ))}
             </motion.h1>
 
             {/* Role with cycling accent text */}
@@ -164,7 +158,6 @@ export default function Hero() {
               {t('hero.role.pre')}&nbsp;
               <span
                 className="hero-role-cycle"
-                aria-live="polite"
                 style={{ display: 'inline-block', position: 'relative', minWidth: 'min(180px, 45vw)' }}
               >
                 <AnimatePresence mode="wait">

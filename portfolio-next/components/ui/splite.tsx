@@ -1,6 +1,8 @@
 'use client'
 
 import { Component, Suspense, lazy, useEffect, useRef, useState, type ReactNode } from 'react'
+import type { Application } from '@splinetool/runtime'
+import { useElementActive } from '@/hooks/useElementActive'
 const Spline = lazy(() => import('@splinetool/react-spline'))
 
 interface SplineSceneProps {
@@ -11,6 +13,7 @@ interface SplineSceneProps {
 
 interface SplineErrorBoundaryProps {
   children: ReactNode
+  fallback?: ReactNode
 }
 
 interface SplineErrorBoundaryState {
@@ -26,11 +29,7 @@ class SplineErrorBoundary extends Component<SplineErrorBoundaryProps, SplineErro
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="w-full h-full flex items-center justify-center bg-black/20">
-          <span className="text-xs text-white/40">Experiência 3D indisponível</span>
-        </div>
-      )
+      return this.props.fallback ?? null
     }
 
     return this.props.children
@@ -39,7 +38,9 @@ class SplineErrorBoundary extends Component<SplineErrorBoundaryProps, SplineErro
 
 export function SplineScene({ scene, className, fallback }: SplineSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const isVisible = useElementActive(containerRef)
+  const applicationRef = useRef<Application | null>(null)
+  const activeRef = useRef(false)
   const [shouldLoad, setShouldLoad] = useState(false)
 
   /* A remote WebGL scene is the largest interactive cost on the page. Keep it
@@ -70,43 +71,50 @@ export function SplineScene({ scene, className, fallback }: SplineSceneProps) {
   }, [])
 
   useEffect(() => {
-    if (!canUse3D) return
-    const container = containerRef.current
-    if (!container) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { rootMargin: '400px 0px', threshold: 0 },
-    )
-    observer.observe(container)
-
-    return () => observer.disconnect()
-  }, [canUse3D])
+    activeRef.current = isVisible && canUse3D
+    if (!canUse3D) { applicationRef.current = null; return }
+    const application = applicationRef.current
+    if (application) {
+      if (activeRef.current) application.play()
+      else application.stop()
+    }
+  }, [isVisible, canUse3D])
 
   useEffect(() => {
-    if (!isVisible) return
+    if (!isVisible || !canUse3D || shouldLoad) return
 
     const load = () => setShouldLoad(true)
-    if ('requestIdleCallback' in window) {
-      const idleId = window.requestIdleCallback(load, { timeout: 1800 })
-      return () => window.cancelIdleCallback(idleId)
+    let idleId: number | undefined
+    const schedule = () => {
+      if (idleId !== undefined) return
+      if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(load, { timeout: 1500 })
+      else load()
     }
-
-    const timer = globalThis.setTimeout(load, 900)
-    return () => globalThis.clearTimeout(timer)
-  }, [isVisible])
+    let seen = false
+    try { seen = sessionStorage.getItem('g-intro-done') === '1' } catch {}
+    seen ||= document.documentElement.dataset.introComplete === 'true'
+    // Avoid running two WebGL engines during the entrance animation.
+    const timer = window.setTimeout(schedule, seen || window.location.hash ? 250 : 8200)
+    window.addEventListener('portfolio:intro-complete', schedule, { once: true })
+    return () => {
+      window.clearTimeout(timer)
+      if (idleId !== undefined) window.cancelIdleCallback(idleId)
+      window.removeEventListener('portfolio:intro-complete', schedule)
+    }
+  }, [isVisible, canUse3D, shouldLoad])
 
   return (
     <div ref={containerRef} className="w-full h-full">
-      <SplineErrorBoundary>
+      <SplineErrorBoundary fallback={fallback}>
         <Suspense
           fallback={
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="w-8 h-8 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-            </div>
+            fallback ?? null
           }
         >
-          {canUse3D && shouldLoad && isVisible ? <Spline scene={scene} className={className} /> : fallback ?? null}
+          {canUse3D && shouldLoad ? <Spline scene={scene} className={className} renderOnDemand onLoad={app => {
+            applicationRef.current = app
+            if (!activeRef.current) app.stop()
+          }}>{fallback}</Spline> : fallback ?? null}
         </Suspense>
       </SplineErrorBoundary>
     </div>

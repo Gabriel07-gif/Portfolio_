@@ -16,6 +16,7 @@ export default function CustomCursor() {
     const ring  = ringRef.current;
     const label = labelRef.current;
     if (!dot || !ring || !label) return;
+    document.documentElement.classList.add('custom-cursor-ready');
 
     let mx = window.innerWidth / 2, my = window.innerHeight / 2;
     let rx = mx, ry = my;
@@ -25,11 +26,12 @@ export default function CustomCursor() {
 
     const loop = () => {
       if (!visible) { rafId = 0; return; } /* stop ticking when cursor is off-screen */
-      rafId = requestAnimationFrame(loop);
+      rafId = 0;
       rx += (mx - rx) * 0.13;
       ry += (my - ry) * 0.13;
       dot.style.transform  = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
       ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%) scale(${scale})`;
+      if (Math.abs(mx - rx) > 0.1 || Math.abs(my - ry) > 0.1) rafId = requestAnimationFrame(loop);
     };
 
     const onMove = (e: MouseEvent) => {
@@ -38,8 +40,8 @@ export default function CustomCursor() {
         dot.style.opacity  = '1';
         ring.style.opacity = '1';
         visible = true;
-        if (!rafId) rafId = requestAnimationFrame(loop); /* restart RAF on re-entry */
       }
+      if (!rafId) rafId = requestAnimationFrame(loop);
     };
 
     const onLeave = () => {
@@ -74,8 +76,8 @@ export default function CustomCursor() {
       }
     };
 
-    const onDown = () => { scale = 0.72; };
-    const onUp   = () => { scale = 1; };
+    const onDown = () => { scale = 0.72; if (!rafId) rafId = requestAnimationFrame(loop); };
+    const onUp   = () => { scale = 1; if (!rafId) rafId = requestAnimationFrame(loop); };
 
     document.addEventListener('mousemove',  onMove,  { passive: true });
     document.addEventListener('mouseleave', onLeave);
@@ -85,6 +87,7 @@ export default function CustomCursor() {
     document.addEventListener('mouseup',    onUp);
 
     return () => {
+      document.documentElement.classList.remove('custom-cursor-ready');
       document.removeEventListener('mousemove',  onMove);
       document.removeEventListener('mouseleave', onLeave);
       document.removeEventListener('mouseover',  onOver);

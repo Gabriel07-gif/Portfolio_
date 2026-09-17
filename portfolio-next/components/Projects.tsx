@@ -48,6 +48,7 @@ const PROJECT_IMG_SIZES = '(max-width: 900px) calc(100vw - 48px), (max-width: 14
 const tiltRafMap = new WeakMap<Element, number>();
 
 function VideoPreview({ src, poster, fallback }: { src: string; poster?: string; fallback: React.ReactNode }) {
+  const { t } = useLang();
   const [errored,   setErrored]   = React.useState(false);
   const [inView,    setInView]    = React.useState(false);
   const [isTouch,   setIsTouch]   = React.useState(true);
@@ -122,7 +123,7 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
               type="button"
               className="project-video-play"
               onClick={() => setRequested(true)}
-              aria-label="Play project preview"
+              aria-label={t('proj.toggle.video')}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="m9 7 7 5-7 5V7Z" fill="currentColor" />
@@ -206,7 +207,7 @@ function ProjectCard({
       onMouseLeave={onMouseLeave}
     >
       {/* Browser chrome + preview */}
-      <div className="project-preview" aria-hidden="true">
+      <div className="project-preview">
         <div className="preview-chrome">
           <div className="preview-dots">
             <i /><i /><i />

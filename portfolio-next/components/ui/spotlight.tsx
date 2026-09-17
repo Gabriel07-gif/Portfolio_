@@ -22,8 +22,8 @@ export function Spotlight({
   const mouseX = useSpring(0, springOptions);
   const mouseY = useSpring(0, springOptions);
 
-  const spotlightLeft = useTransform(mouseX, (x) => `${x - size / 2}px`);
-  const spotlightTop = useTransform(mouseY, (y) => `${y - size / 2}px`);
+  const spotlightLeft = useTransform(mouseX, (x) => x - size / 2);
+  const spotlightTop = useTransform(mouseY, (y) => y - size / 2);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -49,16 +49,16 @@ export function Spotlight({
   useEffect(() => {
     if (!parentElement) return;
 
-    parentElement.addEventListener('mousemove', handleMouseMove);
-    parentElement.addEventListener('mouseenter', () => setIsHovered(true));
-    parentElement.addEventListener('mouseleave', () => setIsHovered(false));
+    const onEnter = () => setIsHovered(true);
+    const onLeave = () => setIsHovered(false);
+    parentElement.addEventListener('mousemove', handleMouseMove, { passive: true });
+    parentElement.addEventListener('mouseenter', onEnter);
+    parentElement.addEventListener('mouseleave', onLeave);
 
     return () => {
       parentElement.removeEventListener('mousemove', handleMouseMove);
-      parentElement.removeEventListener('mouseenter', () => setIsHovered(true));
-      parentElement.removeEventListener('mouseleave', () =>
-        setIsHovered(false)
-      );
+      parentElement.removeEventListener('mouseenter', onEnter);
+      parentElement.removeEventListener('mouseleave', onLeave);
     };
   }, [parentElement, handleMouseMove]);
 
@@ -74,8 +74,10 @@ export function Spotlight({
       style={{
         width: size,
         height: size,
-        left: spotlightLeft,
-        top: spotlightTop,
+        left: 0,
+        top: 0,
+        x: spotlightLeft,
+        y: spotlightTop,
       }}
     />
   );

@@ -7,37 +7,23 @@ export default function SmoothScroll() {
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isTouch      = window.matchMedia('(pointer: coarse)').matches;
-    /* Lenis is skipped on touch (fights native momentum scrolling) and on
-       reduced-motion (its rAF-interpolated scroll IS the motion being asked
-       to reduce). Either way, Navbar/SideDots always call preventDefault()
-       on anchor clicks and rely entirely on the listener below to actually
-       move the page — so it must stay registered in every case, just with
-       a plain native scroll standing in for Lenis when skipped. */
+    // Touch and reduced-motion use native scrolling, including anchor links.
+    if (reduceMotion || isTouch) return;
     let lenis: import('lenis').default | null = null;
     let disposed = false;
     let rafId = 0;
 
     const handleClick = (e: MouseEvent) => {
-      const anchor = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement | null;
-      if (!anchor) return;
-      e.preventDefault();
+      if (!lenis || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const anchor = e.target instanceof Element ? e.target.closest<HTMLAnchorElement>('a[href^="#"]') : null;
+      if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
       const id = anchor.getAttribute('href')!.slice(1);
       const el = id ? document.getElementById(id) : null;
-
-      if (lenis) {
-        if (el) {
-          const navbar = document.getElementById('navbar');
-          lenis.scrollTo(el, { offset: -(navbar?.getBoundingClientRect().height ?? 80) });
-        } else {
-          lenis.scrollTo(0);
-        }
-        return;
-      }
-
-      const top = el
-        ? el.getBoundingClientRect().top + window.scrollY - (document.getElementById('navbar')?.getBoundingClientRect().height ?? 80)
-        : 0;
-      window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
+      if (!el || anchor.classList.contains('skip-to-content')) return;
+      e.preventDefault();
+      // Lenis already respects the root scroll-padding-top used by native links.
+      lenis.scrollTo(el);
+      if (window.location.hash !== anchor.hash) history.pushState(null, '', anchor.hash);
     };
     document.addEventListener('click', handleClick);
 
@@ -54,7 +40,7 @@ export default function SmoothScroll() {
           rafId = requestAnimationFrame(raf);
         };
         rafId = requestAnimationFrame(raf);
-      });
+      }).catch(() => { /* Native links and scrolling remain available. */ });
     }
 
     return () => {
