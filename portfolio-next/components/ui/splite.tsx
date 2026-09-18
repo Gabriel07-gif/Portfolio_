@@ -90,11 +90,9 @@ export function SplineScene({ scene, className, fallback }: SplineSceneProps) {
       if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(load, { timeout: 1500 })
       else load()
     }
-    let seen = false
-    try { seen = sessionStorage.getItem('g-intro-done') === '1' } catch {}
-    seen ||= document.documentElement.dataset.introComplete === 'true'
+    const introComplete = document.documentElement.dataset.introComplete === 'true'
     // Avoid running two WebGL engines during the entrance animation.
-    const timer = window.setTimeout(schedule, seen || window.location.hash ? 250 : 8200)
+    const timer = window.setTimeout(schedule, introComplete ? 250 : 8200)
     window.addEventListener('portfolio:intro-complete', schedule, { once: true })
     return () => {
       window.clearTimeout(timer)

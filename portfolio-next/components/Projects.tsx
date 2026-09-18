@@ -51,7 +51,7 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
   const { t } = useLang();
   const [errored,   setErrored]   = React.useState(false);
   const [inView,    setInView]    = React.useState(false);
-  const [isTouch,   setIsTouch]   = React.useState(true);
+  const [manualPlayback, setManualPlayback] = React.useState(true);
   const [requested, setRequested] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
@@ -59,12 +59,11 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
   React.useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const touch = window.matchMedia('(pointer: coarse)').matches;
-    setIsTouch(touch);
-    const margin = touch ? '0px' : '300px';
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    setManualPlayback(window.matchMedia('(pointer: coarse), (prefers-reduced-motion: reduce)').matches || !!connection?.saveData);
     const obs = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { rootMargin: margin }
+      { rootMargin: '0px' }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -73,21 +72,21 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
   React.useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (inView && (!isTouch || requested) && !document.hidden) {
+    if (inView && (!manualPlayback || requested) && !document.hidden) {
       void video.play().catch(() => {});
     } else {
       video.pause();
     }
-  }, [inView, isTouch, requested]);
+  }, [inView, manualPlayback, requested]);
 
   React.useEffect(() => {
     const onVisibilityChange = () => {
       if (document.hidden) videoRef.current?.pause();
-      else if (inView && (!isTouch || requested)) void videoRef.current?.play().catch(() => {});
+      else if (inView && (!manualPlayback || requested)) void videoRef.current?.play().catch(() => {});
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
     return () => document.removeEventListener('visibilitychange', onVisibilityChange);
-  }, [inView, isTouch, requested]);
+  }, [inView, manualPlayback, requested]);
 
   const placeholder = poster ? (
     <Image
@@ -99,13 +98,13 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
 
   return (
     <div ref={containerRef} style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-      {errored ? fallback : inView && (!isTouch || requested) ? (
+      {errored ? fallback : inView && (!manualPlayback || requested) ? (
         <video
           ref={videoRef}
           src={src}
           poster={poster}
-          autoPlay={!isTouch} muted loop playsInline
-          controls={isTouch}
+          autoPlay={!manualPlayback} muted loop playsInline
+          controls={manualPlayback}
           preload="none"
           onError={() => setErrored(true)}
           style={{
@@ -118,7 +117,7 @@ function VideoPreview({ src, poster, fallback }: { src: string; poster?: string;
       ) : (
         <>
           {placeholder}
-          {isTouch && inView && (
+          {manualPlayback && inView && (
             <button
               type="button"
               className="project-video-play"

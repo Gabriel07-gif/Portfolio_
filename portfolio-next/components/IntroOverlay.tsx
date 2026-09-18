@@ -24,21 +24,24 @@ export default function IntroOverlay() {
   const [hidden,    setHidden]    = useState(false);
   const [mounted,   setMounted]   = useState(false);
   const [glowing,   setGlowing]   = useState(false);
-  /* Lazy init (not an effect) so the first paint already knows — this component
-     is loaded with { ssr: false }, so `window` is always available here. */
-  const [isTouch] = useState(() => window.matchMedia('(pointer: coarse), (max-width: 900px)').matches);
+  const [isTouch, setIsTouch] = useState(true);
 
-  /* ── Check session / reduced-motion / touch on client ── */
+  /* Run on every home-page visit. A previous session must not suppress entry.
+     Direct links to other sections and reduced motion retain immediate access. */
   useEffect(() => {
-    let alreadySeen = false;
-    try { alreadySeen = sessionStorage.getItem('g-intro-done') === '1'; } catch {}
-    if (alreadySeen || window.location.hash || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.dataset.introComplete = 'false';
+    const isSectionLink = window.location.hash && window.location.hash !== '#inicio';
+    if (isSectionLink || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       queueMicrotask(() => setHidden(true));
       document.documentElement.dataset.introComplete = 'true';
       window.dispatchEvent(new Event('portfolio:intro-complete'));
       return;
     }
-    queueMicrotask(() => setMounted(true));
+    const touch = window.matchMedia('(pointer: coarse), (max-width: 900px)').matches;
+    queueMicrotask(() => {
+      setIsTouch(touch);
+      setMounted(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -60,6 +63,7 @@ export default function IntroOverlay() {
     let rafId     = 0;
     let isExiting = false;
     let exitProg  = 0;
+    let exitStartedAt = 0;
     let dismissed = false;
     let finished = false;
     let exitTimer: ReturnType<typeof setTimeout> | undefined;
@@ -67,8 +71,6 @@ export default function IntroOverlay() {
     const finish = () => {
       if (finished) return;
       finished = true;
-      // Storage is optional; its failure must never prevent dismissal.
-      try { sessionStorage.setItem('g-intro-done', '1'); } catch {}
       setHidden(true);
       document.documentElement.dataset.introComplete = 'true';
       window.dispatchEvent(new Event('portfolio:intro-complete'));
@@ -103,6 +105,7 @@ export default function IntroOverlay() {
         /* No Three.js running — CSS fade directly */
         overlay.classList.add('intro-leaving');
       } else {
+        exitStartedAt = performance.now();
         isExiting = true;
       }
     };
@@ -428,7 +431,8 @@ export default function IntroOverlay() {
 
         /* exit fade */
         if (isExiting) {
-          exitProg = Math.min(exitProg + 0.018, 1);
+          // Time-based exit: low frame rates must not prolong the animation.
+          exitProg = Math.min((now - exitStartedAt) / 900, 1);
           const ease = exitProg * exitProg;
 
           camera.position.z = TARGET_Z * (1 - exitProg * 0.72);
@@ -481,12 +485,9 @@ export default function IntroOverlay() {
       canvas.removeEventListener('webglcontextlost', dismiss);
       cleanupPromise.then(fn => { if (isCleaned) fn?.(); }).catch(() => {});
     };
-    /* isTouch never changes after its lazy useState init (no setter is ever
-       called), so listing it here doesn't change when this effect re-runs —
-       it just satisfies exhaustive-deps since the effect does read it. */
   }, [mounted, isTouch, hidden]);
 
-  if (hidden) return null;
+  if (hidden || !mounted) return null;
 
   return (
     <div

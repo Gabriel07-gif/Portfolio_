@@ -3,8 +3,8 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import IntroOverlay from '@/components/IntroOverlay';
 
-const IntroOverlay   = dynamic(() => import('@/components/IntroOverlay'),   { ssr: false });
 const CustomCursor   = dynamic(() => import('@/components/CustomCursor'),   { ssr: false });
 const MagneticLayer  = dynamic(() => import('@/components/MagneticLayer'),  { ssr: false });
 const SmoothScroll   = dynamic(() => import('@/components/SmoothScroll'),   { ssr: false });

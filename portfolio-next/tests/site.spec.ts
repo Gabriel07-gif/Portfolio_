@@ -53,7 +53,7 @@ test('Android continua navegável com CPU e rede lentas', async ({ page, browser
   await expect(page.locator('#formName')).toBeEditable();
 });
 
-test('toque dispensa a entrada e a visita seguinte não a repete', async ({ page, isMobile }) => {
+test('toque dispensa a entrada e recarregar a página inicial a reproduz', async ({ page, isMobile }) => {
   test.skip(!isMobile);
   await page.goto('/');
   const intro = page.locator('#intro-overlay');
@@ -62,9 +62,24 @@ test('toque dispensa a entrada e a visita seguinte não a repete', async ({ page
   await expect(intro).toHaveCount(0);
   await expect(page.locator('html')).toHaveAttribute('data-intro-complete', 'true');
   await page.reload();
+  await expect(intro).toBeVisible();
+  await intro.tap({ position: { x: 40, y: 120 } });
   await expect(page.locator('html')).toHaveAttribute('data-intro-complete', 'true');
   await expect(intro).toHaveCount(0);
   await navigate(page, 'servicos');
+});
+
+test('entrada aparece com flag antiga da sessão e endereço #inicio', async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('g-intro-done', '1'));
+  await page.goto('/#inicio');
+  await expect(page.locator('#intro-overlay')).toBeVisible();
+  await expect.poll(() => page.locator('.intro-ltr').first().evaluate(el => Number(getComputedStyle(el).opacity))).toBeGreaterThan(0.8);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#intro-overlay')).toHaveCount(0);
+  await page.reload();
+  await expect(page.locator('#intro-overlay')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#intro-overlay')).toHaveCount(0);
 });
 
 test('armazenamento indisponível não prende a introdução', async ({ page }) => {
@@ -118,6 +133,9 @@ test('movimento reduzido mantém conteúdo e links disponíveis', async ({ page 
   await openSite(page);
   await navigate(page, 'habilidades');
   await expect(page.locator('#g-intro-blocker')).toHaveCount(0);
+  await expect(page.locator('#backTop')).toBeVisible();
+  await page.locator('#backTop').click();
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
 });
 
 test('Android rola com gestos sobre a hero e não baixa WebGL ou vídeos automaticamente', async ({ page, browserName, isMobile }) => {

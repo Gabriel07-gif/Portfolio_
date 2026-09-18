@@ -13,6 +13,7 @@ export default function BackTop() {
       const next = window.scrollY > 500;
       setVisible(current => current === next ? current : next);
     };
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -20,7 +21,7 @@ export default function BackTop() {
   const handleClick = () => { 
     const lenis = getLenisInstance();
     if (lenis) lenis.scrollTo(0);
-    else window.scrollTo({ top: 0, behavior: 'smooth' });
+    else window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   };
 
   return (
@@ -28,6 +29,8 @@ export default function BackTop() {
       className={`back-top${visible ? ' visible' : ''}`}
       id="backTop"
       aria-label={t('backtop.label')}
+      aria-hidden={!visible}
+      tabIndex={visible ? 0 : -1}
       type="button"
       onClick={handleClick}
     >
